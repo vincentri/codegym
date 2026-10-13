@@ -2,15 +2,18 @@
 //! The Tauri commands are thin wrappers around these methods, so this is where behavior is
 //! tested.
 
+mod ai;
+
 use std::path::Path;
-use std::sync::{Mutex, MutexGuard};
+use std::sync::{Arc, Mutex, MutexGuard};
 use std::time::Duration;
 
+use codegym_ai::{AiClient, SecretStore};
 use codegym_core::{
-    ActivityEvent, AiProfile, AiProfileForm, AppSettings, BankQuestion, Category, CategoryForm, ChatMessage, Dashboard,
-    DataInfo, Draft, Language, PlanDetail, PlanForm, PlanSummary, Problem, ProblemSummary, QuestionInput,
-    QuestionRecord, ResetProgressRequest, RunRequest, RunResult, RuntimeInfo, Stats, Store, StoreError, Submission,
-    SubmitResult, VerifyCase, VerifyRequest, VerifyResult,
+    ActivityEvent, AiProfile, AppSettings, BankQuestion, Category, CategoryForm, ChatMessage, Dashboard, DataInfo,
+    Draft, Language, PlanDetail, PlanForm, PlanSummary, Problem, ProblemSummary, QuestionInput, QuestionRecord,
+    ResetProgressRequest, RunRequest, RunResult, RuntimeInfo, Stats, Store, StoreError, Submission, SubmitResult,
+    VerifyCase, VerifyRequest, VerifyResult,
 };
 use codegym_runner::{Limits, RunCase, RunSpec, Runner, RunnerConfig, Trust, starter_code};
 use serde::Serialize;
@@ -44,15 +47,18 @@ pub type Result<T> = std::result::Result<T, ServiceError>;
 pub struct Service {
     store: Mutex<Store>,
     runner: Runner,
+    ai: AiClient,
+    /// Where API keys live (the OS keychain in the app).
+    secrets: Arc<dyn SecretStore>,
 }
 
 impl Service {
-    pub fn open(db_path: &Path, runner: RunnerConfig) -> Result<Self> {
-        Ok(Self::new(Store::open(db_path)?, runner))
+    pub fn open(db_path: &Path, runner: RunnerConfig, secrets: Arc<dyn SecretStore>) -> Result<Self> {
+        Ok(Self::new(Store::open(db_path)?, runner, secrets))
     }
 
-    pub fn new(store: Store, runner: RunnerConfig) -> Self {
-        Self { store: Mutex::new(store), runner: Runner::new(runner) }
+    pub fn new(store: Store, runner: RunnerConfig, secrets: Arc<dyn SecretStore>) -> Self {
+        Self { store: Mutex::new(store), runner: Runner::new(runner), ai: AiClient::new(), secrets }
     }
 
     /// Prepares slow-to-start runtimes (the Python WebAssembly module) in the background.
@@ -224,15 +230,6 @@ impl Service {
         Ok(self.store().ai_profiles()?)
     }
 
-    /// `has_key` says whether an API key is stored in the OS keychain for this profile.
-    pub fn save_ai_profile(&self, form: &AiProfileForm, has_key: bool) -> Result<AiProfile> {
-        Ok(self.store().save_ai_profile(form, has_key)?)
-    }
-
-    pub fn delete_ai_profile(&self, id: &str) -> Result<()> {
-        Ok(self.store().delete_ai_profile(id)?)
-    }
-
     pub fn set_active_ai_profile(&self, id: &str) -> Result<()> {
         Ok(self.store().set_active_ai_profile(id)?)
     }
@@ -344,3 +341,6 @@ impl Service {
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod ai_tests;

@@ -1,4 +1,4 @@
-import { invoke } from "@tauri-apps/api/core";
+import { Channel, invoke } from "@tauri-apps/api/core";
 import { z } from "zod";
 import {
   aiProfileSchema,
@@ -6,8 +6,12 @@ import {
   bankQuestionSchema,
   categorySchema,
   chatMessageSchema,
+  connectionTestSchema,
   dashboardSchema,
   draftSchema,
+  generatedQuestionSchema,
+  generateProgressSchema,
+  mentorStreamEventSchema,
   planDetailSchema,
   planSummarySchema,
   problemSchema,
@@ -71,12 +75,14 @@ const nothing = async (p: Promise<null>) => {
   await p;
 };
 
-/** AI calls arrive with the AI mentor milestone; until then they explain themselves. */
-function aiNotYet(): never {
-  throw new BackendError(
-    "unavailable",
-    "The AI mentor isn't connected yet in this build. Problems, runs and progress all work offline.",
-  );
+/** A channel that forwards only messages matching `schema` (Rust streams over these). */
+function typedChannel<T>(schema: z.ZodType<T>, onMessage: (value: T) => void): Channel<unknown> {
+  const channel = new Channel<unknown>();
+  channel.onmessage = (raw) => {
+    const parsed = schema.safeParse(raw);
+    if (parsed.success) onMessage(parsed.data);
+  };
+  return channel;
 }
 
 export function createTauriApi(): CodegymApi {
@@ -109,13 +115,26 @@ export function createTauriApi(): CodegymApi {
     saveAiProfile: (form) => call("save_ai_profile", aiProfileSchema, { form }),
     deleteAiProfile: (id) => nothing(call("delete_ai_profile", done, { id })),
     setActiveAiProfile: (id) => nothing(call("set_active_ai_profile", done, { id })),
-    listModels: async () => aiNotYet(),
-    testConnection: async () => aiNotYet(),
+    listModels: (form) => call("list_models", z.array(z.string()), { form }),
+    testConnection: (form) => call("test_connection", connectionTestSchema, { form }),
 
     listChat: (problemId) => call("list_chat", z.array(chatMessageSchema), { problemId }),
     clearChat: (problemId) => nothing(call("clear_chat", done, { problemId })),
-    sendMentorMessage: async () => aiNotYet(),
-    importProblem: async () => aiNotYet(),
+    sendMentorMessage: async (req, onEvent, signal) => {
+      const requestId = crypto.randomUUID();
+      const stop = () => void invoke("cancel_ai", { requestId }).catch(() => undefined);
+      signal.addEventListener("abort", stop, { once: true });
+      try {
+        await call("send_mentor_message", done, {
+          req,
+          requestId,
+          onEvent: typedChannel(mentorStreamEventSchema, onEvent),
+        });
+      } finally {
+        signal.removeEventListener("abort", stop);
+      }
+    },
+    importProblem: (text) => call("import_problem", generatedQuestionSchema, { text }),
 
     listBankQuestions: () => call("list_bank_questions", z.array(bankQuestionSchema)),
     getQuestion: (id) => call("get_question", questionRecordSchema, { id }),
@@ -124,7 +143,11 @@ export function createTauriApi(): CodegymApi {
     deleteQuestions: (ids) => nothing(call("delete_questions", done, { ids })),
     setHidden: (ids, hidden) => nothing(call("set_hidden", done, { ids, hidden })),
     verifyReference: (req) => call("verify_reference", verifyResultSchema, { req }),
-    generateQuestions: async () => aiNotYet(),
+    generateQuestions: (req, onProgress) =>
+      call("generate_questions", z.array(generatedQuestionSchema), {
+        req,
+        onProgress: typedChannel(generateProgressSchema, onProgress),
+      }),
 
     listCategories: () => call("list_categories", z.array(categorySchema)),
     saveCategory: (form) => call("save_category", categorySchema, { form }),

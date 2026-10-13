@@ -5,6 +5,8 @@ pub mod bank;
 pub mod compare;
 pub mod store;
 pub mod types;
+pub mod values;
 
 pub use store::{Store, StoreError};
 pub use types::*;
+pub use values::validate_question;

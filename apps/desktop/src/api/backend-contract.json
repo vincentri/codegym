@@ -31,12 +31,61 @@
       "version": "1.24.7"
     }
   ],
+  "generateQuestions": [
+    {
+      "droppedTests": 2,
+      "question": {
+        "categoryIds": ["array"],
+        "comparator": "exact",
+        "constraints": ["0 ≤ n ≤ 5"],
+        "descriptionMd": "Return the sum of `nums`.",
+        "difficulty": "easy",
+        "forkedFrom": null,
+        "hints": ["Keep a running total."],
+        "inPlaceArg": null,
+        "origin": "ai_generated",
+        "reference": {
+          "code": "function sumAll(nums) {\n  if (nums.length > 5) throw new Error('too long');\n  return nums.reduce((a, b) => a + b, 0);\n}",
+          "language": "javascript"
+        },
+        "signature": {
+          "functionName": "sumAll",
+          "params": [
+            {
+              "name": "nums",
+              "type": "int[]"
+            }
+          ],
+          "returns": "int"
+        },
+        "tests": [
+          {
+            "expected": 6,
+            "hidden": false,
+            "input": [[1, 2, 3]]
+          },
+          {
+            "expected": 0,
+            "hidden": true,
+            "input": [[]]
+          },
+          {
+            "expected": 8,
+            "hidden": true,
+            "input": [[4, 4]]
+          }
+        ],
+        "title": "Sum of a List"
+      },
+      "verifiedTests": 3
+    }
+  ],
   "getDashboard": {
     "continueProblem": null,
     "plan": {
       "builtin": false,
       "description": "First week",
-      "id": "4c0105de-5b18-4ed2-a284-c6d940c86992",
+      "id": "a4b13081-dd28-4f41-9c48-de2546ef4b57",
       "name": "Week 1",
       "next": {
         "categories": [
@@ -56,18 +105,18 @@
       },
       "solved": 1,
       "total": 2,
-      "updatedAt": "2026-10-13T04:47:59.867Z"
+      "updatedAt": "2026-10-13T05:35:58.603Z"
     },
     "recentSubmissions": [
       {
         "code": "function twoSum(nums, target) {\n  const seen = new Map();\n  for (let i = 0; i < nums.length; i++) {\n    if (seen.has(target - nums[i])) return [seen.get(target - nums[i]), i];\n    seen.set(nums[i], i);\n  }\n  return [];\n}\n",
-        "createdAt": "2026-10-13T04:47:59.601Z",
-        "id": "8d895945-1604-4035-93ae-ae9889fe1d57",
+        "createdAt": "2026-10-13T05:35:58.311Z",
+        "id": "ed8f18e0-3e1c-4c27-9ef0-f862c292b36a",
         "language": "javascript",
         "passed": 8,
         "problemId": "two-sum",
         "problemTitle": "Two Sum",
-        "runtimeMs": 0.09314600000000439,
+        "runtimeMs": 0.07620399999999705,
         "total": 8,
         "verdict": "accepted"
       }
@@ -142,12 +191,12 @@
     "code": "class Solution: pass",
     "language": "python",
     "problemId": "two-sum",
-    "updatedAt": "2026-10-13T04:47:59.567Z"
+    "updatedAt": "2026-10-13T05:35:58.277Z"
   },
   "getPlan": {
     "builtin": false,
     "description": "First week",
-    "id": "4c0105de-5b18-4ed2-a284-c6d940c86992",
+    "id": "a4b13081-dd28-4f41-9c48-de2546ef4b57",
     "items": [
       {
         "categories": [
@@ -206,7 +255,7 @@
     },
     "solved": 1,
     "total": 2,
-    "updatedAt": "2026-10-13T04:47:59.867Z"
+    "updatedAt": "2026-10-13T05:35:58.603Z"
   },
   "getProblem": {
     "categories": [
@@ -340,17 +389,64 @@
     "streakDays": 1,
     "total": 35
   },
+  "importProblem": {
+    "droppedTests": 2,
+    "question": {
+      "categoryIds": ["array"],
+      "comparator": "exact",
+      "constraints": ["0 ≤ n ≤ 5"],
+      "descriptionMd": "Return the sum of `nums`.",
+      "difficulty": "easy",
+      "forkedFrom": null,
+      "hints": ["Keep a running total."],
+      "inPlaceArg": null,
+      "origin": "ai_imported",
+      "reference": {
+        "code": "function sumAll(nums) {\n  if (nums.length > 5) throw new Error('too long');\n  return nums.reduce((a, b) => a + b, 0);\n}",
+        "language": "javascript"
+      },
+      "signature": {
+        "functionName": "sumAll",
+        "params": [
+          {
+            "name": "nums",
+            "type": "int[]"
+          }
+        ],
+        "returns": "int"
+      },
+      "tests": [
+        {
+          "expected": 6,
+          "hidden": false,
+          "input": [[1, 2, 3]]
+        },
+        {
+          "expected": 0,
+          "hidden": true,
+          "input": [[]]
+        },
+        {
+          "expected": 8,
+          "hidden": true,
+          "input": [[4, 4]]
+        }
+      ],
+      "title": "Sum of a List"
+    },
+    "verifiedTests": 3
+  },
   "listAiProfiles": [
     {
-      "baseUrl": "http://localhost:11434/v1",
+      "baseUrl": "http://127.0.0.1:37265/v1",
       "effort": "medium",
-      "hasApiKey": false,
-      "id": "b22dcfc8-2e65-4dda-b843-f8791aab7ba5",
+      "hasApiKey": true,
+      "id": "04594336-847c-4445-8e39-06e5bdc5b61d",
       "isActive": true,
       "mentorStyle": "socratic",
       "model": "qwen2.5-coder",
       "name": "Local",
-      "provider": "ollama"
+      "provider": "custom"
     }
   ],
   "listBankQuestions": [
@@ -375,7 +471,7 @@
       "status": "solved",
       "testCount": 8,
       "title": "Two Sum",
-      "updatedAt": "2026-10-13T04:47:59.441Z",
+      "updatedAt": "2026-10-13T05:35:58.130Z",
       "verified": true
     },
     {
@@ -399,7 +495,7 @@
       "status": "todo",
       "testCount": 12,
       "title": "Valid Parentheses",
-      "updatedAt": "2026-10-13T04:47:59.441Z",
+      "updatedAt": "2026-10-13T05:35:58.130Z",
       "verified": true
     },
     {
@@ -418,7 +514,7 @@
       "status": "todo",
       "testCount": 10,
       "title": "Merge Two Sorted Lists",
-      "updatedAt": "2026-10-13T04:47:59.441Z",
+      "updatedAt": "2026-10-13T05:35:58.130Z",
       "verified": true
     },
     {
@@ -442,7 +538,7 @@
       "status": "todo",
       "testCount": 11,
       "title": "Best Time to Buy and Sell Stock",
-      "updatedAt": "2026-10-13T04:47:59.441Z",
+      "updatedAt": "2026-10-13T05:35:58.130Z",
       "verified": true
     },
     {
@@ -466,7 +562,7 @@
       "status": "todo",
       "testCount": 11,
       "title": "Valid Anagram",
-      "updatedAt": "2026-10-13T04:47:59.441Z",
+      "updatedAt": "2026-10-13T05:35:58.130Z",
       "verified": true
     },
     {
@@ -485,7 +581,7 @@
       "status": "todo",
       "testCount": 12,
       "title": "Binary Search",
-      "updatedAt": "2026-10-13T04:47:59.441Z",
+      "updatedAt": "2026-10-13T05:35:58.130Z",
       "verified": true
     },
     {
@@ -504,7 +600,7 @@
       "status": "todo",
       "testCount": 9,
       "title": "Reverse Linked List",
-      "updatedAt": "2026-10-13T04:47:59.441Z",
+      "updatedAt": "2026-10-13T05:35:58.130Z",
       "verified": true
     },
     {
@@ -528,7 +624,7 @@
       "status": "todo",
       "testCount": 11,
       "title": "Maximum Depth of Binary Tree",
-      "updatedAt": "2026-10-13T04:47:59.441Z",
+      "updatedAt": "2026-10-13T05:35:58.130Z",
       "verified": true
     },
     {
@@ -552,7 +648,7 @@
       "status": "todo",
       "testCount": 10,
       "title": "Invert Binary Tree",
-      "updatedAt": "2026-10-13T04:47:59.441Z",
+      "updatedAt": "2026-10-13T05:35:58.130Z",
       "verified": true
     },
     {
@@ -571,7 +667,7 @@
       "status": "todo",
       "testCount": 10,
       "title": "Climbing Stairs",
-      "updatedAt": "2026-10-13T04:47:59.441Z",
+      "updatedAt": "2026-10-13T05:35:58.130Z",
       "verified": true
     },
     {
@@ -595,7 +691,7 @@
       "status": "todo",
       "testCount": 11,
       "title": "Contains Duplicate",
-      "updatedAt": "2026-10-13T04:47:59.441Z",
+      "updatedAt": "2026-10-13T05:35:58.130Z",
       "verified": true
     },
     {
@@ -619,7 +715,7 @@
       "status": "todo",
       "testCount": 10,
       "title": "Move Zeroes",
-      "updatedAt": "2026-10-13T04:47:59.441Z",
+      "updatedAt": "2026-10-13T05:35:58.130Z",
       "verified": true
     },
     {
@@ -643,7 +739,7 @@
       "status": "todo",
       "testCount": 11,
       "title": "Group Anagrams",
-      "updatedAt": "2026-10-13T04:47:59.441Z",
+      "updatedAt": "2026-10-13T05:35:58.130Z",
       "verified": true
     },
     {
@@ -667,7 +763,7 @@
       "status": "todo",
       "testCount": 11,
       "title": "Top K Frequent Elements",
-      "updatedAt": "2026-10-13T04:47:59.441Z",
+      "updatedAt": "2026-10-13T05:35:58.130Z",
       "verified": true
     },
     {
@@ -691,7 +787,7 @@
       "status": "todo",
       "testCount": 11,
       "title": "Product of Array Except Self",
-      "updatedAt": "2026-10-13T04:47:59.441Z",
+      "updatedAt": "2026-10-13T05:35:58.130Z",
       "verified": true
     },
     {
@@ -720,7 +816,7 @@
       "status": "todo",
       "testCount": 11,
       "title": "Longest Substring Without Repeating Characters",
-      "updatedAt": "2026-10-13T04:47:59.441Z",
+      "updatedAt": "2026-10-13T05:35:58.130Z",
       "verified": true
     },
     {
@@ -749,7 +845,7 @@
       "status": "todo",
       "testCount": 10,
       "title": "3Sum",
-      "updatedAt": "2026-10-13T04:47:59.441Z",
+      "updatedAt": "2026-10-13T05:35:58.130Z",
       "verified": true
     },
     {
@@ -778,7 +874,7 @@
       "status": "todo",
       "testCount": 10,
       "title": "Container With Most Water",
-      "updatedAt": "2026-10-13T04:47:59.441Z",
+      "updatedAt": "2026-10-13T05:35:58.130Z",
       "verified": true
     },
     {
@@ -807,7 +903,7 @@
       "status": "todo",
       "testCount": 11,
       "title": "Number of Islands",
-      "updatedAt": "2026-10-13T04:47:59.441Z",
+      "updatedAt": "2026-10-13T05:35:58.130Z",
       "verified": true
     },
     {
@@ -826,7 +922,7 @@
       "status": "todo",
       "testCount": 12,
       "title": "Coin Change",
-      "updatedAt": "2026-10-13T04:47:59.441Z",
+      "updatedAt": "2026-10-13T05:35:58.130Z",
       "verified": true
     },
     {
@@ -850,7 +946,7 @@
       "status": "todo",
       "testCount": 11,
       "title": "Longest Increasing Subsequence",
-      "updatedAt": "2026-10-13T04:47:59.441Z",
+      "updatedAt": "2026-10-13T05:35:58.130Z",
       "verified": true
     },
     {
@@ -879,7 +975,7 @@
       "status": "todo",
       "testCount": 11,
       "title": "Merge Intervals",
-      "updatedAt": "2026-10-13T04:47:59.441Z",
+      "updatedAt": "2026-10-13T05:35:58.130Z",
       "verified": true
     },
     {
@@ -903,7 +999,7 @@
       "status": "todo",
       "testCount": 12,
       "title": "Kth Largest Element in an Array",
-      "updatedAt": "2026-10-13T04:47:59.441Z",
+      "updatedAt": "2026-10-13T05:35:58.130Z",
       "verified": true
     },
     {
@@ -927,7 +1023,7 @@
       "status": "todo",
       "testCount": 10,
       "title": "Binary Tree Level Order Traversal",
-      "updatedAt": "2026-10-13T04:47:59.441Z",
+      "updatedAt": "2026-10-13T05:35:58.130Z",
       "verified": true
     },
     {
@@ -951,7 +1047,7 @@
       "status": "todo",
       "testCount": 12,
       "title": "Validate Binary Search Tree",
-      "updatedAt": "2026-10-13T04:47:59.441Z",
+      "updatedAt": "2026-10-13T05:35:58.130Z",
       "verified": true
     },
     {
@@ -975,7 +1071,7 @@
       "status": "todo",
       "testCount": 12,
       "title": "Course Schedule",
-      "updatedAt": "2026-10-13T04:47:59.441Z",
+      "updatedAt": "2026-10-13T05:35:58.130Z",
       "verified": true
     },
     {
@@ -999,7 +1095,7 @@
       "status": "todo",
       "testCount": 12,
       "title": "Search in Rotated Sorted Array",
-      "updatedAt": "2026-10-13T04:47:59.441Z",
+      "updatedAt": "2026-10-13T05:35:58.130Z",
       "verified": true
     },
     {
@@ -1028,7 +1124,7 @@
       "status": "todo",
       "testCount": 10,
       "title": "Daily Temperatures",
-      "updatedAt": "2026-10-13T04:47:59.441Z",
+      "updatedAt": "2026-10-13T05:35:58.130Z",
       "verified": true
     },
     {
@@ -1052,7 +1148,7 @@
       "status": "todo",
       "testCount": 11,
       "title": "Word Break",
-      "updatedAt": "2026-10-13T04:47:59.441Z",
+      "updatedAt": "2026-10-13T05:35:58.130Z",
       "verified": true
     },
     {
@@ -1076,7 +1172,7 @@
       "status": "todo",
       "testCount": 11,
       "title": "Edit Distance",
-      "updatedAt": "2026-10-13T04:47:59.441Z",
+      "updatedAt": "2026-10-13T05:35:58.130Z",
       "verified": true
     },
     {
@@ -1105,7 +1201,7 @@
       "status": "todo",
       "testCount": 11,
       "title": "Trapping Rain Water",
-      "updatedAt": "2026-10-13T04:47:59.441Z",
+      "updatedAt": "2026-10-13T05:35:58.130Z",
       "verified": true
     },
     {
@@ -1129,7 +1225,7 @@
       "status": "todo",
       "testCount": 12,
       "title": "Median of Two Sorted Arrays",
-      "updatedAt": "2026-10-13T04:47:59.441Z",
+      "updatedAt": "2026-10-13T05:35:58.130Z",
       "verified": true
     },
     {
@@ -1153,7 +1249,7 @@
       "status": "todo",
       "testCount": 11,
       "title": "Merge k Sorted Lists",
-      "updatedAt": "2026-10-13T04:47:59.441Z",
+      "updatedAt": "2026-10-13T05:35:58.130Z",
       "verified": true
     },
     {
@@ -1182,7 +1278,7 @@
       "status": "todo",
       "testCount": 11,
       "title": "Minimum Window Substring",
-      "updatedAt": "2026-10-13T04:47:59.441Z",
+      "updatedAt": "2026-10-13T05:35:58.130Z",
       "verified": true
     },
     {
@@ -1201,7 +1297,7 @@
       "status": "todo",
       "testCount": 3,
       "title": "Sum All",
-      "updatedAt": "2026-10-13T04:47:59.602Z",
+      "updatedAt": "2026-10-13T05:35:58.311Z",
       "verified": true
     }
   ],
@@ -1396,7 +1492,25 @@
       "solvedCount": 0
     }
   ],
-  "listChat": [],
+  "listChat": [
+    {
+      "content": "Give me a hint.",
+      "createdAt": "2026-10-13T05:35:58.656Z",
+      "id": "b8c460c9-e608-4424-bf82-cc8c46475bad",
+      "mode": "hint",
+      "problemId": "two-sum",
+      "role": "user"
+    },
+    {
+      "content": "Think about complements.",
+      "createdAt": "2026-10-13T05:35:58.657Z",
+      "id": "a1fcbaff-5a6e-4ceb-8221-19059a35674f",
+      "mode": "hint",
+      "problemId": "two-sum",
+      "role": "assistant"
+    }
+  ],
+  "listModels": ["qwen2.5-coder"],
   "listPlans": [
     {
       "builtin": true,
@@ -1426,12 +1540,12 @@
       },
       "solved": 1,
       "total": 34,
-      "updatedAt": "2026-10-13T04:47:59.441Z"
+      "updatedAt": "2026-10-13T05:35:58.130Z"
     },
     {
       "builtin": false,
       "description": "First week",
-      "id": "4c0105de-5b18-4ed2-a284-c6d940c86992",
+      "id": "a4b13081-dd28-4f41-9c48-de2546ef4b57",
       "name": "Week 1",
       "next": {
         "categories": [
@@ -1451,7 +1565,7 @@
       },
       "solved": 1,
       "total": 2,
-      "updatedAt": "2026-10-13T04:47:59.867Z"
+      "updatedAt": "2026-10-13T05:35:58.603Z"
     }
   ],
   "listProblems": [
@@ -2204,14 +2318,35 @@
   "listSubmissions": [
     {
       "code": "function twoSum(nums, target) {\n  const seen = new Map();\n  for (let i = 0; i < nums.length; i++) {\n    if (seen.has(target - nums[i])) return [seen.get(target - nums[i]), i];\n    seen.set(nums[i], i);\n  }\n  return [];\n}\n",
-      "createdAt": "2026-10-13T04:47:59.601Z",
-      "id": "8d895945-1604-4035-93ae-ae9889fe1d57",
+      "createdAt": "2026-10-13T05:35:58.311Z",
+      "id": "ed8f18e0-3e1c-4c27-9ef0-f862c292b36a",
       "language": "javascript",
       "passed": 8,
       "problemId": "two-sum",
-      "runtimeMs": 0.09314600000000439,
+      "runtimeMs": 0.07620399999999705,
       "total": 8,
       "verdict": "accepted"
+    }
+  ],
+  "mentorEvents": [
+    {
+      "text": "Think about ",
+      "type": "delta"
+    },
+    {
+      "text": "complements.",
+      "type": "delta"
+    },
+    {
+      "message": {
+        "content": "Think about complements.",
+        "createdAt": "2026-10-13T05:35:58.657Z",
+        "id": "a1fcbaff-5a6e-4ceb-8221-19059a35674f",
+        "mode": "hint",
+        "problemId": "two-sum",
+        "role": "assistant"
+      },
+      "type": "done"
     }
   ],
   "runCode": [
@@ -2229,7 +2364,7 @@
           "input": [[2, 7, 11, 15], 9],
           "passed": true,
           "stdout": "",
-          "timeMs": 0.03220200000000162
+          "timeMs": 0.04669200000000018
         },
         {
           "actual": [1, 2],
@@ -2241,7 +2376,7 @@
           "input": [[3, 2, 4], 6],
           "passed": true,
           "stdout": "",
-          "timeMs": 0.00420000000000087
+          "timeMs": 0.004698000000004754
         },
         {
           "actual": [0, 1],
@@ -2253,7 +2388,7 @@
           "input": [[3, 3], 6],
           "passed": true,
           "stdout": "",
-          "timeMs": 0.0035640000000007888
+          "timeMs": 0.002430000000003929
         },
         {
           "actual": [0, 1],
@@ -2265,11 +2400,11 @@
           "input": [[1, 2], 3],
           "passed": null,
           "stdout": "",
-          "timeMs": 0.003575000000001438
+          "timeMs": 0.0024370000000004666
         }
       ],
       "total": 3,
-      "totalTimeMs": 0.043541000000004715,
+      "totalTimeMs": 0.05625700000000933,
       "verdict": "accepted"
     },
     {
@@ -2351,7 +2486,7 @@
           "input": [[2, 7, 11, 15], 9],
           "passed": true,
           "stdout": "",
-          "timeMs": 0.03752900000000281
+          "timeMs": 0.02944100000000205
         },
         {
           "actual": [1, 2],
@@ -2363,7 +2498,7 @@
           "input": [[3, 2, 4], 6],
           "passed": true,
           "stdout": "",
-          "timeMs": 0.0035600000000002296
+          "timeMs": 0.0033519999999995775
         },
         {
           "actual": [0, 1],
@@ -2375,7 +2510,7 @@
           "input": [[3, 3], 6],
           "passed": true,
           "stdout": "",
-          "timeMs": 0.0029140000000005273
+          "timeMs": 0.002504000000001838
         },
         {
           "actual": null,
@@ -2387,7 +2522,7 @@
           "input": null,
           "passed": true,
           "stdout": "",
-          "timeMs": 0.003519000000000716
+          "timeMs": 0.003759999999999763
         },
         {
           "actual": null,
@@ -2399,7 +2534,7 @@
           "input": null,
           "passed": true,
           "stdout": "",
-          "timeMs": 0.03875099999999776
+          "timeMs": 0.03200199999999853
         },
         {
           "actual": null,
@@ -2411,7 +2546,7 @@
           "input": null,
           "passed": true,
           "stdout": "",
-          "timeMs": 0.0029479999999999507
+          "timeMs": 0.002341999999998734
         },
         {
           "actual": null,
@@ -2423,7 +2558,7 @@
           "input": null,
           "passed": true,
           "stdout": "",
-          "timeMs": 0.0015490000000006887
+          "timeMs": 0.0011539999999996553
         },
         {
           "actual": null,
@@ -2435,24 +2570,29 @@
           "input": null,
           "passed": true,
           "stdout": "",
-          "timeMs": 0.00237600000000171
+          "timeMs": 0.001648999999996903
         }
       ],
       "total": 8,
-      "totalTimeMs": 0.09314600000000439,
+      "totalTimeMs": 0.07620399999999705,
       "verdict": "accepted"
     },
     "submission": {
       "code": "function twoSum(nums, target) {\n  const seen = new Map();\n  for (let i = 0; i < nums.length; i++) {\n    if (seen.has(target - nums[i])) return [seen.get(target - nums[i]), i];\n    seen.set(nums[i], i);\n  }\n  return [];\n}\n",
-      "createdAt": "2026-10-13T04:47:59.601Z",
-      "id": "8d895945-1604-4035-93ae-ae9889fe1d57",
+      "createdAt": "2026-10-13T05:35:58.311Z",
+      "id": "ed8f18e0-3e1c-4c27-9ef0-f862c292b36a",
       "language": "javascript",
       "passed": 8,
       "problemId": "two-sum",
-      "runtimeMs": 0.09314600000000439,
+      "runtimeMs": 0.07620399999999705,
       "total": 8,
       "verdict": "accepted"
     }
+  },
+  "testConnection": {
+    "error": null,
+    "latencyMs": 1.376068,
+    "ok": true
   },
   "verifyReference": {
     "executed": true,

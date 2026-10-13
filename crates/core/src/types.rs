@@ -578,3 +578,71 @@ pub struct AiProfileForm {
 pub struct ResetProgressRequest {
     pub include_custom_problems: bool,
 }
+
+// --- AI --------------------------------------------------------------------------
+
+/// A question for the mentor about the problem being solved (`MentorRequest` in api/types.ts).
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct MentorRequest {
+    pub problem_id: String,
+    pub language: Language,
+    /// chat, hint, explain, review, debug, complexity, approach or solution.
+    pub mode: String,
+    pub message: String,
+    pub code: String,
+    pub last_run: Option<RunResult>,
+}
+
+/// Streamed to the mentor panel while a reply is written.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(tag = "type", rename_all = "snake_case")]
+pub enum MentorStreamEvent {
+    Delta {
+        text: String,
+    },
+    /// The text so far was withdrawn (a model declined and another took over); start again.
+    Reset,
+    Done {
+        message: ChatMessage,
+    },
+    Error {
+        message: String,
+    },
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ConnectionTest {
+    pub ok: bool,
+    pub latency_ms: Option<f64>,
+    pub error: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct GenerateRequest {
+    pub topic: String,
+    pub difficulty: Difficulty,
+    pub count: usize,
+    pub notes: String,
+    pub plan_id: Option<String>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum GenerateProgress {
+    Writing,
+    Testing,
+    Verifying,
+    Done,
+}
+
+/// An AI-written question after its reference solution was run on its tests (not saved yet).
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct GeneratedQuestion {
+    pub question: QuestionInput,
+    pub verified_tests: usize,
+    pub dropped_tests: usize,
+}

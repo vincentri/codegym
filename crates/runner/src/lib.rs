@@ -24,6 +24,7 @@ use std::path::PathBuf;
 use std::sync::OnceLock;
 use std::time::Duration;
 
+use codegym_core::values::is_identifier;
 use codegym_core::{Comparator, Language, RunResult, RuntimeInfo, Signature};
 use serde_json::Value;
 
@@ -225,12 +226,6 @@ impl Runner {
 
 const GO_HINT: &str = "Install Go from https://go.dev/dl/ and restart CodeGym.";
 const PYTHON_HINT: &str = "Install Python 3 from https://www.python.org/downloads/ and restart CodeGym.";
-
-fn is_identifier(s: &str) -> bool {
-    let mut chars = s.chars();
-    matches!(chars.next(), Some(c) if c.is_ascii_alphabetic() || c == '_')
-        && chars.all(|c| c.is_ascii_alphanumeric() || c == '_')
-}
 
 /// The harnesses splice names into generated code, so they must be plain identifiers.
 fn validate(spec: &RunSpec) -> Result<(), String> {

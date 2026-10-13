@@ -1,6 +1,6 @@
 [workspace]
 resolver = "3"
-members = ["crates/core", "crates/runner", "crates/service", "apps/desktop/src-tauri"]
+members = ["crates/core", "crates/runner", "crates/ai", "crates/service", "apps/desktop/src-tauri"]
 
 [workspace.package]
 version = "0.1.0"
@@ -11,6 +11,7 @@ rust-version = "1.85"
 [workspace.dependencies]
 codegym-core = { path = "crates/core" }
 codegym-runner = { path = "crates/runner" }
+codegym-ai = { path = "crates/ai" }
 codegym-service = { path = "crates/service" }
 anyhow = "1"
 chrono = { version = "0.4", default-features = false, features = ["clock", "std"] }
@@ -29,6 +30,10 @@ unsafe_code = "forbid"
 
 [workspace.lints.clippy]
 all = { level = "warn", priority = -1 }
+
+# Full debug info for every test binary fills disks fast; line tables keep useful backtraces.
+[profile.dev]
+debug = "line-tables-only"
 
 [profile.dev.package."*"]
 opt-level = 2

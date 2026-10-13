@@ -49,28 +49,7 @@ pub(crate) fn parse_status(s: Option<String>) -> ProblemStatus {
 
 /// Checks a question before it is written. The editor's Zod schema enforces the same rules.
 fn validate(input: &QuestionInput) -> Result<()> {
-    let bad = |m: &str| Err(StoreError::Invalid(m.into()));
-    if input.title.trim().len() < 3 {
-        return bad("Title is too short");
-    }
-    if input.signature.params.is_empty() {
-        return bad("Add at least one parameter");
-    }
-    if input.tests.len() < 3 {
-        return bad("Add at least 3 test cases");
-    }
-    if input.tests.iter().all(|t| t.hidden) {
-        return bad("Keep at least one test visible as an example");
-    }
-    if input.tests.iter().any(|t| t.input.len() != input.signature.params.len()) {
-        return bad("Every test needs one value per parameter");
-    }
-    if let Some(i) = input.in_place_arg
-        && i >= input.signature.params.len()
-    {
-        return bad("The in-place argument must be one of the parameters");
-    }
-    Ok(())
+    crate::values::validate_question(input).map_err(StoreError::Invalid)
 }
 
 fn write_tests(tx: &Transaction, id: &str, tests: &[TestCase]) -> Result<()> {

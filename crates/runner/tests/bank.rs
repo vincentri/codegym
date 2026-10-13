@@ -9,9 +9,9 @@ use std::path::PathBuf;
 use std::time::Duration;
 
 use codegym_core::bank::BankProblem;
-use codegym_core::{Language, ParamType, Verdict};
+use codegym_core::values::fits;
+use codegym_core::{Language, Verdict};
 use codegym_runner::{Limits, RunCase, RunSpec, Runner, RunnerConfig, Trust, starter_code};
-use serde_json::Value;
 
 fn root() -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../..")
@@ -47,30 +47,6 @@ fn selected() -> Vec<String> {
     match std::env::var("CODEGYM_PROBLEMS") {
         Ok(list) if !list.trim().is_empty() => list.split(',').map(|s| s.trim().to_string()).collect(),
         _ => problem_ids_on_disk().into_iter().collect(),
-    }
-}
-
-/// Checks a JSON value has the shape `t` promises, so every language can decode it.
-fn fits(t: ParamType, v: &Value) -> bool {
-    let all = |v: &Value, f: &dyn Fn(&Value) -> bool| v.as_array().is_some_and(|a| a.iter().all(f));
-    let int = |v: &Value| v.is_i64();
-    let num = |v: &Value| v.is_number();
-    let string = |v: &Value| v.is_string();
-    let ch = |v: &Value| v.as_str().is_some_and(|s| s.chars().count() == 1);
-    match t {
-        ParamType::Int => int(v),
-        ParamType::Float => num(v),
-        ParamType::Bool => v.is_boolean(),
-        ParamType::String => string(v),
-        ParamType::IntArray | ParamType::ListNode => all(v, &int),
-        ParamType::FloatArray => all(v, &num),
-        ParamType::StringArray => all(v, &string),
-        ParamType::BoolArray => all(v, &Value::is_boolean),
-        ParamType::IntMatrix | ParamType::ListNodeArray => all(v, &|r| all(r, &int)),
-        ParamType::StringMatrix => all(v, &|r| all(r, &string)),
-        ParamType::CharMatrix => all(v, &|r| all(r, &ch)),
-        ParamType::TreeNode => all(v, &|x| x.is_null() || x.is_i64()) && v.get(0).is_none_or(|x| !x.is_null()),
-        ParamType::Void => v.is_null(),
     }
 }
 

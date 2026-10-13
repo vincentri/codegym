@@ -300,4 +300,5 @@ export const generatedQuestionSchema = z.object({
 });
 export type GeneratedQuestion = z.infer<typeof generatedQuestionSchema>;
 
-export type GenerateProgress = "writing" | "testing" | "verifying" | "done";
+export const generateProgressSchema = z.enum(["writing", "testing", "verifying", "done"]);
+export type GenerateProgress = z.infer<typeof generateProgressSchema>;

@@ -4,14 +4,14 @@ A desktop app for practicing coding-interview problems offline, with an AI mento
 instead of handing you the answer. Bring your own AI: a free local model through Ollama, OpenCode
 Zen, Claude, or any OpenAI-compatible endpoint.
 
-> **Status:** milestone 1. The desktop app runs on a real backend:
-> - 34 built-in problems (each with reference solutions in all three languages);
-> - Run and Submit in Python, JavaScript and Go;
-> - progress, drafts, solve records, question bank, categories and study plans stored in SQLite.
+> **Status:** milestone 2. The desktop app runs fully offline for practice and connects to the AI you choose for the mentor:
+> - **Practice:** 34 built-in problems, each with reference solutions in all three languages. Run and Submit in Python, JavaScript and Go.
+> - **Saved in SQLite:** progress, drafts, solve records, the question bank, categories and study plans.
+> - **AI mentor:** a streaming chat that sees your code and last run, but never hidden tests.
+> - **AI questions:** import pasted problems or generate new ones. Every AI-written question is checked by running its reference solution in a sandbox.
+> - **API keys:** kept in the operating system's keychain.
 >
-> Still to come:
-> - **Next milestone:** the AI mentor, plus AI question import and generation.
-> - **After that:** installers.
+> Next: installers and CI.
 
 ## How it works
 
@@ -22,6 +22,7 @@ Zen, Claude, or any OpenAI-compatible endpoint.
 | Service | `crates/service` | The operations behind every screen, built on the store and the runner. |
 | Store | `crates/core` | SQLite database (`codegym.db` in the app data folder), shared types, the answer comparator, and the built-in question bank. |
 | Runner | `crates/runner` | Runs solutions against tests. See the language table below. |
+| AI | `crates/ai` | Provider clients over raw HTTP (OpenAI-compatible for Ollama, OpenCode Zen and custom URLs; the Anthropic Messages API for Claude), streaming, keychain storage, prompts. |
 | Question bank | `problems/` | One JSON file per problem plus `solutions/<language>/`. It is embedded in the app and synced into SQLite on launch. |
 
 How each language runs:
@@ -31,6 +32,28 @@ How each language runs:
 | Python | CPython compiled to WebAssembly, inside wasmtime: no file or network access, memory cap, time limit | No (built in) |
 | JavaScript | Node.js when installed, otherwise QuickJS (built in) | No |
 | Go | The Go toolchain on your computer | Yes ([go.dev/dl](https://go.dev/dl/)) |
+
+## AI providers
+
+Pick one in **Settings → AI Mentor**:
+
+| Provider | Base URL | Key |
+|---|---|---|
+| Ollama (free, local) | `http://localhost:11434/v1` | none |
+| OpenCode Zen | `https://opencode.ai/zen/v1` | required |
+| Claude | `https://api.anthropic.com` | required (`sk-ant-…`) |
+| Custom | any OpenAI-compatible URL (LM Studio, OpenRouter, Groq, OpenAI, …) | optional |
+
+**How the mentor works:**
+- It guides with hints and questions. It writes a full solution only when you press **Show solution**.
+- Each message includes the problem, your current code and your last run.
+- Hidden tests stay hidden from the AI too.
+
+**Using Claude:**
+- Requests ask for server-side refusal fallback (`fallbacks: "default"`) on the models that support it.
+- If the model declines, the reply says so instead of showing partial text.
+
+**On Linux:** saving keys needs a Secret Service keyring, such as GNOME Keyring or KWallet. Ollama needs no key.
 
 ## Develop
 

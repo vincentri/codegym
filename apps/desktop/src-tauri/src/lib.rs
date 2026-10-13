@@ -2,16 +2,20 @@
 //! (apps/desktop/src/api/types.ts) as a Tauri command. Commands run on a worker thread so a
 //! long run never freezes the window.
 
-use std::sync::Arc;
+use std::collections::HashMap;
+use std::sync::{Arc, Mutex};
 
+use codegym_ai::{Cancel, KeyringStore};
 use codegym_core::{
-    ActivityEvent, AiProfile, AiProfileForm, AppSettings, BankQuestion, Category, CategoryForm, ChatMessage, Dashboard,
-    DataInfo, Draft, Language, PlanDetail, PlanForm, PlanSummary, Problem, ProblemSummary, QuestionInput,
+    ActivityEvent, AiProfile, AiProfileForm, AppSettings, BankQuestion, Category, CategoryForm, ChatMessage,
+    ConnectionTest, Dashboard, DataInfo, Draft, GenerateProgress, GenerateRequest, GeneratedQuestion, Language,
+    MentorRequest, MentorStreamEvent, PlanDetail, PlanForm, PlanSummary, Problem, ProblemSummary, QuestionInput,
     QuestionRecord, ResetProgressRequest, RunRequest, RunResult, RuntimeInfo, Stats, Submission, SubmitResult,
     VerifyRequest, VerifyResult,
 };
 use codegym_runner::{RunnerConfig, Trust};
 use codegym_service::{Result, Service, ServiceError};
+use tauri::ipc::Channel;
 use tauri::{Manager, State};
 use tauri_plugin_opener::OpenerExt;
 
@@ -60,8 +64,8 @@ commands! {
     fn reset_progress(req: ResetProgressRequest) -> () => |s| s.reset_progress(&req);
 
     fn list_ai_profiles() -> Vec<AiProfile> => |s| s.list_ai_profiles();
-    // API keys go to the OS keychain with the AI mentor; until then profiles are saved without one.
-    fn save_ai_profile(form: AiProfileForm) -> AiProfile => |s| s.save_ai_profile(&form, false);
+    // Keychain calls can block (an unlock prompt), so they run on a worker thread too.
+    fn save_ai_profile(form: AiProfileForm) -> AiProfile => |s| s.save_ai_profile(&form);
     fn delete_ai_profile(id: String) -> () => |s| s.delete_ai_profile(&id);
     fn set_active_ai_profile(id: String) -> () => |s| s.set_active_ai_profile(&id);
     fn list_chat(problem_id: String) -> Vec<ChatMessage> => |s| s.list_chat(&problem_id);
@@ -89,6 +93,80 @@ commands! {
     fn set_plan_items(id: String, problem_ids: Vec<String>) -> () => |s| s.set_plan_items(&id, &problem_ids);
 }
 
+/// Requests that can be stopped from the UI, by request id.
+#[derive(Default)]
+struct AiTasks(Mutex<HashMap<String, Cancel>>);
+
+impl AiTasks {
+    fn start(&self, id: &str) -> Cancel {
+        let token = Cancel::new();
+        self.0.lock().unwrap_or_else(|e| e.into_inner()).insert(id.to_string(), token.clone());
+        token
+    }
+
+    fn finish(&self, id: &str) -> Option<Cancel> {
+        self.0.lock().unwrap_or_else(|e| e.into_inner()).remove(id)
+    }
+}
+
+#[tauri::command]
+async fn list_models(svc: Svc<'_>, form: AiProfileForm) -> Result<Vec<String>> {
+    svc.list_models(&form).await
+}
+
+#[tauri::command]
+async fn test_connection(svc: Svc<'_>, form: AiProfileForm) -> Result<ConnectionTest> {
+    svc.test_connection(&form).await
+}
+
+/// Streams the mentor's reply over `on_event` until it finishes or `cancel_ai` stops it.
+#[tauri::command]
+async fn send_mentor_message(
+    svc: Svc<'_>,
+    tasks: State<'_, AiTasks>,
+    req: MentorRequest,
+    request_id: String,
+    on_event: Channel<MentorStreamEvent>,
+) -> Result<()> {
+    let cancel = tasks.start(&request_id);
+    let result = svc
+        .send_mentor_message(
+            &req,
+            &mut |event| {
+                let _ = on_event.send(event);
+            },
+            &cancel,
+        )
+        .await;
+    tasks.finish(&request_id);
+    result
+}
+
+#[tauri::command]
+async fn cancel_ai(tasks: State<'_, AiTasks>, request_id: String) -> Result<()> {
+    if let Some(token) = tasks.finish(&request_id) {
+        token.cancel();
+    }
+    Ok(())
+}
+
+#[tauri::command]
+async fn import_problem(svc: Svc<'_>, text: String) -> Result<GeneratedQuestion> {
+    svc.import_problem(&text).await
+}
+
+#[tauri::command]
+async fn generate_questions(
+    svc: Svc<'_>,
+    req: GenerateRequest,
+    on_progress: Channel<GenerateProgress>,
+) -> Result<Vec<GeneratedQuestion>> {
+    svc.generate_questions(&req, &mut |step| {
+        let _ = on_progress.send(step);
+    })
+    .await
+}
+
 /// Opens the folder holding the database in the system file manager.
 #[tauri::command]
 async fn open_data_folder(app: tauri::AppHandle) -> Result<()> {
@@ -105,7 +183,7 @@ fn open_service(app: &tauri::App) -> std::result::Result<Service, Box<dyn std::e
         cache_dir: Some(paths.app_cache_dir()?.join("wasmtime")),
         force_quickjs: false,
     };
-    Ok(Service::open(&db, config)?)
+    Ok(Service::open(&db, config, Arc::new(KeyringStore))?)
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -117,6 +195,7 @@ pub fn run() {
             let warm = service.clone();
             std::thread::spawn(move || warm.warm_up());
             app.manage(service);
+            app.manage(AiTasks::default());
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
@@ -160,6 +239,12 @@ pub fn run() {
             delete_plan,
             set_plan_items,
             open_data_folder,
+            list_models,
+            test_connection,
+            send_mentor_message,
+            cancel_ai,
+            import_problem,
+            generate_questions,
         ])
         .run(tauri::generate_context!())
         .expect("error while running CodeGym");

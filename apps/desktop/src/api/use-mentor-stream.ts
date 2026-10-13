@@ -26,6 +26,8 @@ export function useMentorStream(problemId: string) {
           (event) => {
             if (event.type === "delta") {
               setPending((p) => (p ? { ...p, answer: p.answer + event.text } : p));
+            } else if (event.type === "reset") {
+              setPending((p) => (p ? { ...p, answer: "" } : p));
             } else if (event.type === "error") {
               setError(event.message);
             }

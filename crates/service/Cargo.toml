@@ -7,10 +7,18 @@ license.workspace = true
 
 [dependencies]
 codegym-core.workspace = true
+codegym-ai.workspace = true
 codegym-runner.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 thiserror.workspace = true
+tokio = { version = "1", features = ["rt-multi-thread"] }
+uuid.workspace = true
+
+[dev-dependencies]
+codegym-ai = { workspace = true, features = ["testing"] }
+tempfile.workspace = true
+tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
 
 [lints]
 workspace = true

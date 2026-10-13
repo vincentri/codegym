@@ -6,8 +6,11 @@ import {
   bankQuestionSchema,
   categorySchema,
   chatMessageSchema,
+  connectionTestSchema,
   dashboardSchema,
   draftSchema,
+  generatedQuestionSchema,
+  mentorStreamEventSchema,
   planDetailSchema,
   planSummarySchema,
   problemSchema,
@@ -27,6 +30,11 @@ import { dataInfoSchema } from "./tauri";
 // If Rust and the Zod schemas drift apart, the desktop app would reject replies at runtime; this
 // catches it here instead.
 const contract: Record<keyof typeof fixture, z.ZodType> = {
+  mentorEvents: z.array(mentorStreamEventSchema),
+  importProblem: generatedQuestionSchema,
+  generateQuestions: z.array(generatedQuestionSchema),
+  testConnection: connectionTestSchema,
+  listModels: z.array(z.string()),
   listProblems: z.array(problemSummarySchema),
   getProblem: problemSchema,
   getStats: statsSchema,
@@ -65,5 +73,8 @@ describe("backend contract", () => {
     ]);
     expect(fixture.submitCode.firstSolve).toBe(true);
     expect(fixture.listProblems.length).toBeGreaterThanOrEqual(30);
+    expect(fixture.mentorEvents.at(-1)?.type).toBe("done");
+    expect(fixture.listAiProfiles[0]?.hasApiKey).toBe(true);
+    expect(fixture.importProblem.verifiedTests).toBeGreaterThan(0);
   });
 });
