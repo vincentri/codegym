@@ -89,12 +89,27 @@ To install:
 
    Or run `xattr -dr com.apple.quarantine /Applications/CodeGym.app` in Terminal.
 
+**Without an admin account:** copy the app into your own `~/Applications` folder and clear the
+quarantine flag there (no password needed):
+
+```bash
+mkdir -p ~/Applications
+hdiutil attach ~/Downloads/CodeGym_<version>_universal.dmg -nobrowse -mountpoint /tmp/codegym-dmg
+cp -R /tmp/codegym-dmg/CodeGym.app ~/Applications/
+hdiutil detach /tmp/codegym-dmg
+xattr -dr com.apple.quarantine ~/Applications/CodeGym.app
+open ~/Applications/CodeGym.app
+```
+
+The app is signed ad hoc with the hardened runtime and `Entitlements.plist`, which lets the
+built-in Python (WebAssembly compiled at run time) run.
+
 ## CI and releases
 
 | Workflow | When | What |
 |---|---|---|
-| `ci.yml` | pull requests and pushes to other branches | UI format/lint/types/tests; Rust fmt, clippy (warnings are errors) and every test, including all built-in problems in all 7 languages (CI installs a JDK; g++ and rustc come with the runner) |
-| `release.yml` | push to `main` | runs CI, builds the universal macOS app with the bundled WebAssembly Python, creates the GitHub Release `v0.1.<run>` with the `.dmg` |
+| `ci.yml` | pull requests and pushes to other branches | UI format/lint/types/tests; on macOS, the runner tests signed like the app; Rust fmt, clippy (warnings are errors) and every test, including all built-in problems in all 7 languages (CI installs a JDK; g++ and rustc come with the runner) |
+| `release.yml` | push to `main` | runs CI, builds the universal macOS app with the bundled WebAssembly Python, checks its signature and entitlements, then publishes the GitHub Release `v0.1.<run>` with the `.dmg` |
 | `python-wasi.yml` | used by both | builds the WebAssembly Python once (cached by the build script's hash) and shares it as an artifact |
 
 Apple signing and notarization can be added later by giving the release job the `APPLE_*` secrets that Tauri reads. That removes the "Open Anyway" step.

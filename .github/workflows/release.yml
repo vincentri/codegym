@@ -59,12 +59,29 @@ jobs:
           tagName: v${{ env.VERSION }}
           releaseName: CodeGym ${{ env.VERSION }}
           releaseCommitish: ${{ github.sha }}
-          releaseDraft: false
+          releaseDraft: true # published below, once the app's signature is checked
           prerelease: false
           releaseBody: |
             **Install on a Mac** (Apple Silicon or Intel):
             1. Download `CodeGym_${{ env.VERSION }}_universal.dmg` below, open it, and drag **CodeGym** into **Applications**.
             2. The app isn't notarized by Apple yet, so the first launch is blocked. Open it once, then go to **System Settings → Privacy & Security** and click **Open Anyway**.
                Or, in Terminal: `xattr -dr com.apple.quarantine /Applications/CodeGym.app`
+            3. No admin account? Copy CodeGym into `~/Applications` (your home folder) instead, then run
+               `xattr -dr com.apple.quarantine ~/Applications/CodeGym.app` — no password needed.
 
             Built from ${{ github.sha }}.
+
+      # The app must carry its entitlements: without allow-jit, macOS kills it on the first Python run.
+      - name: Check the app's signature
+        run: |
+          APP=apps/desktop/src-tauri/target/universal-apple-darwin/release/bundle/macos/CodeGym.app
+          codesign --verify --deep --strict "$APP"
+          codesign -d --entitlements - --xml "$APP" > entitlements.xml
+          cat entitlements.xml
+          grep -q com.apple.security.cs.allow-jit entitlements.xml
+          grep -q com.apple.security.cs.allow-unsigned-executable-memory entitlements.xml
+
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release edit "v$VERSION" --draft=false --latest
