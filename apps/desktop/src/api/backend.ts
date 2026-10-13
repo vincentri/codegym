@@ -170,6 +170,7 @@ export function createBackendApi(transport: Transport): CodegymApi {
     listChat: (problemId) => call("list_chat", z.array(chatMessageSchema), { problemId }),
     clearChat: (problemId) => nothing(call("clear_chat", done, { problemId })),
     sendMentorMessage: async (req, onEvent, signal) => {
+      if (signal.aborted) return;
       const requestId = crypto.randomUUID();
       const stop = () => void transport.invoke("cancel_ai", { requestId }).catch(() => undefined);
       signal.addEventListener("abort", stop, { once: true });

@@ -20,7 +20,7 @@ pub struct Raw {
     pub crash: Option<String>,
 }
 
-pub(crate) fn is_memory(text: &str) -> bool {
+fn is_memory(text: &str) -> bool {
     ["MemoryError", "out of memory", "Allocation failed", "memory limit"].iter().any(|s| text.contains(s))
 }
 

@@ -50,7 +50,13 @@ async function readStream(response: Response, onEvent: (raw: unknown) => void): 
     buffer = done ? "" : (lines.pop() ?? "");
     for (const line of lines) {
       if (!line.trim()) continue;
-      const parsed = streamLineSchema.safeParse(JSON.parse(line));
+      let json: unknown;
+      try {
+        json = JSON.parse(line);
+      } catch {
+        throw "The server sent a malformed reply.";
+      }
+      const parsed = streamLineSchema.safeParse(json);
       if (!parsed.success) continue;
       const message = parsed.data;
       if ("event" in message) onEvent(message.event);

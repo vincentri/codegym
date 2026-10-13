@@ -141,10 +141,6 @@ pub fn run_quickjs(code: &str, spec: &RunSpec, limits: Limits, remap: &dyn Fn(&s
                 };
                 if text.contains("SyntaxError") {
                     raw.stderr = text;
-                } else if !outcome::is_memory(&text) && rt.memory_usage().malloc_size as usize >= memory / 10 * 9 {
-                    // Out of memory, QuickJS may fail to allocate even the error and throw `null`
-                    // (seen on macOS); the heap being at its limit tells us what happened.
-                    raw.crash = Some(format!("InternalError: out of memory\n{text}"));
                 } else {
                     raw.crash = Some(text);
                 }

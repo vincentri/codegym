@@ -103,6 +103,22 @@ describe("http api", () => {
     ).rejects.toBeInstanceOf(BackendError);
   });
 
+  it("reports a malformed stream line clearly", async () => {
+    vi.stubGlobal("fetch", async () => chunked(["{not json\n"]));
+    await expect(
+      createHttpApi().sendMentorMessage(mentorRequest, () => {}, new AbortController().signal),
+    ).rejects.toMatchObject({ message: "The server sent a malformed reply." });
+  });
+
+  it("does nothing when already stopped", async () => {
+    const fetchMock = vi.fn(async () => reply(200, null));
+    vi.stubGlobal("fetch", fetchMock);
+    const controller = new AbortController();
+    controller.abort();
+    await createHttpApi().sendMentorMessage(mentorRequest, () => {}, controller.signal);
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
   it("cancels a mentor reply on the server when aborted", async () => {
     const fetchMock = vi.fn(async (url: string) =>
       url === "api/cancel_ai"

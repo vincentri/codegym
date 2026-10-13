@@ -304,9 +304,10 @@ async fn send_mentor_message(State(state): State<AppState>, Json(args): Json<Val
         Ok(a) => a,
         Err(e) => return error_response(status(&e), &e),
     };
+    // Registered before the reply starts, so a Stop that follows the request can always find it.
+    let cancel = state.tasks.start(&args.request_id);
     let (tx, rx) = mpsc::unbounded_channel();
     tokio::spawn(async move {
-        let cancel = state.tasks.start(&args.request_id);
         let events = tx.clone();
         let result = state
             .service
