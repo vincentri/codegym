@@ -3,6 +3,7 @@
 //!
 //! Reads `problems/` from disk so a single problem can be checked while it's being written:
 //!   CODEGYM_PROBLEMS=two-sum,valid-anagram cargo test -p codegym-runner --test bank -- --nocapture
+//! and to a subset of languages with CODEGYM_LANGUAGES=java,rust.
 
 use std::collections::BTreeSet;
 use std::path::PathBuf;
@@ -11,7 +12,7 @@ use std::time::Duration;
 use codegym_core::bank::BankProblem;
 use codegym_core::values::fits;
 use codegym_core::{Language, Verdict};
-use codegym_runner::{Limits, RunCase, RunSpec, Runner, RunnerConfig, Trust, starter_code};
+use codegym_runner::{Limits, RunCase, RunSpec, Runner, RunnerConfig, Trust, starter_code_for};
 
 fn root() -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../..")
@@ -24,14 +25,6 @@ fn runner() -> Runner {
         cache_dir: Some(root().join("target/wasmtime-cache")),
         force_quickjs: false,
     })
-}
-
-fn extension(language: Language) -> &'static str {
-    match language {
-        Language::Javascript => "js",
-        Language::Python => "py",
-        Language::Go => "go",
-    }
 }
 
 fn problem_ids_on_disk() -> BTreeSet<String> {
@@ -47,6 +40,15 @@ fn selected() -> Vec<String> {
     match std::env::var("CODEGYM_PROBLEMS") {
         Ok(list) if !list.trim().is_empty() => list.split(',').map(|s| s.trim().to_string()).collect(),
         _ => problem_ids_on_disk().into_iter().collect(),
+    }
+}
+
+fn languages() -> Vec<Language> {
+    match std::env::var("CODEGYM_LANGUAGES") {
+        Ok(list) if !list.trim().is_empty() => {
+            list.split(',').map(|l| Language::parse(l.trim()).expect("unknown language")).collect()
+        }
+        _ => Language::ALL.to_vec(),
     }
 }
 
@@ -99,8 +101,8 @@ fn check(runner: &Runner, id: &str) -> Vec<String> {
             .collect(),
     };
     let limits = Limits { timeout: Duration::from_secs(20), memory_mb: 512 };
-    for language in Language::ALL {
-        let file = root().join(format!("problems/solutions/{}/{id}.{}", language.as_str(), extension(language)));
+    for language in languages() {
+        let file = root().join(format!("problems/solutions/{}/{id}.{}", language.as_str(), language.extension()));
         let Ok(code) = std::fs::read_to_string(&file) else {
             problems.push(format!("{id}: missing {}", file.display()));
             continue;
@@ -121,8 +123,10 @@ fn check(runner: &Runner, id: &str) -> Vec<String> {
                 .unwrap_or_default();
             problems.push(format!("{id} [{}]: {:?} — {detail}", language.as_str(), result.verdict));
         }
-        if language != Language::Go {
-            let starter = runner.run(language, &starter_code(sig, language), &spec, limits, Trust::User);
+        // Starter code in compiled languages has an empty body that doesn't compile yet.
+        if matches!(language, Language::Javascript | Language::Python | Language::Typescript) {
+            let starter =
+                runner.run(language, &starter_code_for(sig, p.in_place_arg, language), &spec, limits, Trust::User);
             let harness_error = starter.compile_output.is_some()
                 || starter.results.iter().any(|r| r.error.as_deref().is_some_and(|e| !e.contains("Time limit")));
             if harness_error {
@@ -150,7 +154,7 @@ fn bank_index_lists_every_problem() {
     let listed: BTreeSet<String> = bank.problems.iter().map(|p| p.id.clone()).collect();
     assert_eq!(listed, problem_ids_on_disk(), "bank.json `problems` must list every problems/*.json");
     for p in &bank.problems {
-        assert_eq!(p.references.len(), 3, "{} needs a reference solution in each language", p.id);
+        assert_eq!(p.references.len(), Language::ALL.len(), "{} needs a reference solution in each language", p.id);
     }
     let plan = &bank.plans[0];
     assert_eq!(

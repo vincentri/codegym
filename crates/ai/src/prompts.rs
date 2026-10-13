@@ -66,6 +66,10 @@ pub fn language_label(language: Language) -> &'static str {
         Language::Python => "Python 3",
         Language::Javascript => "JavaScript",
         Language::Go => "Go",
+        Language::Typescript => "TypeScript",
+        Language::Java => "Java",
+        Language::Cpp => "C++",
+        Language::Rust => "Rust",
     }
 }
 

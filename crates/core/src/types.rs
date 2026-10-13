@@ -126,16 +126,49 @@ pub enum Language {
     Javascript,
     Python,
     Go,
+    Typescript,
+    Java,
+    Cpp,
+    Rust,
 }
 
 impl Language {
-    pub const ALL: [Language; 3] = [Language::Javascript, Language::Python, Language::Go];
+    pub const ALL: [Language; 7] = [
+        Language::Javascript,
+        Language::Python,
+        Language::Go,
+        Language::Typescript,
+        Language::Java,
+        Language::Cpp,
+        Language::Rust,
+    ];
 
     pub fn as_str(self) -> &'static str {
         match self {
             Self::Javascript => "javascript",
             Self::Python => "python",
             Self::Go => "go",
+            Self::Typescript => "typescript",
+            Self::Java => "java",
+            Self::Cpp => "cpp",
+            Self::Rust => "rust",
+        }
+    }
+
+    pub fn parse(s: &str) -> Option<Self> {
+        Self::ALL.into_iter().find(|l| l.as_str() == s)
+    }
+
+    /// File extension of a solution in this language.
+    pub fn extension(self) -> &'static str {
+        match self {
+            Self::Javascript => "js",
+            Self::Python => "py",
+            Self::Go => "go",
+            Self::Typescript => "ts",
+            Self::Java => "java",
+            Self::Cpp => "cpp",
+            Self::Rust => "rs",
         }
     }
 }

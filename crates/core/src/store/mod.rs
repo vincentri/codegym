@@ -57,11 +57,7 @@ pub(crate) fn from_json<T: DeserializeOwned>(s: &str) -> Result<T> {
 }
 
 pub(crate) fn parse_language(s: &str) -> Language {
-    match s {
-        "javascript" => Language::Javascript,
-        "go" => Language::Go,
-        _ => Language::Python,
-    }
+    Language::parse(s).unwrap_or(Language::Python)
 }
 
 fn migrations() -> Migrations<'static> {

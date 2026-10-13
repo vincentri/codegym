@@ -1,4 +1,5 @@
 import { Channel, invoke } from "@tauri-apps/api/core";
+import { open, save } from "@tauri-apps/plugin-dialog";
 import { z } from "zod";
 import {
   aiProfileSchema,
@@ -12,6 +13,8 @@ import {
   generatedQuestionSchema,
   generateProgressSchema,
   mentorStreamEventSchema,
+  packExportSchema,
+  packImportSchema,
   planDetailSchema,
   planSummarySchema,
   problemSchema,
@@ -85,6 +88,8 @@ function typedChannel<T>(schema: z.ZodType<T>, onMessage: (value: T) => void): C
   return channel;
 }
 
+const PACK_FILTERS = [{ name: "CodeGym problem pack", extensions: ["json"] }];
+
 export function createTauriApi(): CodegymApi {
   return {
     listProblems: () => call("list_problems", z.array(problemSummarySchema)),
@@ -109,6 +114,16 @@ export function createTauriApi(): CodegymApi {
     detectRuntimes: () => call("detect_runtimes", z.array(runtimeInfoSchema)),
     dataInfo: () => call("data_info", dataInfoSchema),
     openDataFolder: () => nothing(call("open_data_folder", done)),
+    exportProblemPack: async () => {
+      const path = await save({ defaultPath: "my-problems.codegym.json", filters: PACK_FILTERS });
+      return path ? call("export_problem_pack", packExportSchema, { path }) : null;
+    },
+    importProblemPack: async () => {
+      const path = await open({ multiple: false, directory: false, filters: PACK_FILTERS });
+      return typeof path === "string"
+        ? call("import_problem_pack", packImportSchema, { path })
+        : null;
+    },
     resetProgress: (req) => nothing(call("reset_progress", done, { req })),
 
     listAiProfiles: () => call("list_ai_profiles", z.array(aiProfileSchema)),

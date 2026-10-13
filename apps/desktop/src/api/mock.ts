@@ -1,5 +1,11 @@
 import { answersMatch } from "@/lib/compare";
 import { starterCode } from "@/lib/starter-code";
+import {
+  categoryColorSchema,
+  problemPackSchema,
+  type PackImport,
+  type ProblemPack,
+} from "@/schemas";
 import type {
   AiProfile,
   AiProfileForm,
@@ -32,6 +38,7 @@ import {
   seedQuestions,
   slugify,
 } from "./mock-data";
+import { downloadText, pickTextFile } from "./browser-file";
 import { MENTOR_REPLIES } from "./mock-replies";
 import type { CodegymApi, MentorRequest, VerifyRequest } from "./types";
 
@@ -253,7 +260,7 @@ export function createMockApi(): CodegymApi {
   const fakeRun = async (req: RunRequest, includeHidden: boolean): Promise<RunResult> => {
     await sleep(500);
     const q = findQuestion(req.problemId);
-    const starter = starterCode(q.signature, req.language);
+    const starter = starterCode(q.signature, req.language, q.inPlaceArg);
     const attempted = req.code.trim() !== starter.trim() && /return/.test(req.code);
     const results: TestResult[] = [];
     for (const t of q.tests.filter((t) => includeHidden || !t.hidden)) {
@@ -400,7 +407,8 @@ export function createMockApi(): CodegymApi {
       return draft;
     },
     async starterCode(problemId, language) {
-      return starterCode(findQuestion(problemId).signature, language);
+      const q = findQuestion(problemId);
+      return starterCode(q.signature, language, q.inPlaceArg);
     },
     runCode: (req) => fakeRun(req, false),
     async submitCode(req) {
@@ -474,6 +482,82 @@ export function createMockApi(): CodegymApi {
     },
     async openDataFolder() {
       throw new Error("Opening the data folder works in the desktop app.");
+    },
+    async exportProblemPack() {
+      const mine = questions.filter((q) => q.origin !== "builtin");
+      if (mine.length === 0) {
+        throw new Error(
+          "You haven't created any questions yet. Add or generate some in Questions first.",
+        );
+      }
+      const used = new Set(mine.flatMap((q) => q.categoryIds));
+      const pack: ProblemPack = {
+        format: "codegym-problem-pack",
+        version: 1,
+        exportedAt: now(),
+        categories: categories
+          .filter((c) => !c.builtin && used.has(c.id))
+          .map(({ id, name, color, description }) => ({ id, name, color, description })),
+        questions: mine.map(
+          ({ id: _id, ...input }) => structuredClone(input) as ProblemPack["questions"][number],
+        ),
+      };
+      const name = "my-problems.codegym.json";
+      downloadText(name, JSON.stringify(pack, null, 2));
+      return { path: name, questions: mine.length };
+    },
+    async importProblemPack() {
+      const text = await pickTextFile(".json,application/json");
+      if (text === null) return null;
+      let raw: unknown;
+      try {
+        raw = JSON.parse(text);
+      } catch {
+        throw new Error("This isn't a CodeGym problem pack.");
+      }
+      const parsed = problemPackSchema.safeParse(raw);
+      if (!parsed.success) throw new Error("This isn't a CodeGym problem pack.");
+      const result: PackImport = { imported: 0, categoriesCreated: 0, skipped: [] };
+      const ids = new Map<string, string>();
+      for (const c of parsed.data.categories) {
+        const found = categories.find((x) => x.name.toLowerCase() === c.name.trim().toLowerCase());
+        if (found) {
+          ids.set(c.id, found.id);
+          continue;
+        }
+        let id = slugify(c.name) || "category";
+        while (categories.some((x) => x.id === id)) id = `${id}-x`;
+        const color = categoryColorSchema.safeParse(c.color);
+        categories.push({
+          id,
+          name: c.name.trim(),
+          color: color.success ? color.data : "slate",
+          description: c.description,
+          builtin: false,
+        });
+        ids.set(c.id, id);
+        result.categoriesCreated++;
+      }
+      for (const q of parsed.data.questions) {
+        if (questions.some((x) => x.title.toLowerCase() === q.title.trim().toLowerCase())) {
+          result.skipped.push({
+            title: q.title,
+            reason: "a question with this title is already in your bank",
+          });
+          continue;
+        }
+        const categoryIds = q.categoryIds
+          .map((id) => ids.get(id) ?? (categories.some((c) => c.id === id) ? id : null))
+          .filter((id): id is string => id !== null);
+        createRecord({
+          ...structuredClone(q),
+          categoryIds,
+          origin: q.origin === "builtin" ? "manual" : q.origin,
+          forkedFrom: null,
+        });
+        result.imported++;
+      }
+      return result;
     },
     async listAiProfiles() {
       return profiles;

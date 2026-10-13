@@ -15,6 +15,8 @@ import type {
   Language,
   MentorMode,
   MentorStreamEvent,
+  PackExport,
+  PackImport,
   PlanDetail,
   PlanForm,
   PlanSummary,
@@ -90,6 +92,10 @@ export interface CodegymApi {
   dataInfo(): Promise<DataInfo>;
   /** Shows the folder holding the database in the system file manager (desktop app only). */
   openDataFolder(): Promise<void>;
+  /** Saves your own questions as a problem pack file. Null when the save dialog was cancelled. */
+  exportProblemPack(): Promise<PackExport | null>;
+  /** Adds the questions from a problem pack file. Null when the open dialog was cancelled. */
+  importProblemPack(): Promise<PackImport | null>;
   /** Deletes all progress, submissions, drafts, chats and activity records. Settings and AI profiles stay. */
   resetProgress(req: ResetProgressRequest): Promise<void>;
 

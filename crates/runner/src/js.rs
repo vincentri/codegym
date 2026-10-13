@@ -26,7 +26,8 @@ fn user_lines(code: &str) -> usize {
     code.lines().count().max(1)
 }
 
-pub fn run_node(node: &Tool, code: &str, spec: &RunSpec, limits: Limits) -> RunResult {
+/// `remap` rewrites error locations (TypeScript maps them back to its own lines).
+pub fn run_node(node: &Tool, code: &str, spec: &RunSpec, limits: Limits, remap: &dyn Fn(&str) -> String) -> RunResult {
     let dir = match tempfile::Builder::new().prefix("codegym-js").tempdir() {
         Ok(d) => d,
         Err(e) => return outcome::internal_error(spec, format!("Couldn't create a temp folder: {e}")),
@@ -49,7 +50,7 @@ pub fn run_node(node: &Tool, code: &str, spec: &RunSpec, limits: Limits) -> RunR
         Err(e) => return outcome::internal_error(spec, format!("Couldn't start Node.js: {e}")),
     };
     let prefix = format!("{}{}", dir.path().display(), std::path::MAIN_SEPARATOR);
-    let clean = |s: &str| clean_node(&s.replace(&format!("file://{prefix}"), "").replace(&prefix, ""));
+    let clean = |s: &str| remap(&clean_node(&s.replace(&format!("file://{prefix}"), "").replace(&prefix, "")));
     let raw = Raw {
         stdout: out.stdout,
         stderr: out.stderr,
@@ -77,7 +78,7 @@ fn clean_node(text: &str) -> String {
 /// Runs in QuickJS on its own thread, with a memory cap and a deadline checked by QuickJS's
 /// interrupt handler. QuickJS has no file, network or process APIs, so this is the sandbox
 /// for code the user didn't write.
-pub fn run_quickjs(code: &str, spec: &RunSpec, limits: Limits) -> RunResult {
+pub fn run_quickjs(code: &str, spec: &RunSpec, limits: Limits, remap: &dyn Fn(&str) -> String) -> RunResult {
     let nonce = nonce();
     let source = script(code, spec);
     let input = payload(spec, &nonce, user_lines(code), None);
@@ -157,6 +158,6 @@ pub fn run_quickjs(code: &str, spec: &RunSpec, limits: Limits) -> RunResult {
         Ok(Ok(raw)) => raw,
         _ => return outcome::internal_error(spec, "The JavaScript sandbox crashed.".into()),
     };
-    let clean = |s: &str| s.trim().to_string();
+    let clean = |s: &str| remap(s.trim());
     outcome::assemble(spec, &raw, &nonce, timeout, &clean)
 }

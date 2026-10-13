@@ -256,8 +256,31 @@ async fn contract_fixture_is_up_to_date() {
     let connection = s.test_connection(&form).await.unwrap();
     let models = s.list_models(&form).await.unwrap();
 
+    let pack_dir = tempfile::tempdir().unwrap();
+    let exported = s.export_problem_pack(&pack_dir.path().join("mine.codegym.json")).unwrap();
+    let pack = s.problem_pack().unwrap();
+    // Everything in it is already here, so this records the "skipped" shape too.
+    let pack_import = s.import_pack_text(&serde_json::to_string(&pack).unwrap()).unwrap();
+    // The UI mirrors starter code in TypeScript (`lib/starter-code.ts`); these are compared there.
+    let starter: Vec<Value> =
+        ["two-sum", "move-zeroes", "invert-binary-tree", "merge-k-sorted-lists", "number-of-islands"]
+            .iter()
+            .map(|id| {
+                let p = s.get_problem(id).unwrap();
+                let code: Map<String, Value> = Language::ALL
+                    .iter()
+                    .map(|&l| (l.as_str().to_string(), json!(s.starter_code(id, l).unwrap())))
+                    .collect();
+                json!({ "signature": p.signature, "inPlaceArg": p.in_place_arg, "code": code })
+            })
+            .collect();
+
     let v = |x: &dyn erased::Ser| x.to_value();
     let fixture = json!({
+        "problemPack": v(&pack),
+        "exportProblemPack": v(&exported),
+        "importProblemPack": v(&pack_import),
+        "starterCode": starter,
         "mentorEvents": v(&mentor_events),
         "importProblem": v(&imported),
         "generateQuestions": v(&generated),
@@ -306,6 +329,7 @@ async fn contract_fixture_is_up_to_date() {
         v["detectRuntimes"] = json!([]);
         shape(&v)
     };
+    assert_eq!(fixture["starterCode"], committed["starterCode"], "starter code changed: rerun with UPDATE_CONTRACT=1");
     assert_eq!(strip(fixture), strip(committed), "backend responses changed shape: rerun with UPDATE_CONTRACT=1");
 }
 
@@ -318,4 +342,46 @@ mod erased {
             serde_json::to_value(self).unwrap()
         }
     }
+}
+
+#[test]
+fn problem_packs_round_trip_between_installs() {
+    let a = service();
+    let mine = a
+        .save_category(&codegym_core::CategoryForm {
+            id: None,
+            name: "Warm-ups".into(),
+            color: "green".into(),
+            description: "Short ones".into(),
+        })
+        .unwrap();
+    let mut q = sum_question("class Solution:\n    def sumAll(self, nums):\n        return sum(nums)\n");
+    q.category_ids = vec!["array".into(), mine.id.clone()];
+    a.create_question(&q).unwrap();
+    let dir = tempfile::tempdir().unwrap();
+    let file = dir.path().join("mine.codegym.json");
+    let exported = a.export_problem_pack(&file).unwrap();
+    assert_eq!(exported.questions, 1);
+
+    // A different install: no "Warm-ups" category yet.
+    let b = service();
+    let result = b.import_problem_pack(&file).unwrap();
+    assert_eq!((result.imported, result.categories_created), (1, 1), "{result:?}");
+    let imported = b.list_bank_questions().unwrap().into_iter().find(|q| q.summary.title == "Sum All").unwrap();
+    assert!(imported.verified, "the reference is run on import");
+    let names: Vec<String> = imported.summary.categories.iter().map(|c| c.name.clone()).collect();
+    assert_eq!(names.len(), 2, "{names:?}");
+
+    // Importing again skips duplicates; broken entries are reported, not fatal.
+    let again = b.import_problem_pack(&file).unwrap();
+    assert_eq!(again.imported, 0);
+    assert!(again.skipped[0].reason.contains("already"));
+    let mut pack = a.problem_pack().unwrap();
+    pack.questions[0].title = "Broken".into();
+    pack.questions[0].tests.truncate(1);
+    let broken = b.import_pack_text(&serde_json::to_string(&pack).unwrap()).unwrap();
+    assert_eq!(broken.skipped[0].title, "Broken");
+
+    assert!(b.import_pack_text("{\"format\": \"something-else\"}").is_err());
+    assert!(matches!(service().export_problem_pack(&file), Err(ServiceError::Invalid(_))), "nothing to export");
 }

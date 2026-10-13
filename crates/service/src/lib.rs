@@ -3,6 +3,7 @@
 //! tested.
 
 mod ai;
+mod pack;
 
 use std::path::Path;
 use std::sync::{Arc, Mutex, MutexGuard};
@@ -15,7 +16,7 @@ use codegym_core::{
     ResetProgressRequest, RunRequest, RunResult, RuntimeInfo, Stats, Store, StoreError, Submission, SubmitResult,
     VerifyCase, VerifyRequest, VerifyResult,
 };
-use codegym_runner::{Limits, RunCase, RunSpec, Runner, RunnerConfig, Trust, starter_code};
+use codegym_runner::{Limits, RunCase, RunSpec, Runner, RunnerConfig, Trust, starter_code_for};
 use serde::Serialize;
 
 /// An error the UI can show as is.
@@ -41,6 +42,8 @@ impl From<StoreError> for ServiceError {
         }
     }
 }
+
+pub use pack::{PackExport, PackImport, ProblemPack, SkippedQuestion};
 
 pub type Result<T> = std::result::Result<T, ServiceError>;
 
@@ -100,7 +103,7 @@ impl Service {
 
     pub fn starter_code(&self, problem_id: &str, language: Language) -> Result<String> {
         let problem = self.store().get_problem(problem_id)?;
-        Ok(starter_code(&problem.signature, language))
+        Ok(starter_code_for(&problem.signature, problem.in_place_arg, language))
     }
 
     // --- running -----------------------------------------------------------------

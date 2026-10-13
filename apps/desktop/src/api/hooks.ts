@@ -122,6 +122,18 @@ export function useOpenDataFolder() {
   return useMutation({ mutationFn: () => api.openDataFolder() });
 }
 
+export function useExportProblemPack() {
+  return useMutation({ mutationFn: () => api.exportProblemPack() });
+}
+
+export function useImportProblemPack() {
+  const invalidate = useInvalidateBank();
+  return useMutation({
+    mutationFn: () => api.importProblemPack(),
+    onSuccess: (result) => (result && result.imported > 0 ? invalidate() : undefined),
+  });
+}
+
 export function useAiProfiles() {
   return useQuery({ queryKey: queryKeys.aiProfiles, queryFn: () => api.listAiProfiles() });
 }

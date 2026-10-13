@@ -14,7 +14,7 @@ use codegym_core::{
     VerifyRequest, VerifyResult,
 };
 use codegym_runner::{RunnerConfig, Trust};
-use codegym_service::{Result, Service, ServiceError};
+use codegym_service::{PackExport, PackImport, Result, Service, ServiceError};
 use tauri::ipc::Channel;
 use tauri::{Manager, State};
 use tauri_plugin_opener::OpenerExt;
@@ -91,6 +91,10 @@ commands! {
     fn duplicate_plan(id: String) -> PlanSummary => |s| s.duplicate_plan(&id);
     fn delete_plan(id: String) -> () => |s| s.delete_plan(&id);
     fn set_plan_items(id: String, problem_ids: Vec<String>) -> () => |s| s.set_plan_items(&id, &problem_ids);
+
+    // The UI picks the file with the system dialog and passes its path.
+    fn export_problem_pack(path: String) -> PackExport => |s| s.export_problem_pack(std::path::Path::new(&path));
+    fn import_problem_pack(path: String) -> PackImport => |s| s.import_problem_pack(std::path::Path::new(&path));
 }
 
 /// Requests that can be stopped from the UI, by request id.
@@ -190,6 +194,7 @@ fn open_service(app: &tauri::App) -> std::result::Result<Service, Box<dyn std::e
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
+        .plugin(tauri_plugin_dialog::init())
         .setup(|app| {
             let service = Arc::new(open_service(app)?);
             let warm = service.clone();
@@ -239,6 +244,8 @@ pub fn run() {
             delete_plan,
             set_plan_items,
             open_data_folder,
+            export_problem_pack,
+            import_problem_pack,
             list_models,
             test_connection,
             send_mentor_message,

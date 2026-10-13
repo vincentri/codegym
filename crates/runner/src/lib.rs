@@ -13,12 +13,17 @@
 //!   system `python3` when the WebAssembly build isn't available.
 //! - Go: the system Go toolchain.
 
+mod cpp;
 mod go;
+mod java;
 mod js;
+mod native;
 mod outcome;
 mod process;
 mod python;
+mod rustc;
 mod starter;
+mod ts;
 
 use std::path::PathBuf;
 use std::sync::OnceLock;
@@ -28,7 +33,7 @@ use codegym_core::values::is_identifier;
 use codegym_core::{Comparator, Language, RunResult, RuntimeInfo, Signature};
 use serde_json::Value;
 
-pub use starter::starter_code;
+pub use starter::{starter_code, starter_code_for};
 
 /// One test to run. `expected` is `None` for custom inputs, which are run but not graded.
 #[derive(Debug, Clone)]
@@ -80,6 +85,9 @@ pub struct Runner {
     config: RunnerConfig,
     node: OnceLock<Option<process::Tool>>,
     go: OnceLock<Option<process::Tool>>,
+    javac: OnceLock<Option<process::Tool>>,
+    cxx: OnceLock<Option<process::Tool>>,
+    rustc: OnceLock<Option<process::Tool>>,
     python_system: OnceLock<Option<process::Tool>>,
     python_wasi: OnceLock<Result<python::Wasi, String>>,
 }
@@ -90,6 +98,9 @@ impl Runner {
             config,
             node: OnceLock::new(),
             go: OnceLock::new(),
+            javac: OnceLock::new(),
+            cxx: OnceLock::new(),
+            rustc: OnceLock::new(),
             python_system: OnceLock::new(),
             python_wasi: OnceLock::new(),
         }
@@ -104,6 +115,18 @@ impl Runner {
 
     fn go(&self) -> Option<&process::Tool> {
         self.go.get_or_init(|| process::Tool::detect(&["go"], &["version"])).as_ref()
+    }
+
+    fn javac(&self) -> Option<&process::Tool> {
+        self.javac.get_or_init(|| process::Tool::detect(&["javac"], &["-version"])).as_ref()
+    }
+
+    fn cxx(&self) -> Option<&process::Tool> {
+        self.cxx.get_or_init(|| process::Tool::detect(&["g++", "clang++", "c++"], &["--version"])).as_ref()
+    }
+
+    fn rustc(&self) -> Option<&process::Tool> {
+        self.rustc.get_or_init(|| process::Tool::detect(&["rustc"], &["--version"])).as_ref()
     }
 
     fn python_system(&self) -> Option<&process::Tool> {
@@ -127,8 +150,18 @@ impl Runner {
         }
         match language {
             Language::Javascript => match (trust, self.node()) {
-                (Trust::User, Some(node)) => js::run_node(node, code, spec, limits),
-                _ => js::run_quickjs(code, spec, limits),
+                (Trust::User, Some(node)) => js::run_node(node, code, spec, limits, &|s| s.to_string()),
+                _ => js::run_quickjs(code, spec, limits, &|s| s.to_string()),
+            },
+            Language::Typescript => match ts::transpile(code) {
+                Err(message) => outcome::compile_error(spec, message),
+                Ok(out) => {
+                    let remap = |s: &str| out.remap(s);
+                    match (trust, self.node()) {
+                        (Trust::User, Some(node)) => js::run_node(node, &out.js, spec, limits, &remap),
+                        _ => js::run_quickjs(&out.js, spec, limits, &remap),
+                    }
+                }
             },
             Language::Python => match (self.python_wasi(), trust) {
                 (Some(wasi), _) => wasi.run(code, spec, limits),
@@ -145,6 +178,22 @@ impl Runner {
                     "Generated Go code isn't run outside the sandbox. Verify it with JavaScript or Python.".into(),
                 ),
                 (_, None) => outcome::internal_error(spec, GO_HINT.into()),
+            },
+            Language::Java | Language::Cpp | Language::Rust if trust == Trust::Untrusted => outcome::internal_error(
+                spec,
+                "Generated code only runs in the built-in sandboxes. Verify it with JavaScript or Python.".into(),
+            ),
+            Language::Java => match self.javac() {
+                Some(javac) => java::run(javac, code, spec, limits),
+                None => outcome::internal_error(spec, JAVA_HINT.into()),
+            },
+            Language::Cpp => match self.cxx() {
+                Some(cxx) => cpp::run(cxx, code, spec, limits),
+                None => outcome::internal_error(spec, CPP_HINT.into()),
+            },
+            Language::Rust => match self.rustc() {
+                Some(rustc) => rustc::run(rustc, code, spec, limits),
+                None => outcome::internal_error(spec, RUST_HINT.into()),
             },
         }
     }
@@ -220,10 +269,37 @@ impl Runner {
                 install_hint: Some(GO_HINT.into()),
             },
         };
-        vec![python, js, go]
+        let ts = RuntimeInfo {
+            language: Language::Typescript,
+            engine: format!("{} with built-in type stripping", js.engine),
+            version: js.version.clone(),
+            available: true,
+            bundled: js.bundled,
+            install_hint: js.install_hint.clone(),
+        };
+        let system = |language, engine: &str, tool: Option<&process::Tool>, hint: &str| RuntimeInfo {
+            language,
+            engine: engine.into(),
+            version: tool.map(|t| t.version.clone()),
+            available: tool.is_some(),
+            bundled: false,
+            install_hint: tool.is_none().then(|| hint.into()),
+        };
+        vec![
+            python,
+            js,
+            ts,
+            go,
+            system(Language::Java, "JDK (system)", self.javac(), JAVA_HINT),
+            system(Language::Cpp, "C++ compiler (system)", self.cxx(), CPP_HINT),
+            system(Language::Rust, "Rust compiler (system)", self.rustc(), RUST_HINT),
+        ]
     }
 }
 
+const JAVA_HINT: &str = "Install a JDK (17 or newer), for example from https://adoptium.net, and restart CodeGym.";
+const CPP_HINT: &str = "Install a C++ compiler: Xcode Command Line Tools on macOS (xcode-select --install), build-essential on Linux, or MSYS2 on Windows.";
+const RUST_HINT: &str = "Install Rust from https://rustup.rs and restart CodeGym.";
 const GO_HINT: &str = "Install Go from https://go.dev/dl/ and restart CodeGym.";
 const PYTHON_HINT: &str = "Install Python 3 from https://www.python.org/downloads/ and restart CodeGym.";
 

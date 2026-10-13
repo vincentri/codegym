@@ -25,12 +25,48 @@
     {
       "available": true,
       "bundled": false,
+      "engine": "Node.js (system) with built-in type stripping",
+      "installHint": null,
+      "language": "typescript",
+      "version": "22.22.0"
+    },
+    {
+      "available": true,
+      "bundled": false,
       "engine": "Go toolchain (system)",
       "installHint": null,
       "language": "go",
       "version": "1.24.7"
+    },
+    {
+      "available": true,
+      "bundled": false,
+      "engine": "JDK (system)",
+      "installHint": null,
+      "language": "java",
+      "version": "21.0.12.1"
+    },
+    {
+      "available": true,
+      "bundled": false,
+      "engine": "C++ compiler (system)",
+      "installHint": null,
+      "language": "cpp",
+      "version": "13.3.0-6ubuntu2~24.04.1)"
+    },
+    {
+      "available": true,
+      "bundled": false,
+      "engine": "Rust compiler (system)",
+      "installHint": null,
+      "language": "rust",
+      "version": "1.97.0"
     }
   ],
+  "exportProblemPack": {
+    "path": "/tmp/.tmpaELs22/mine.codegym.json",
+    "questions": 1
+  },
   "generateQuestions": [
     {
       "droppedTests": 2,
@@ -85,7 +121,7 @@
     "plan": {
       "builtin": false,
       "description": "First week",
-      "id": "a4b13081-dd28-4f41-9c48-de2546ef4b57",
+      "id": "17b4715a-cb8f-480c-88d2-2503aab5681f",
       "name": "Week 1",
       "next": {
         "categories": [
@@ -105,18 +141,18 @@
       },
       "solved": 1,
       "total": 2,
-      "updatedAt": "2026-10-13T05:35:58.603Z"
+      "updatedAt": "2026-10-13T07:13:38.654Z"
     },
     "recentSubmissions": [
       {
         "code": "function twoSum(nums, target) {\n  const seen = new Map();\n  for (let i = 0; i < nums.length; i++) {\n    if (seen.has(target - nums[i])) return [seen.get(target - nums[i]), i];\n    seen.set(nums[i], i);\n  }\n  return [];\n}\n",
-        "createdAt": "2026-10-13T05:35:58.311Z",
-        "id": "ed8f18e0-3e1c-4c27-9ef0-f862c292b36a",
+        "createdAt": "2026-10-13T07:13:38.356Z",
+        "id": "bf824a0f-18da-4994-a3c9-cfc67d996132",
         "language": "javascript",
         "passed": 8,
         "problemId": "two-sum",
         "problemTitle": "Two Sum",
-        "runtimeMs": 0.07620399999999705,
+        "runtimeMs": 0.09200400000000997,
         "total": 8,
         "verdict": "accepted"
       }
@@ -191,12 +227,12 @@
     "code": "class Solution: pass",
     "language": "python",
     "problemId": "two-sum",
-    "updatedAt": "2026-10-13T05:35:58.277Z"
+    "updatedAt": "2026-10-13T07:13:38.306Z"
   },
   "getPlan": {
     "builtin": false,
     "description": "First week",
-    "id": "a4b13081-dd28-4f41-9c48-de2546ef4b57",
+    "id": "17b4715a-cb8f-480c-88d2-2503aab5681f",
     "items": [
       {
         "categories": [
@@ -255,7 +291,7 @@
     },
     "solved": 1,
     "total": 2,
-    "updatedAt": "2026-10-13T05:35:58.603Z"
+    "updatedAt": "2026-10-13T07:13:38.654Z"
   },
   "getProblem": {
     "categories": [
@@ -436,12 +472,22 @@
     },
     "verifiedTests": 3
   },
+  "importProblemPack": {
+    "categoriesCreated": 0,
+    "imported": 0,
+    "skipped": [
+      {
+        "reason": "a question with this title is already in your bank",
+        "title": "Sum All"
+      }
+    ]
+  },
   "listAiProfiles": [
     {
-      "baseUrl": "http://127.0.0.1:37265/v1",
+      "baseUrl": "http://127.0.0.1:37693/v1",
       "effort": "medium",
       "hasApiKey": true,
-      "id": "04594336-847c-4445-8e39-06e5bdc5b61d",
+      "id": "368c8731-f800-4b6c-8a42-e697e85b8997",
       "isActive": true,
       "mentorStyle": "socratic",
       "model": "qwen2.5-coder",
@@ -471,7 +517,7 @@
       "status": "solved",
       "testCount": 8,
       "title": "Two Sum",
-      "updatedAt": "2026-10-13T05:35:58.130Z",
+      "updatedAt": "2026-10-13T07:13:38.143Z",
       "verified": true
     },
     {
@@ -495,7 +541,7 @@
       "status": "todo",
       "testCount": 12,
       "title": "Valid Parentheses",
-      "updatedAt": "2026-10-13T05:35:58.130Z",
+      "updatedAt": "2026-10-13T07:13:38.143Z",
       "verified": true
     },
     {
@@ -514,7 +560,7 @@
       "status": "todo",
       "testCount": 10,
       "title": "Merge Two Sorted Lists",
-      "updatedAt": "2026-10-13T05:35:58.130Z",
+      "updatedAt": "2026-10-13T07:13:38.143Z",
       "verified": true
     },
     {
@@ -538,7 +584,7 @@
       "status": "todo",
       "testCount": 11,
       "title": "Best Time to Buy and Sell Stock",
-      "updatedAt": "2026-10-13T05:35:58.130Z",
+      "updatedAt": "2026-10-13T07:13:38.143Z",
       "verified": true
     },
     {
@@ -562,7 +608,7 @@
       "status": "todo",
       "testCount": 11,
       "title": "Valid Anagram",
-      "updatedAt": "2026-10-13T05:35:58.130Z",
+      "updatedAt": "2026-10-13T07:13:38.143Z",
       "verified": true
     },
     {
@@ -581,7 +627,7 @@
       "status": "todo",
       "testCount": 12,
       "title": "Binary Search",
-      "updatedAt": "2026-10-13T05:35:58.130Z",
+      "updatedAt": "2026-10-13T07:13:38.143Z",
       "verified": true
     },
     {
@@ -600,7 +646,7 @@
       "status": "todo",
       "testCount": 9,
       "title": "Reverse Linked List",
-      "updatedAt": "2026-10-13T05:35:58.130Z",
+      "updatedAt": "2026-10-13T07:13:38.143Z",
       "verified": true
     },
     {
@@ -624,7 +670,7 @@
       "status": "todo",
       "testCount": 11,
       "title": "Maximum Depth of Binary Tree",
-      "updatedAt": "2026-10-13T05:35:58.130Z",
+      "updatedAt": "2026-10-13T07:13:38.143Z",
       "verified": true
     },
     {
@@ -648,7 +694,7 @@
       "status": "todo",
       "testCount": 10,
       "title": "Invert Binary Tree",
-      "updatedAt": "2026-10-13T05:35:58.130Z",
+      "updatedAt": "2026-10-13T07:13:38.143Z",
       "verified": true
     },
     {
@@ -667,7 +713,7 @@
       "status": "todo",
       "testCount": 10,
       "title": "Climbing Stairs",
-      "updatedAt": "2026-10-13T05:35:58.130Z",
+      "updatedAt": "2026-10-13T07:13:38.143Z",
       "verified": true
     },
     {
@@ -691,7 +737,7 @@
       "status": "todo",
       "testCount": 11,
       "title": "Contains Duplicate",
-      "updatedAt": "2026-10-13T05:35:58.130Z",
+      "updatedAt": "2026-10-13T07:13:38.143Z",
       "verified": true
     },
     {
@@ -715,7 +761,7 @@
       "status": "todo",
       "testCount": 10,
       "title": "Move Zeroes",
-      "updatedAt": "2026-10-13T05:35:58.130Z",
+      "updatedAt": "2026-10-13T07:13:38.143Z",
       "verified": true
     },
     {
@@ -739,7 +785,7 @@
       "status": "todo",
       "testCount": 11,
       "title": "Group Anagrams",
-      "updatedAt": "2026-10-13T05:35:58.130Z",
+      "updatedAt": "2026-10-13T07:13:38.143Z",
       "verified": true
     },
     {
@@ -763,7 +809,7 @@
       "status": "todo",
       "testCount": 11,
       "title": "Top K Frequent Elements",
-      "updatedAt": "2026-10-13T05:35:58.130Z",
+      "updatedAt": "2026-10-13T07:13:38.143Z",
       "verified": true
     },
     {
@@ -787,7 +833,7 @@
       "status": "todo",
       "testCount": 11,
       "title": "Product of Array Except Self",
-      "updatedAt": "2026-10-13T05:35:58.130Z",
+      "updatedAt": "2026-10-13T07:13:38.143Z",
       "verified": true
     },
     {
@@ -816,7 +862,7 @@
       "status": "todo",
       "testCount": 11,
       "title": "Longest Substring Without Repeating Characters",
-      "updatedAt": "2026-10-13T05:35:58.130Z",
+      "updatedAt": "2026-10-13T07:13:38.143Z",
       "verified": true
     },
     {
@@ -845,7 +891,7 @@
       "status": "todo",
       "testCount": 10,
       "title": "3Sum",
-      "updatedAt": "2026-10-13T05:35:58.130Z",
+      "updatedAt": "2026-10-13T07:13:38.143Z",
       "verified": true
     },
     {
@@ -874,7 +920,7 @@
       "status": "todo",
       "testCount": 10,
       "title": "Container With Most Water",
-      "updatedAt": "2026-10-13T05:35:58.130Z",
+      "updatedAt": "2026-10-13T07:13:38.143Z",
       "verified": true
     },
     {
@@ -903,7 +949,7 @@
       "status": "todo",
       "testCount": 11,
       "title": "Number of Islands",
-      "updatedAt": "2026-10-13T05:35:58.130Z",
+      "updatedAt": "2026-10-13T07:13:38.143Z",
       "verified": true
     },
     {
@@ -922,7 +968,7 @@
       "status": "todo",
       "testCount": 12,
       "title": "Coin Change",
-      "updatedAt": "2026-10-13T05:35:58.130Z",
+      "updatedAt": "2026-10-13T07:13:38.143Z",
       "verified": true
     },
     {
@@ -946,7 +992,7 @@
       "status": "todo",
       "testCount": 11,
       "title": "Longest Increasing Subsequence",
-      "updatedAt": "2026-10-13T05:35:58.130Z",
+      "updatedAt": "2026-10-13T07:13:38.143Z",
       "verified": true
     },
     {
@@ -975,7 +1021,7 @@
       "status": "todo",
       "testCount": 11,
       "title": "Merge Intervals",
-      "updatedAt": "2026-10-13T05:35:58.130Z",
+      "updatedAt": "2026-10-13T07:13:38.143Z",
       "verified": true
     },
     {
@@ -999,7 +1045,7 @@
       "status": "todo",
       "testCount": 12,
       "title": "Kth Largest Element in an Array",
-      "updatedAt": "2026-10-13T05:35:58.130Z",
+      "updatedAt": "2026-10-13T07:13:38.143Z",
       "verified": true
     },
     {
@@ -1023,7 +1069,7 @@
       "status": "todo",
       "testCount": 10,
       "title": "Binary Tree Level Order Traversal",
-      "updatedAt": "2026-10-13T05:35:58.130Z",
+      "updatedAt": "2026-10-13T07:13:38.143Z",
       "verified": true
     },
     {
@@ -1047,7 +1093,7 @@
       "status": "todo",
       "testCount": 12,
       "title": "Validate Binary Search Tree",
-      "updatedAt": "2026-10-13T05:35:58.130Z",
+      "updatedAt": "2026-10-13T07:13:38.143Z",
       "verified": true
     },
     {
@@ -1071,7 +1117,7 @@
       "status": "todo",
       "testCount": 12,
       "title": "Course Schedule",
-      "updatedAt": "2026-10-13T05:35:58.130Z",
+      "updatedAt": "2026-10-13T07:13:38.143Z",
       "verified": true
     },
     {
@@ -1095,7 +1141,7 @@
       "status": "todo",
       "testCount": 12,
       "title": "Search in Rotated Sorted Array",
-      "updatedAt": "2026-10-13T05:35:58.130Z",
+      "updatedAt": "2026-10-13T07:13:38.143Z",
       "verified": true
     },
     {
@@ -1124,7 +1170,7 @@
       "status": "todo",
       "testCount": 10,
       "title": "Daily Temperatures",
-      "updatedAt": "2026-10-13T05:35:58.130Z",
+      "updatedAt": "2026-10-13T07:13:38.143Z",
       "verified": true
     },
     {
@@ -1148,7 +1194,7 @@
       "status": "todo",
       "testCount": 11,
       "title": "Word Break",
-      "updatedAt": "2026-10-13T05:35:58.130Z",
+      "updatedAt": "2026-10-13T07:13:38.143Z",
       "verified": true
     },
     {
@@ -1172,7 +1218,7 @@
       "status": "todo",
       "testCount": 11,
       "title": "Edit Distance",
-      "updatedAt": "2026-10-13T05:35:58.130Z",
+      "updatedAt": "2026-10-13T07:13:38.143Z",
       "verified": true
     },
     {
@@ -1201,7 +1247,7 @@
       "status": "todo",
       "testCount": 11,
       "title": "Trapping Rain Water",
-      "updatedAt": "2026-10-13T05:35:58.130Z",
+      "updatedAt": "2026-10-13T07:13:38.143Z",
       "verified": true
     },
     {
@@ -1225,7 +1271,7 @@
       "status": "todo",
       "testCount": 12,
       "title": "Median of Two Sorted Arrays",
-      "updatedAt": "2026-10-13T05:35:58.130Z",
+      "updatedAt": "2026-10-13T07:13:38.143Z",
       "verified": true
     },
     {
@@ -1249,7 +1295,7 @@
       "status": "todo",
       "testCount": 11,
       "title": "Merge k Sorted Lists",
-      "updatedAt": "2026-10-13T05:35:58.130Z",
+      "updatedAt": "2026-10-13T07:13:38.143Z",
       "verified": true
     },
     {
@@ -1278,7 +1324,7 @@
       "status": "todo",
       "testCount": 11,
       "title": "Minimum Window Substring",
-      "updatedAt": "2026-10-13T05:35:58.130Z",
+      "updatedAt": "2026-10-13T07:13:38.143Z",
       "verified": true
     },
     {
@@ -1297,7 +1343,7 @@
       "status": "todo",
       "testCount": 3,
       "title": "Sum All",
-      "updatedAt": "2026-10-13T05:35:58.311Z",
+      "updatedAt": "2026-10-13T07:13:38.359Z",
       "verified": true
     }
   ],
@@ -1495,16 +1541,16 @@
   "listChat": [
     {
       "content": "Give me a hint.",
-      "createdAt": "2026-10-13T05:35:58.656Z",
-      "id": "b8c460c9-e608-4424-bf82-cc8c46475bad",
+      "createdAt": "2026-10-13T07:13:38.691Z",
+      "id": "94ac41ec-bc8f-419f-9195-fe0d4cd39d0d",
       "mode": "hint",
       "problemId": "two-sum",
       "role": "user"
     },
     {
       "content": "Think about complements.",
-      "createdAt": "2026-10-13T05:35:58.657Z",
-      "id": "a1fcbaff-5a6e-4ceb-8221-19059a35674f",
+      "createdAt": "2026-10-13T07:13:38.693Z",
+      "id": "ffb65ebf-4a36-4d6d-a254-10c2b95e5423",
       "mode": "hint",
       "problemId": "two-sum",
       "role": "assistant"
@@ -1540,12 +1586,12 @@
       },
       "solved": 1,
       "total": 34,
-      "updatedAt": "2026-10-13T05:35:58.130Z"
+      "updatedAt": "2026-10-13T07:13:38.143Z"
     },
     {
       "builtin": false,
       "description": "First week",
-      "id": "a4b13081-dd28-4f41-9c48-de2546ef4b57",
+      "id": "17b4715a-cb8f-480c-88d2-2503aab5681f",
       "name": "Week 1",
       "next": {
         "categories": [
@@ -1565,7 +1611,7 @@
       },
       "solved": 1,
       "total": 2,
-      "updatedAt": "2026-10-13T05:35:58.603Z"
+      "updatedAt": "2026-10-13T07:13:38.654Z"
     }
   ],
   "listProblems": [
@@ -2318,12 +2364,12 @@
   "listSubmissions": [
     {
       "code": "function twoSum(nums, target) {\n  const seen = new Map();\n  for (let i = 0; i < nums.length; i++) {\n    if (seen.has(target - nums[i])) return [seen.get(target - nums[i]), i];\n    seen.set(nums[i], i);\n  }\n  return [];\n}\n",
-      "createdAt": "2026-10-13T05:35:58.311Z",
-      "id": "ed8f18e0-3e1c-4c27-9ef0-f862c292b36a",
+      "createdAt": "2026-10-13T07:13:38.356Z",
+      "id": "bf824a0f-18da-4994-a3c9-cfc67d996132",
       "language": "javascript",
       "passed": 8,
       "problemId": "two-sum",
-      "runtimeMs": 0.07620399999999705,
+      "runtimeMs": 0.09200400000000997,
       "total": 8,
       "verdict": "accepted"
     }
@@ -2340,8 +2386,8 @@
     {
       "message": {
         "content": "Think about complements.",
-        "createdAt": "2026-10-13T05:35:58.657Z",
-        "id": "a1fcbaff-5a6e-4ceb-8221-19059a35674f",
+        "createdAt": "2026-10-13T07:13:38.693Z",
+        "id": "ffb65ebf-4a36-4d6d-a254-10c2b95e5423",
         "mode": "hint",
         "problemId": "two-sum",
         "role": "assistant"
@@ -2349,6 +2395,57 @@
       "type": "done"
     }
   ],
+  "problemPack": {
+    "categories": [],
+    "exportedAt": "2026-10-13T07:13:38Z",
+    "format": "codegym-problem-pack",
+    "questions": [
+      {
+        "categoryIds": ["array"],
+        "comparator": "exact",
+        "constraints": [],
+        "descriptionMd": "Add up the numbers.",
+        "difficulty": "easy",
+        "forkedFrom": null,
+        "hints": [],
+        "inPlaceArg": null,
+        "origin": "manual",
+        "reference": {
+          "code": "class Solution:\n    def sumAll(self, nums):\n        return sum(nums)\n",
+          "language": "python"
+        },
+        "signature": {
+          "functionName": "sumAll",
+          "params": [
+            {
+              "name": "nums",
+              "type": "int[]"
+            }
+          ],
+          "returns": "int"
+        },
+        "tests": [
+          {
+            "expected": 6,
+            "hidden": false,
+            "input": [[1, 2, 3]]
+          },
+          {
+            "expected": 0,
+            "hidden": true,
+            "input": [[]]
+          },
+          {
+            "expected": 0,
+            "hidden": true,
+            "input": [[-4, 4]]
+          }
+        ],
+        "title": "Sum All"
+      }
+    ],
+    "version": 1
+  },
   "runCode": [
     {
       "compileOutput": null,
@@ -2364,7 +2461,7 @@
           "input": [[2, 7, 11, 15], 9],
           "passed": true,
           "stdout": "",
-          "timeMs": 0.04669200000000018
+          "timeMs": 0.03887800000000041
         },
         {
           "actual": [1, 2],
@@ -2376,7 +2473,7 @@
           "input": [[3, 2, 4], 6],
           "passed": true,
           "stdout": "",
-          "timeMs": 0.004698000000004754
+          "timeMs": 0.003185000000001992
         },
         {
           "actual": [0, 1],
@@ -2388,7 +2485,7 @@
           "input": [[3, 3], 6],
           "passed": true,
           "stdout": "",
-          "timeMs": 0.002430000000003929
+          "timeMs": 0.0027439999999998577
         },
         {
           "actual": [0, 1],
@@ -2400,11 +2497,11 @@
           "input": [[1, 2], 3],
           "passed": null,
           "stdout": "",
-          "timeMs": 0.0024370000000004666
+          "timeMs": 0.002452000000001675
         }
       ],
       "total": 3,
-      "totalTimeMs": 0.05625700000000933,
+      "totalTimeMs": 0.04725900000000394,
       "verdict": "accepted"
     },
     {
@@ -2470,6 +2567,122 @@
     "questionCount": 0,
     "solvedCount": 0
   },
+  "starterCode": [
+    {
+      "code": {
+        "cpp": "class Solution {\npublic:\n    vector<int> twoSum(vector<int>& nums, int target) {\n        \n    }\n};\n",
+        "go": "func twoSum(nums []int, target int) []int {\n    \n}\n",
+        "java": "class Solution {\n    public int[] twoSum(int[] nums, int target) {\n        \n    }\n}\n",
+        "javascript": "/**\n * @param {int[]} nums\n * @param {int} target\n * @return {int[]}\n */\nfunction twoSum(nums, target) {\n  \n}\n",
+        "python": "class Solution:\n    def twoSum(self, nums: List[int], target: int) -> List[int]:\n        pass\n",
+        "rust": "impl Solution {\n    pub fn two_sum(nums: Vec<i32>, target: i32) -> Vec<i32> {\n        \n    }\n}\n",
+        "typescript": "function twoSum(nums: number[], target: number): number[] {\n  \n}\n"
+      },
+      "inPlaceArg": null,
+      "signature": {
+        "functionName": "twoSum",
+        "params": [
+          {
+            "name": "nums",
+            "type": "int[]"
+          },
+          {
+            "name": "target",
+            "type": "int"
+          }
+        ],
+        "returns": "int[]"
+      }
+    },
+    {
+      "code": {
+        "cpp": "class Solution {\npublic:\n    void moveZeroes(vector<int>& nums) {\n        \n    }\n};\n",
+        "go": "func moveZeroes(nums []int) {\n    \n}\n",
+        "java": "class Solution {\n    public void moveZeroes(int[] nums) {\n        \n    }\n}\n",
+        "javascript": "/**\n * @param {int[]} nums\n * @return {void}\n */\nfunction moveZeroes(nums) {\n  \n}\n",
+        "python": "class Solution:\n    def moveZeroes(self, nums: List[int]) -> None:\n        pass\n",
+        "rust": "impl Solution {\n    pub fn move_zeroes(nums: &mut Vec<i32>) {\n        \n    }\n}\n",
+        "typescript": "function moveZeroes(nums: number[]): void {\n  \n}\n"
+      },
+      "inPlaceArg": 0,
+      "signature": {
+        "functionName": "moveZeroes",
+        "params": [
+          {
+            "name": "nums",
+            "type": "int[]"
+          }
+        ],
+        "returns": "void"
+      }
+    },
+    {
+      "code": {
+        "cpp": "class Solution {\npublic:\n    TreeNode* invertTree(TreeNode* root) {\n        \n    }\n};\n",
+        "go": "func invertTree(root *TreeNode) *TreeNode {\n    \n}\n",
+        "java": "class Solution {\n    public TreeNode invertTree(TreeNode root) {\n        \n    }\n}\n",
+        "javascript": "/**\n * @param {TreeNode} root\n * @return {TreeNode}\n */\nfunction invertTree(root) {\n  \n}\n",
+        "python": "class Solution:\n    def invertTree(self, root: Optional[TreeNode]) -> Optional[TreeNode]:\n        pass\n",
+        "rust": "impl Solution {\n    pub fn invert_tree(root: Option<Rc<RefCell<TreeNode>>>) -> Option<Rc<RefCell<TreeNode>>> {\n        \n    }\n}\n",
+        "typescript": "function invertTree(root: TreeNode | null): TreeNode | null {\n  \n}\n"
+      },
+      "inPlaceArg": null,
+      "signature": {
+        "functionName": "invertTree",
+        "params": [
+          {
+            "name": "root",
+            "type": "TreeNode"
+          }
+        ],
+        "returns": "TreeNode"
+      }
+    },
+    {
+      "code": {
+        "cpp": "class Solution {\npublic:\n    ListNode* mergeKLists(vector<ListNode*>& lists) {\n        \n    }\n};\n",
+        "go": "func mergeKLists(lists []*ListNode) *ListNode {\n    \n}\n",
+        "java": "class Solution {\n    public ListNode mergeKLists(ListNode[] lists) {\n        \n    }\n}\n",
+        "javascript": "/**\n * @param {ListNode[]} lists\n * @return {ListNode}\n */\nfunction mergeKLists(lists) {\n  \n}\n",
+        "python": "class Solution:\n    def mergeKLists(self, lists: List[Optional[ListNode]]) -> Optional[ListNode]:\n        pass\n",
+        "rust": "impl Solution {\n    pub fn merge_k_lists(lists: Vec<Option<Box<ListNode>>>) -> Option<Box<ListNode>> {\n        \n    }\n}\n",
+        "typescript": "function mergeKLists(lists: Array<ListNode | null>): ListNode | null {\n  \n}\n"
+      },
+      "inPlaceArg": null,
+      "signature": {
+        "functionName": "mergeKLists",
+        "params": [
+          {
+            "name": "lists",
+            "type": "ListNode[]"
+          }
+        ],
+        "returns": "ListNode"
+      }
+    },
+    {
+      "code": {
+        "cpp": "class Solution {\npublic:\n    int numIslands(vector<vector<char>>& grid) {\n        \n    }\n};\n",
+        "go": "func numIslands(grid [][]byte) int {\n    \n}\n",
+        "java": "class Solution {\n    public int numIslands(char[][] grid) {\n        \n    }\n}\n",
+        "javascript": "/**\n * @param {char[][]} grid\n * @return {int}\n */\nfunction numIslands(grid) {\n  \n}\n",
+        "python": "class Solution:\n    def numIslands(self, grid: List[List[str]]) -> int:\n        pass\n",
+        "rust": "impl Solution {\n    pub fn num_islands(grid: Vec<Vec<char>>) -> i32 {\n        \n    }\n}\n",
+        "typescript": "function numIslands(grid: string[][]): number {\n  \n}\n"
+      },
+      "inPlaceArg": null,
+      "signature": {
+        "functionName": "numIslands",
+        "params": [
+          {
+            "name": "grid",
+            "type": "char[][]"
+          }
+        ],
+        "returns": "int"
+      }
+    }
+  ],
   "submitCode": {
     "firstSolve": true,
     "run": {
@@ -2486,7 +2699,7 @@
           "input": [[2, 7, 11, 15], 9],
           "passed": true,
           "stdout": "",
-          "timeMs": 0.02944100000000205
+          "timeMs": 0.0332209999999975
         },
         {
           "actual": [1, 2],
@@ -2498,7 +2711,7 @@
           "input": [[3, 2, 4], 6],
           "passed": true,
           "stdout": "",
-          "timeMs": 0.0033519999999995775
+          "timeMs": 0.003441999999999723
         },
         {
           "actual": [0, 1],
@@ -2510,7 +2723,7 @@
           "input": [[3, 3], 6],
           "passed": true,
           "stdout": "",
-          "timeMs": 0.002504000000001838
+          "timeMs": 0.0025380000000012615
         },
         {
           "actual": null,
@@ -2522,7 +2735,7 @@
           "input": null,
           "passed": true,
           "stdout": "",
-          "timeMs": 0.003759999999999763
+          "timeMs": 0.004901000000003819
         },
         {
           "actual": null,
@@ -2534,7 +2747,7 @@
           "input": null,
           "passed": true,
           "stdout": "",
-          "timeMs": 0.03200199999999853
+          "timeMs": 0.03777000000000186
         },
         {
           "actual": null,
@@ -2546,7 +2759,7 @@
           "input": null,
           "passed": true,
           "stdout": "",
-          "timeMs": 0.002341999999998734
+          "timeMs": 0.006199999999999761
         },
         {
           "actual": null,
@@ -2558,7 +2771,7 @@
           "input": null,
           "passed": true,
           "stdout": "",
-          "timeMs": 0.0011539999999996553
+          "timeMs": 0.00215400000000443
         },
         {
           "actual": null,
@@ -2570,28 +2783,28 @@
           "input": null,
           "passed": true,
           "stdout": "",
-          "timeMs": 0.001648999999996903
+          "timeMs": 0.0017780000000016116
         }
       ],
       "total": 8,
-      "totalTimeMs": 0.07620399999999705,
+      "totalTimeMs": 0.09200400000000997,
       "verdict": "accepted"
     },
     "submission": {
       "code": "function twoSum(nums, target) {\n  const seen = new Map();\n  for (let i = 0; i < nums.length; i++) {\n    if (seen.has(target - nums[i])) return [seen.get(target - nums[i]), i];\n    seen.set(nums[i], i);\n  }\n  return [];\n}\n",
-      "createdAt": "2026-10-13T05:35:58.311Z",
-      "id": "ed8f18e0-3e1c-4c27-9ef0-f862c292b36a",
+      "createdAt": "2026-10-13T07:13:38.356Z",
+      "id": "bf824a0f-18da-4994-a3c9-cfc67d996132",
       "language": "javascript",
       "passed": 8,
       "problemId": "two-sum",
-      "runtimeMs": 0.07620399999999705,
+      "runtimeMs": 0.09200400000000997,
       "total": 8,
       "verdict": "accepted"
     }
   },
   "testConnection": {
     "error": null,
-    "latencyMs": 1.376068,
+    "latencyMs": 0.822113,
     "ok": true
   },
   "verifyReference": {

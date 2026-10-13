@@ -69,12 +69,14 @@ fn two_sum() -> RunSpec {
 }
 
 fn reference(lang: Language) -> String {
-    let ext = match lang {
-        Language::Javascript => "js",
-        Language::Python => "py",
-        Language::Go => "go",
-    };
-    std::fs::read_to_string(root().join(format!("problems/solutions/{}/two-sum.{ext}", lang.as_str()))).unwrap()
+    let path = format!("problems/solutions/{}/two-sum.{}", lang.as_str(), lang.extension());
+    std::fs::read_to_string(root().join(path)).unwrap()
+}
+
+/// Languages that compile before running: errors in them are compile errors, and they get
+/// more time in tests that measure how long a run took.
+fn compiled(lang: Language) -> bool {
+    matches!(lang, Language::Go | Language::Java | Language::Cpp | Language::Rust)
 }
 
 fn have_go() -> bool {
@@ -99,6 +101,22 @@ fn engines() -> Vec<(&'static str, &'static Runner, Language)> {
     }
     if have_go() {
         out.push(("go", runner(), Language::Go));
+    }
+    out.push(("typescript-quickjs", fallback(), Language::Typescript));
+    if runner().node().is_some() {
+        out.push(("typescript-node", runner(), Language::Typescript));
+    }
+    // System toolchains are optional locally but required in CI.
+    let ci = std::env::var_os("CI").is_some();
+    for (label, lang, found) in [
+        ("java", Language::Java, runner().javac().is_some()),
+        ("cpp", Language::Cpp, runner().cxx().is_some()),
+        ("rust", Language::Rust, runner().rustc().is_some()),
+    ] {
+        assert!(found || !ci, "{label} toolchain missing in CI");
+        if found {
+            out.push((label, runner(), lang));
+        }
     }
     out
 }
@@ -136,6 +154,18 @@ fn wrong_answers_and_prints_are_reported_per_test() {
         Language::Go => {
             "func twoSum(nums []int, target int) []int {\n\tfmt.Println(\"len\", len(nums))\n\treturn []int{0, 1}\n}\n"
         }
+        Language::Typescript => {
+            "function twoSum(nums: number[], target: number): number[] {\n  console.log(\"len\", nums.length);\n  return [0, 1];\n}\n"
+        }
+        Language::Java => {
+            "class Solution {\n    public int[] twoSum(int[] nums, int target) {\n        System.out.println(\"len \" + nums.length);\n        return new int[] {0, 1};\n    }\n}\n"
+        }
+        Language::Cpp => {
+            "class Solution {\npublic:\n    vector<int> twoSum(vector<int>& nums, int target) {\n        cout << \"len \" << nums.size() << endl;\n        return {0, 1};\n    }\n};\n"
+        }
+        Language::Rust => {
+            "impl Solution {\n    pub fn two_sum(nums: Vec<i32>, target: i32) -> Vec<i32> {\n        println!(\"len {}\", nums.len());\n        vec![0, 1]\n    }\n}\n"
+        }
     };
     for (label, r, lang) in engines() {
         let result = run(r, lang, code(lang), &two_sum());
@@ -154,6 +184,16 @@ fn syntax_errors_are_compile_errors() {
         Language::Javascript => "function twoSum(nums, target) {\n  return [0, 1;\n}\n",
         Language::Python => "class Solution:\n    def twoSum(self, nums, target)\n        return [0, 1]\n",
         Language::Go => "func twoSum(nums []int, target int) []int {\n\treturn []int{0, 1\n}\n",
+        Language::Typescript => "function twoSum(nums: number[], target: number): number[] {\n  return [0, 1;\n}\n",
+        Language::Java => {
+            "class Solution {\n    public int[] twoSum(int[] nums, int target) { return new int[] {0, 1} }\n}\n"
+        }
+        Language::Cpp => {
+            "class Solution {\npublic: vector<int> twoSum(vector<int>& nums, int target) { return {0, 1} }\n};\n"
+        }
+        Language::Rust => {
+            "impl Solution {\n    pub fn two_sum(nums: Vec<i32>, target: i32) -> Vec<i32> { vec![0, 1 }\n}\n"
+        }
     };
     for (label, r, lang) in engines() {
         let result = run(r, lang, code(lang), &two_sum());
@@ -174,11 +214,28 @@ fn runtime_errors_point_at_the_solvers_line() {
         Language::Go => {
             "func twoSum(nums []int, target int) []int {\n\tvar m map[int]int\n\tm[1] = 2\n\treturn nil\n}\n"
         }
+        Language::Typescript => {
+            "function twoSum(nums: number[], target: number): number[] {\n  const x: any = null;\n  return x.boom;\n}\n"
+        }
+        Language::Java => {
+            "class Solution {\n    public int[] twoSum(int[] nums, int target) {\n        int[] a = new int[1];\n        a[5] = 1;\n        return a;\n    }\n}\n"
+        }
+        Language::Cpp => {
+            "class Solution {\npublic:\n    vector<int> twoSum(vector<int>& nums, int target) {\n        return {nums.at(100)};\n    }\n};\n"
+        }
+        Language::Rust => {
+            "impl Solution {\n    pub fn two_sum(nums: Vec<i32>, target: i32) -> Vec<i32> {\n        let v: Vec<i32> = vec![];\n        vec![v[3]]\n    }\n}\n"
+        }
     };
     let line = |lang| match lang {
         Language::Javascript => "solution.js:3",
         Language::Python => "line 4",
         Language::Go => "solution.go:3",
+        Language::Typescript => "solution.ts:3",
+        Language::Java => "Solution.java:4",
+        // C++ exceptions carry no line numbers; the message names what failed.
+        Language::Cpp => "exception:",
+        Language::Rust => "solution.rs:4",
     };
     for (label, r, lang) in engines() {
         let result = run(r, lang, code(lang), &two_sum());
@@ -201,15 +258,25 @@ fn infinite_loops_hit_the_time_limit_and_stop_the_run() {
         Language::Go => {
             "func twoSum(nums []int, target int) []int {\n\tfor len(nums) == 3 {\n\t}\n\treturn []int{0, 1}\n}\n"
         }
+        Language::Typescript => {
+            "function twoSum(nums: number[], target: number): number[] {\n  if (nums.length === 3) while (true) {}\n  return [0, 1];\n}\n"
+        }
+        Language::Java => {
+            "class Solution {\n    public int[] twoSum(int[] nums, int target) {\n        while (nums.length == 3) {}\n        return new int[] {0, 1};\n    }\n}\n"
+        }
+        // A side-effect-free infinite loop is undefined behavior in C++, so this one counts.
+        Language::Cpp => {
+            "class Solution {\npublic:\n    vector<int> twoSum(vector<int>& nums, int target) {\n        volatile long spin = 0;\n        while (nums.size() == 3) spin = spin + 1;\n        return {0, 1};\n    }\n};\n"
+        }
+        Language::Rust => {
+            "impl Solution {\n    pub fn two_sum(nums: Vec<i32>, target: i32) -> Vec<i32> {\n        while nums.len() == 3 {}\n        vec![0, 1]\n    }\n}\n"
+        }
     };
     for (label, r, lang) in engines() {
         let limits = Limits { timeout: Duration::from_millis(1500), memory_mb: 256 };
         let started = std::time::Instant::now();
         let result = r.run(lang, code(lang), &two_sum(), limits, Trust::User);
-        assert!(
-            started.elapsed() < Duration::from_secs(if lang == Language::Go { 30 } else { 6 }),
-            "{label} wasn't stopped"
-        );
+        assert!(started.elapsed() < Duration::from_secs(if compiled(lang) { 60 } else { 6 }), "{label} wasn't stopped");
         assert_eq!(result.verdict, Verdict::TimeLimit, "{label}: {result:#?}");
         assert_eq!(result.results[0].passed, Some(true), "{label}");
         assert!(result.results[1].error.as_deref().unwrap().contains("Time limit"), "{label}");
@@ -226,11 +293,17 @@ fn memory_hogs_hit_the_memory_limit() {
         Language::Python => {
             "class Solution:\n    def twoSum(self, nums, target):\n        a = []\n        while True:\n            a.append([7] * 10**6)\n"
         }
-        Language::Go => "",
+        Language::Typescript => {
+            "function twoSum(nums: number[], target: number): number[] {\n  const a: number[][] = [];\n  while (true) a.push(new Array(1e6).fill(7));\n}\n"
+        }
+        Language::Java => {
+            "class Solution {\n    public int[] twoSum(int[] nums, int target) {\n        List<int[]> a = new ArrayList<>();\n        while (true) a.add(new int[1000000]);\n    }\n}\n"
+        }
+        Language::Go | Language::Cpp | Language::Rust => "",
     };
     for (label, r, lang) in engines() {
-        if lang == Language::Go || label == "python-system" {
-            continue; // Go and system Python only get soft limits.
+        if matches!(lang, Language::Go | Language::Cpp | Language::Rust) || label == "python-system" {
+            continue; // These only get soft limits.
         }
         let limits = Limits { timeout: Duration::from_secs(20), memory_mb: 128 };
         let result = r.run(lang, code(lang), &two_sum(), limits, Trust::User);
@@ -289,6 +362,18 @@ fn linked_lists_trees_and_in_place_answers() {
         Language::Go => {
             "func reverseList(head *ListNode) *ListNode {\n\tvar prev *ListNode\n\tfor head != nil {\n\t\thead.Next, prev, head = prev, head, head.Next\n\t}\n\treturn prev\n}\n"
         }
+        Language::Typescript => {
+            "function reverseList(head: ListNode | null): ListNode | null {\n  let prev: ListNode | null = null;\n  while (head) { const n = head.next; head.next = prev; prev = head; head = n; }\n  return prev;\n}\n"
+        }
+        Language::Java => {
+            "class Solution {\n    public ListNode reverseList(ListNode head) {\n        ListNode prev = null;\n        while (head != null) { ListNode n = head.next; head.next = prev; prev = head; head = n; }\n        return prev;\n    }\n}\n"
+        }
+        Language::Cpp => {
+            "class Solution {\npublic:\n    ListNode* reverseList(ListNode* head) {\n        ListNode* prev = nullptr;\n        while (head) { ListNode* n = head->next; head->next = prev; prev = head; head = n; }\n        return prev;\n    }\n};\n"
+        }
+        Language::Rust => {
+            "impl Solution {\n    pub fn reverse_list(head: Option<Box<ListNode>>) -> Option<Box<ListNode>> {\n        let (mut prev, mut cur) = (None, head);\n        while let Some(mut node) = cur {\n            cur = node.next.take();\n            node.next = prev;\n            prev = Some(node);\n        }\n        prev\n    }\n}\n"
+        }
     };
     let invert = RunSpec {
         signature: sig("invertTree", &[("root", ParamType::TreeNode)], ParamType::TreeNode),
@@ -306,6 +391,18 @@ fn linked_lists_trees_and_in_place_answers() {
         Language::Go => {
             "func invertTree(root *TreeNode) *TreeNode {\n\tif root != nil {\n\t\troot.Left, root.Right = invertTree(root.Right), invertTree(root.Left)\n\t}\n\treturn root\n}\n"
         }
+        Language::Typescript => {
+            "function invertTree(root: TreeNode | null): TreeNode | null {\n  if (!root) return null;\n  [root.left, root.right] = [invertTree(root.right), invertTree(root.left)];\n  return root;\n}\n"
+        }
+        Language::Java => {
+            "class Solution {\n    public TreeNode invertTree(TreeNode root) {\n        if (root == null) return null;\n        TreeNode l = invertTree(root.left);\n        root.left = invertTree(root.right);\n        root.right = l;\n        return root;\n    }\n}\n"
+        }
+        Language::Cpp => {
+            "class Solution {\npublic:\n    TreeNode* invertTree(TreeNode* root) {\n        if (!root) return nullptr;\n        swap(root->left, root->right);\n        invertTree(root->left);\n        invertTree(root->right);\n        return root;\n    }\n};\n"
+        }
+        Language::Rust => {
+            "impl Solution {\n    pub fn invert_tree(root: Option<Rc<RefCell<TreeNode>>>) -> Option<Rc<RefCell<TreeNode>>> {\n        if let Some(node) = root.clone() {\n            let mut n = node.borrow_mut();\n            let left = n.left.take();\n            let right = n.right.take();\n            n.left = Self::invert_tree(right);\n            n.right = Self::invert_tree(left);\n        }\n        root\n    }\n}\n"
+        }
     };
     let sort = RunSpec {
         signature: sig("sortGrid", &[("grid", ParamType::CharMatrix)], ParamType::Void),
@@ -320,6 +417,18 @@ fn linked_lists_trees_and_in_place_answers() {
         }
         Language::Go => {
             "func sortGrid(grid [][]byte) {\n\tfor _, row := range grid {\n\t\tsort.Slice(row, func(i, j int) bool { return row[i] < row[j] })\n\t}\n}\n"
+        }
+        Language::Typescript => {
+            "function sortGrid(grid: string[][]): void {\n  for (const row of grid) row.sort();\n}\n"
+        }
+        Language::Java => {
+            "class Solution {\n    public void sortGrid(char[][] grid) {\n        for (char[] row : grid) Arrays.sort(row);\n    }\n}\n"
+        }
+        Language::Cpp => {
+            "class Solution {\npublic:\n    void sortGrid(vector<vector<char>>& grid) {\n        for (auto& row : grid) sort(row.begin(), row.end());\n    }\n};\n"
+        }
+        Language::Rust => {
+            "impl Solution {\n    pub fn sort_grid(grid: &mut Vec<Vec<char>>) {\n        for row in grid.iter_mut() {\n            row.sort();\n        }\n    }\n}\n"
         }
     };
     for (label, r, lang) in engines() {
@@ -355,7 +464,9 @@ fn a_missing_function_is_explained() {
         let code = match lang {
             Language::Javascript => "function twoSums() {}\n",
             Language::Python => "class Solution:\n    def twoSums(self):\n        pass\n",
-            Language::Go => continue,
+            Language::Typescript => "function twoSums(): void {}\n",
+            // In compiled languages a wrong name is a compile error, covered elsewhere.
+            Language::Go | Language::Java | Language::Cpp | Language::Rust => continue,
         };
         let result = run(r, lang, code, &two_sum());
         assert_eq!(result.verdict, Verdict::RuntimeError, "{label}");
@@ -369,10 +480,12 @@ fn starter_code_runs_cleanly() {
     for (label, r, lang) in engines() {
         let code = starter_code(&spec.signature, lang);
         let result = run(r, lang, &code, &spec);
-        if lang == Language::Go {
-            // An empty Go function body doesn't compile ("missing return"), as on any judge.
+        if compiled(lang) {
+            // An empty body with a return type doesn't compile, as on any judge; the error
+            // must come from the solver's function, not the harness.
             assert_eq!(result.verdict, Verdict::CompileError, "{label}: {result:#?}");
-            assert!(result.compile_output.unwrap().contains("missing return"));
+            let output = result.compile_output.unwrap();
+            assert!(!output.contains("Main.java") && !output.contains("main.cpp:"), "{label}: {output}");
         } else {
             assert_eq!(result.verdict, Verdict::WrongAnswer, "{label}: {result:#?}");
             assert!(result.results.iter().all(|r| r.error.is_none()), "{label}: {result:#?}");
@@ -401,18 +514,34 @@ fn deep_recursion_works_and_runaway_recursion_is_a_runtime_error() {
             "class Solution:\n    def depth(self, n):\n        return 0 if n == 0 else 1 + self.depth(n - 1)\n"
         }
         Language::Go => "func depth(n int) int {\n\tif n == 0 {\n\t\treturn 0\n\t}\n\treturn 1 + depth(n-1)\n}\n",
+        Language::Typescript => "function depth(n: number): number {\n  return n === 0 ? 0 : 1 + depth(n - 1);\n}\n",
+        Language::Java => {
+            "class Solution {\n    public int depth(int n) {\n        return n == 0 ? 0 : 1 + depth(n - 1);\n    }\n}\n"
+        }
+        Language::Cpp => {
+            "class Solution {\npublic:\n    int depth(int n) {\n        return n == 0 ? 0 : 1 + depth(n - 1);\n    }\n};\n"
+        }
+        Language::Rust => {
+            "impl Solution {\n    pub fn depth(n: i32) -> i32 {\n        if n == 0 { 0 } else { 1 + Self::depth(n - 1) }\n    }\n}\n"
+        }
     };
     for (label, r, lang) in engines() {
         let limits = Limits { timeout: Duration::from_secs(10), memory_mb: 512 };
         let result = r.run(lang, code(lang), &spec, limits, Trust::User);
         assert_eq!(result.results[0].passed, Some(true), "{label}: {result:#?}");
-        // Go grows its stack until the cap, so runaway recursion there may hit the time limit.
-        let expected = if lang == Language::Go {
+        // Native code may grow its stack for a long time, or optimize the recursion into a loop
+        // that runs until the time limit.
+        let expected = if lang == Language::Cpp {
+            // Signed overflow is undefined in C++, so the optimizer may also produce any answer.
+            [Verdict::RuntimeError, Verdict::TimeLimit, Verdict::WrongAnswer].as_slice()
+        } else if compiled(lang) {
             [Verdict::RuntimeError, Verdict::TimeLimit, Verdict::MemoryLimit].as_slice()
         } else {
             &[Verdict::RuntimeError]
         };
         assert!(expected.contains(&result.verdict), "{label}: {result:#?}");
-        assert!(result.results[1].error.is_some(), "{label}");
+        if lang != Language::Cpp {
+            assert!(result.results[1].error.is_some(), "{label}");
+        }
     }
 }

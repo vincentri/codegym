@@ -11,7 +11,13 @@ import {
 import { useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
-import { useDataInfo, useOpenDataFolder, useResetProgress } from "@/api/hooks";
+import {
+  useDataInfo,
+  useExportProblemPack,
+  useImportProblemPack,
+  useOpenDataFolder,
+  useResetProgress,
+} from "@/api/hooks";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -181,7 +187,29 @@ export function ResetProgressDialog() {
 
 export function DataSettings() {
   const { data } = useDataInfo();
-  const notYet = () => toast.info("Problem packs arrive in a later update");
+  const exportPack = useExportProblemPack();
+  const importPack = useImportProblemPack();
+  const onExport = () =>
+    exportPack.mutate(undefined, {
+      onSuccess: (r) =>
+        r &&
+        toast.success(`Exported ${r.questions} question${r.questions === 1 ? "" : "s"}`, {
+          description: r.path,
+        }),
+      onError: (e) => toast.error(e.message),
+    });
+  const onImport = () =>
+    importPack.mutate(undefined, {
+      onSuccess: (r) => {
+        if (!r) return;
+        const skipped = r.skipped.map((s) => `${s.title}: ${s.reason}`).join("\n");
+        const title = `Imported ${r.imported} question${r.imported === 1 ? "" : "s"}`;
+        if (r.skipped.length > 0)
+          toast.warning(`${title}, skipped ${r.skipped.length}`, { description: skipped });
+        else toast.success(title);
+      },
+      onError: (e) => toast.error(e.message),
+    });
   const openDataFolder = useOpenDataFolder();
   const openFolder = () =>
     openDataFolder.mutate(undefined, { onError: (e) => toast.error(e.message) });
@@ -214,10 +242,10 @@ export function DataSettings() {
             <Button variant="outline" onClick={openFolder}>
               <FolderOpenIcon /> Open data folder
             </Button>
-            <Button variant="outline" onClick={notYet}>
+            <Button variant="outline" onClick={onExport} disabled={exportPack.isPending}>
               <DownloadIcon /> Export my problems
             </Button>
-            <Button variant="outline" onClick={notYet}>
+            <Button variant="outline" onClick={onImport} disabled={importPack.isPending}>
               <UploadIcon /> Import problem pack
             </Button>
           </div>

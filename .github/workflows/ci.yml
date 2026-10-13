@@ -1,5 +1,5 @@
 # Checks every change: formatting, lint, types and tests for the UI and the Rust crates,
-# including every built-in problem in JavaScript, Python and Go.
+# including every built-in problem in every language.
 name: CI
 
 on:
@@ -67,6 +67,11 @@ jobs:
         with:
           go-version: stable
           cache: false
+      # Java solutions need a JDK; g++ and rustc are already on the runner.
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 21
 
       # The desktop crate embeds the built UI, so it has to exist before the crate compiles.
       - uses: pnpm/action-setup@v6

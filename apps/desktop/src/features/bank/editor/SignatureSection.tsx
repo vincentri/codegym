@@ -37,9 +37,9 @@ const COMPARATORS: { value: Comparator; label: string }[] = [
 
 function StarterPreview() {
   const form = useFormContext<QuestionForm>();
-  const [functionName, params, returns] = useWatch({
+  const [functionName, params, returns, inPlaceArg] = useWatch({
     control: form.control,
-    name: ["functionName", "params", "returns"],
+    name: ["functionName", "params", "returns", "inPlaceArg"],
   });
   const signature = {
     functionName: functionName.trim() || "solve",
@@ -60,7 +60,7 @@ function StarterPreview() {
         {LANGUAGES.map((l) => (
           <TabsContent key={l.id} value={l.id}>
             <pre className="overflow-x-auto rounded-md bg-muted p-3 font-mono text-xs">
-              {starterCode(signature, l.id)}
+              {starterCode(signature, l.id, inPlaceArg === "none" ? null : Number(inPlaceArg))}
             </pre>
           </TabsContent>
         ))}

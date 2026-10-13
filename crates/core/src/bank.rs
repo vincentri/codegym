@@ -81,14 +81,6 @@ fn read_json<T: for<'de> Deserialize<'de>>(path: &str) -> Result<T, BankError> {
     serde_json::from_slice(file.contents()).map_err(|source| BankError::Invalid { file: path.into(), source })
 }
 
-fn extension(language: Language) -> &'static str {
-    match language {
-        Language::Javascript => "js",
-        Language::Python => "py",
-        Language::Go => "go",
-    }
-}
-
 /// Loads and checks the embedded bank. Inconsistencies are bugs in `problems/`, caught by tests.
 pub fn load() -> Result<Bank, BankError> {
     let index: BankIndex = read_json("bank.json")?;
@@ -104,7 +96,7 @@ pub fn load() -> Result<Bank, BankError> {
             }
         }
         for language in Language::ALL {
-            let path = format!("solutions/{}/{id}.{}", language.as_str(), extension(language));
+            let path = format!("solutions/{}/{id}.{}", language.as_str(), language.extension());
             if let Some(f) = BANK_DIR.get_file(&path) {
                 p.references
                     .push(ReferenceSolution { language, code: String::from_utf8_lossy(f.contents()).into_owned() });

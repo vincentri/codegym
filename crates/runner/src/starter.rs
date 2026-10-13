@@ -2,6 +2,11 @@
 
 use codegym_core::{Language, ParamType, Signature};
 
+use crate::cpp::{cpp_param, cpp_type};
+use crate::java::java_type;
+use crate::native::snake_case;
+use crate::rustc::rust_type;
+
 fn type_name(t: ParamType) -> &'static str {
     match t {
         ParamType::Int => "int",
@@ -41,6 +46,23 @@ fn py_type(t: ParamType) -> &'static str {
     }
 }
 
+fn ts_type(t: ParamType) -> &'static str {
+    match t {
+        ParamType::Int | ParamType::Float => "number",
+        ParamType::Bool => "boolean",
+        ParamType::String => "string",
+        ParamType::IntArray | ParamType::FloatArray => "number[]",
+        ParamType::StringArray => "string[]",
+        ParamType::BoolArray => "boolean[]",
+        ParamType::IntMatrix => "number[][]",
+        ParamType::StringMatrix | ParamType::CharMatrix => "string[][]",
+        ParamType::ListNode => "ListNode | null",
+        ParamType::ListNodeArray => "Array<ListNode | null>",
+        ParamType::TreeNode => "TreeNode | null",
+        ParamType::Void => "void",
+    }
+}
+
 fn go_type(t: ParamType) -> &'static str {
     match t {
         ParamType::Int => "int",
@@ -58,6 +80,46 @@ fn go_type(t: ParamType) -> &'static str {
         ParamType::ListNodeArray => "[]*ListNode",
         ParamType::TreeNode => "*TreeNode",
         ParamType::Void => "",
+    }
+}
+
+/// Starter code for a problem. `in_place_arg` marks the argument modified in place (Rust takes
+/// it as `&mut`).
+pub fn starter_code_for(sig: &Signature, in_place_arg: Option<usize>, language: Language) -> String {
+    let name = &sig.function_name;
+    let list = |f: &dyn Fn(usize, &codegym_core::Param) -> String| {
+        sig.params.iter().enumerate().map(|(i, p)| f(i, p)).collect::<Vec<_>>().join(", ")
+    };
+    match language {
+        Language::Typescript => {
+            let args = list(&|_, p| format!("{}: {}", p.name, ts_type(p.ty)));
+            format!("function {name}({args}): {} {{\n  \n}}\n", ts_type(sig.returns))
+        }
+        Language::Java => {
+            let args = list(&|_, p| format!("{} {}", java_type(p.ty), p.name));
+            format!(
+                "class Solution {{\n    public {} {name}({args}) {{\n        \n    }}\n}}\n",
+                java_type(sig.returns)
+            )
+        }
+        Language::Cpp => {
+            let args = list(&|_, p| format!("{} {}", cpp_param(p.ty), p.name));
+            format!(
+                "class Solution {{\npublic:\n    {} {name}({args}) {{\n        \n    }}\n}};\n",
+                cpp_type(sig.returns)
+            )
+        }
+        Language::Rust => {
+            let args = list(&|i, p| {
+                let ty = rust_type(p.ty);
+                let ty = if in_place_arg == Some(i) { format!("&mut {ty}") } else { ty.to_string() };
+                format!("{}: {ty}", snake_case(&p.name))
+            });
+            let ret =
+                if sig.returns == ParamType::Void { String::new() } else { format!(" -> {}", rust_type(sig.returns)) };
+            format!("impl Solution {{\n    pub fn {}({args}){ret} {{\n        \n    }}\n}}\n", snake_case(name))
+        }
+        _ => starter_code(sig, language),
     }
 }
 
@@ -88,5 +150,6 @@ pub fn starter_code(sig: &Signature, language: Language) -> String {
             let ret = if ret.is_empty() { String::new() } else { format!(" {ret}") };
             format!("func {name}({args}){ret} {{\n    \n}}\n")
         }
+        other => starter_code_for(sig, None, other),
     }
 }

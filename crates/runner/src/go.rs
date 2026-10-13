@@ -6,6 +6,7 @@ use std::time::Duration;
 
 use codegym_core::{ParamType, RunResult};
 
+use crate::native::shift_lines;
 use crate::outcome::{self, Raw};
 use crate::process::{self, Tool};
 use crate::{Limits, RunSpec, nonce, payload};
@@ -122,27 +123,6 @@ fn call_function(spec: &RunSpec) -> String {
     s
 }
 
-/// Maps `solution.go:12` back to the line the solver sees in the editor.
-fn shift_lines(text: &str, offset: usize) -> String {
-    if offset == 0 {
-        return text.to_string();
-    }
-    const KEY: &str = "solution.go:";
-    let mut out = String::with_capacity(text.len());
-    let mut rest = text;
-    while let Some(pos) = rest.find(KEY) {
-        out.push_str(&rest[..pos + KEY.len()]);
-        rest = &rest[pos + KEY.len()..];
-        let digits = rest.chars().take_while(char::is_ascii_digit).count();
-        if let Ok(n) = rest[..digits].parse::<usize>() {
-            let _ = write!(out, "{}", n.saturating_sub(offset).max(1));
-            rest = &rest[digits..];
-        }
-    }
-    out.push_str(rest);
-    out
-}
-
 pub fn run(go: &Tool, code: &str, spec: &RunSpec, limits: Limits) -> RunResult {
     if code.lines().any(|l| l.trim_start().starts_with("func main(")) {
         return outcome::compile_error(spec, "Remove `func main()`: CodeGym calls your function for you.".into());
@@ -161,7 +141,8 @@ pub fn run(go: &Tool, code: &str, spec: &RunSpec, limits: Limits) -> RunResult {
         }
     }
     let prefix = format!("{}{}", dir.path().display(), std::path::MAIN_SEPARATOR);
-    let clean = |s: &str| shift_lines(&s.replace(&prefix, "").replace("./solution.go", "solution.go"), offset);
+    let clean =
+        |s: &str| shift_lines(&s.replace(&prefix, "").replace("./solution.go", "solution.go"), "solution.go:", offset);
 
     let exe = dir.path().join(if cfg!(windows) { "solution.exe" } else { "solution" });
     let mut build = go.command();
@@ -218,9 +199,10 @@ mod tests {
 
     #[test]
     fn shifts_line_numbers() {
-        assert_eq!(shift_lines("solution.go:3:5: undefined: x", 1), "solution.go:2:5: undefined: x");
-        assert_eq!(shift_lines("at solution.go:10 +0x1", 1), "at solution.go:9 +0x1");
-        assert_eq!(shift_lines("no match", 1), "no match");
+        let shift = |s: &str| shift_lines(s, "solution.go:", 1);
+        assert_eq!(shift("solution.go:3:5: undefined: x"), "solution.go:2:5: undefined: x");
+        assert_eq!(shift("at solution.go:10 +0x1"), "at solution.go:9 +0x1");
+        assert_eq!(shift("no match"), "no match");
     }
 
     #[test]

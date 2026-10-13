@@ -44,17 +44,32 @@ fn search_path() -> std::ffi::OsString {
     let mut dirs: Vec<PathBuf> =
         std::env::var_os("PATH").map(|p| std::env::split_paths(&p).collect()).unwrap_or_default();
     let home = std::env::var_os("HOME").or_else(|| std::env::var_os("USERPROFILE")).map(PathBuf::from);
+    if let Some(java_home) = std::env::var_os("JAVA_HOME") {
+        dirs.push(PathBuf::from(java_home).join("bin"));
+    }
     if cfg!(windows) {
         for var in ["ProgramFiles", "LOCALAPPDATA"] {
             if let Some(base) = std::env::var_os(var).map(PathBuf::from) {
                 dirs.extend([base.join("Go").join("bin"), base.join("nodejs"), base.join("Programs").join("Python")]);
+                dirs.push(base.join("Microsoft").join("jdk").join("bin"));
             }
         }
     } else {
-        dirs.extend(["/usr/local/go/bin", "/opt/homebrew/bin", "/usr/local/bin", "/opt/local/bin"].map(PathBuf::from));
+        dirs.extend(
+            [
+                "/usr/local/go/bin",
+                "/opt/homebrew/bin",
+                "/opt/homebrew/opt/openjdk/bin",
+                "/usr/local/opt/openjdk/bin",
+                "/usr/local/bin",
+                "/opt/local/bin",
+            ]
+            .map(PathBuf::from),
+        );
         if let Some(home) = &home {
             dirs.extend([
                 home.join("go/bin"),
+                home.join(".cargo/bin"),
                 home.join(".volta/bin"),
                 home.join(".local/bin"),
                 home.join(".asdf/shims"),

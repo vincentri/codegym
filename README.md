@@ -4,14 +4,14 @@ A desktop app for practicing coding-interview problems offline, with an AI mento
 instead of handing you the answer. Bring your own AI: a free local model through Ollama, OpenCode
 Zen, Claude, or any OpenAI-compatible endpoint.
 
-> **Status:** milestone 2. The desktop app runs fully offline for practice and connects to the AI you choose for the mentor:
-> - **Practice:** 34 built-in problems, each with reference solutions in all three languages. Run and Submit in Python, JavaScript and Go.
+> **Status:** milestone 3. The desktop app runs fully offline for practice and connects to the AI you choose for the mentor:
+> - **Practice:** 34 built-in problems, each with reference solutions in every language. Run and Submit in Python, JavaScript, TypeScript, Go, Java, C++ and Rust.
 > - **Saved in SQLite:** progress, drafts, solve records, the question bank, categories and study plans.
 > - **AI mentor:** a streaming chat that sees your code and last run, but never hidden tests.
 > - **AI questions:** import pasted problems or generate new ones. Every AI-written question is checked by running its reference solution in a sandbox.
+> - **Problem packs:** export your own questions to a `.codegym.json` file and import someone else's (Settings → Data).
 > - **API keys:** kept in the operating system's keychain.
->
-> Next: installers and CI.
+> - **Releases:** every merge to `main` publishes a macOS `.dmg`.
 
 ## How it works
 
@@ -31,7 +31,28 @@ How each language runs:
 |---|---|---|
 | Python | CPython compiled to WebAssembly, inside wasmtime: no file or network access, memory cap, time limit | No (built in) |
 | JavaScript | Node.js when installed, otherwise QuickJS (built in) | No |
+| TypeScript | Types are stripped by the built-in oxc compiler (not type-checked), then it runs like JavaScript. Errors point at your TypeScript lines. | No |
 | Go | The Go toolchain on your computer | Yes ([go.dev/dl](https://go.dev/dl/)) |
+| Java | `javac` + `java` from a JDK 17+ on your computer | Yes (`brew install openjdk`, or [adoptium.net](https://adoptium.net/)) |
+| C++ | `g++` or `clang++` (C++17) on your computer | macOS: `xcode-select --install` |
+| Rust | `rustc` on your computer | Yes ([rustup.rs](https://rustup.rs/)) |
+
+Code that runs on your toolchain (Go, Java, C++, Rust) is your own code, with a time limit. Code
+written by the AI (reference solutions of generated questions) only ever runs in the built-in
+sandboxes.
+
+## Problem packs
+
+**Settings → Data → Export my problems** saves every question you created or imported (not the
+built-ins) to a `.codegym.json` file, with the custom categories they use. **Import problem pack**
+adds a pack's questions to your bank:
+- categories are matched by name and created when missing;
+- questions whose title is already in your bank, or that don't pass validation, are skipped and
+  listed;
+- reference solutions are run again before a question is saved.
+
+The format is `{ "format": "codegym-problem-pack", "version": 1, "exportedAt", "categories", "questions" }`,
+where each question has the same shape as in the question editor.
 
 ## AI providers
 
@@ -72,7 +93,7 @@ To install:
 
 | Workflow | When | What |
 |---|---|---|
-| `ci.yml` | pull requests and pushes to other branches | UI format/lint/types/tests; Rust fmt, clippy (warnings are errors) and every test, including all built-in problems in JS, Python and Go |
+| `ci.yml` | pull requests and pushes to other branches | UI format/lint/types/tests; Rust fmt, clippy (warnings are errors) and every test, including all built-in problems in all 7 languages (CI installs a JDK; g++ and rustc come with the runner) |
 | `release.yml` | push to `main` | runs CI, builds the universal macOS app with the bundled WebAssembly Python, creates the GitHub Release `v0.1.<run>` with the `.dmg` |
 | `python-wasi.yml` | used by both | builds the WebAssembly Python once (cached by the build script's hash) and shares it as an artifact |
 
@@ -97,13 +118,15 @@ cargo test --workspace           # store, runner sandbox, every problem × langu
 
 ### Adding a built-in problem
 
-1. Add `problems/<id>.json` and a solution in each of `problems/solutions/{javascript,python,go}/`.
+1. Add `problems/<id>.json` and a solution in each of
+   `problems/solutions/{javascript,python,go,typescript,java,cpp,rust}/`.
 2. List the id in `problems/bank.json`.
 3. Check it:
    ```bash
    CODEGYM_PROBLEMS=<id> cargo test -p codegym-runner --test bank
    ```
    This runs every reference solution against every test and checks the starter code too.
+   `CODEGYM_LANGUAGES=java,rust` limits it to some languages.
 
 ## Conventions
 
