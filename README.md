@@ -1,7 +1,7 @@
 # CodeGym
 
-A desktop app for practicing coding-interview problems offline, with an AI mentor that guides you
-instead of handing you the answer. Bring your own AI: a free local model through Ollama, OpenCode
+An app for practicing coding-interview problems offline, with an AI mentor that guides you
+instead of handing you the answer. Run it with Docker in your browser, or install the macOS app. Bring your own AI: a free local model through Ollama, OpenCode
 Zen, Claude, or any OpenAI-compatible endpoint.
 
 > **Status:** milestone 3. The desktop app runs fully offline for practice and connects to the AI you choose for the mentor:
@@ -10,15 +10,41 @@ Zen, Claude, or any OpenAI-compatible endpoint.
 > - **AI mentor:** a streaming chat that sees your code and last run, but never hidden tests.
 > - **AI questions:** import pasted problems or generate new ones. Every AI-written question is checked by running its reference solution in a sandbox.
 > - **Problem packs:** export your own questions to a `.codegym.json` file and import someone else's (Settings → Data).
-> - **API keys:** kept in the operating system's keychain.
-> - **Releases:** every merge to `main` publishes a macOS `.dmg`.
+> - **API keys:** kept in the operating system's keychain (desktop) or a private file in the data volume (Docker).
+> - **Two ways to run:** `docker compose up` (every language included, nothing else to install), or the macOS `.dmg` published on every merge to `main`.
+
+## Run with Docker (recommended)
+
+Needs Docker Desktop, OrbStack or Colima, and git.
+
+```bash
+git clone https://github.com/vincentri/codegym.git
+cd codegym
+docker compose up -d --build
+```
+
+Then open **http://localhost:8080**. The first build takes several minutes; later starts are instant.
+
+- **Every language works out of the box:** the image includes Python, Node.js (JavaScript and
+  TypeScript), Go, a JDK, g++ and rustc.
+- **Your progress** lives in the `codegym-data` Docker volume, so it survives restarts and
+  updates. `docker compose down` stops CodeGym; `docker compose down --volumes` also deletes your
+  data.
+- **Update:** `git pull && docker compose up -d --build`.
+- **Another port:** `CODEGYM_PORT=9000 docker compose up -d`.
+- **Ollama:** use the base URL `http://host.docker.internal:11434/v1` (the AI Mentor preset already
+  does). Docker Desktop on macOS and Windows reaches Ollama as is; on Linux, start Ollama with
+  `OLLAMA_HOST=0.0.0.0 ollama serve` so the container can reach it.
+- **Only your computer can reach it:** the port is bound to `127.0.0.1`, because CodeGym has no
+  login. Your code runs inside the container, not on your computer.
 
 ## How it works
 
 | Piece | Where | What it does |
 |---|---|---|
-| UI | `apps/desktop/src` | React screens. All backend calls go through `api/hooks.ts`. Inside the app they reach Rust (`api/tauri.ts`); in a browser they use a mock (`api/mock.ts`). |
+| UI | `apps/desktop/src` | React screens. All backend calls go through `api/hooks.ts`. Inside the app they reach Rust through Tauri (`api/tauri.ts`), in the Docker build over HTTP (`api/http.ts`), and in a plain browser preview a mock (`api/mock.ts`). |
 | Desktop shell | `apps/desktop/src-tauri` | Tauri 2. Exposes one command per API method. |
+| HTTP server | `crates/server` | The same commands as `POST /api/<command>` (streams as newline-delimited JSON), plus the built UI. What runs in Docker. |
 | Service | `crates/service` | The operations behind every screen, built on the store and the runner. |
 | Store | `crates/core` | SQLite database (`codegym.db` in the app data folder), shared types, the answer comparator, and the built-in question bank. |
 | Runner | `crates/runner` | Runs solutions against tests. See the language table below. |
@@ -89,12 +115,28 @@ To install:
 
    Or run `xattr -dr com.apple.quarantine /Applications/CodeGym.app` in Terminal.
 
+**Without an admin account:** copy the app into your own `~/Applications` folder and clear the
+quarantine flag there (no password needed):
+
+```bash
+mkdir -p ~/Applications
+VERSION=0.1.1   # the version you downloaded
+hdiutil attach ~/Downloads/CodeGym_${VERSION}_universal.dmg -nobrowse -mountpoint /tmp/codegym-dmg
+cp -R /tmp/codegym-dmg/CodeGym.app ~/Applications/
+hdiutil detach /tmp/codegym-dmg
+xattr -dr com.apple.quarantine ~/Applications/CodeGym.app
+open ~/Applications/CodeGym.app
+```
+
+The app is signed ad hoc with the hardened runtime and `Entitlements.plist`, which lets the
+built-in Python (WebAssembly compiled at run time) run.
+
 ## CI and releases
 
 | Workflow | When | What |
 |---|---|---|
-| `ci.yml` | pull requests and pushes to other branches | UI format/lint/types/tests; Rust fmt, clippy (warnings are errors) and every test, including all built-in problems in all 7 languages (CI installs a JDK; g++ and rustc come with the runner) |
-| `release.yml` | push to `main` | runs CI, builds the universal macOS app with the bundled WebAssembly Python, creates the GitHub Release `v0.1.<run>` with the `.dmg` |
+| `ci.yml` | pull requests and pushes to other branches | UI format/lint/types/tests; on macOS, the runner tests signed like the app; the Docker image built and smoke-tested; Rust fmt, clippy (warnings are errors) and every test, including all built-in problems in all 7 languages (CI installs a JDK; g++ and rustc come with the runner) |
+| `release.yml` | push to `main` | runs CI, builds the universal macOS app with the bundled WebAssembly Python, checks its signature and entitlements, then publishes the GitHub Release `v0.1.<run>` with the `.dmg` |
 | `python-wasi.yml` | used by both | builds the WebAssembly Python once (cached by the build script's hash) and shares it as an artifact |
 
 Apple signing and notarization can be added later by giving the release job the `APPLE_*` secrets that Tauri reads. That removes the "Open Anyway" step.
@@ -106,6 +148,10 @@ pnpm install
 ./scripts/build-python-wasi.sh   # once: builds the WebAssembly Python into src-tauri/resources/python
 pnpm --filter desktop tauri dev  # desktop app
 pnpm dev                         # browser preview on the mock backend, http://localhost:1420
+
+# The Docker setup without Docker: the HTTP server on the real backend, http://localhost:8080
+(cd apps/desktop && VITE_CODEGYM_BACKEND=http pnpm build) && cargo run -p codegym-server
+scripts/docker-smoke.sh          # checks a running server: UI, toolchains, Two Sum in every language
 
 pnpm exec vp check               # format + lint + type check
 pnpm exec vp test -C apps/desktop

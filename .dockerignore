@@ -1,0 +1,11 @@
+# Only the sources the image builds from.
+**/node_modules
+**/target
+**/dist
+apps/desktop/src-tauri/gen
+apps/desktop/src-tauri/resources/python/*
+!apps/desktop/src-tauri/resources/python/README.md
+.git
+.github
+*.log
+data

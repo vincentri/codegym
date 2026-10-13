@@ -18,7 +18,9 @@ use std::time::Duration;
 use futures_util::StreamExt;
 use tokio_util::sync::CancellationToken;
 
-pub use secrets::{KeyringStore, MemoryStore, SecretStore};
+#[cfg(feature = "keychain")]
+pub use secrets::KeyringStore;
+pub use secrets::{FileStore, MemoryStore, SecretStore};
 pub use tokio_util::sync::CancellationToken as Cancel;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

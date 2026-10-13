@@ -6,6 +6,11 @@ export type ProviderKind = z.infer<typeof providerKindSchema>;
 export const effortSchema = z.enum(["low", "medium", "high"]);
 export const mentorStyleSchema = z.enum(["socratic", "direct"]);
 
+/** In the Docker build the backend runs in a container, where the host's Ollama has its own name. */
+// (Not `IN_DOCKER` from api/client: schemas stay free of the API layer.)
+const OLLAMA_HOST =
+  import.meta.env.VITE_CODEGYM_BACKEND === "http" ? "host.docker.internal" : "localhost";
+
 export const PROVIDER_PRESETS: Record<
   ProviderKind,
   {
@@ -18,7 +23,7 @@ export const PROVIDER_PRESETS: Record<
 > = {
   ollama: {
     label: "Ollama (local)",
-    baseUrl: "http://localhost:11434/v1",
+    baseUrl: `http://${OLLAMA_HOST}:11434/v1`,
     keyRequired: false,
     description: "Free. Runs a model on your own computer. Install Ollama and pull a model first.",
     defaultModel: "qwen2.5-coder:7b",
