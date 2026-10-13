@@ -89,5 +89,13 @@ export function settingsFromEditorForm(f: EditorSettingsForm): AppSettings {
   });
 }
 
-export const settingsTabSchema = z.enum(["ai", "editor", "languages", "data"]);
-export type SettingsTab = z.infer<typeof settingsTabSchema>;
+/** Typed confirmation for Settings → Data → Reset progress. */
+export const RESET_CONFIRM_WORD = "RESET";
+export const resetConfirmSchema = z.object({
+  confirm: z
+    .string()
+    .trim()
+    .refine((v): boolean => v === RESET_CONFIRM_WORD, `Type ${RESET_CONFIRM_WORD} to confirm`),
+  includeCustomProblems: z.boolean(),
+});
+export type ResetConfirmForm = z.infer<typeof resetConfirmSchema>;

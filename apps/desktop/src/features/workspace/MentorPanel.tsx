@@ -110,9 +110,7 @@ function ConnectAiCard() {
       </EmptyHeader>
       <EmptyContent>
         <Button asChild>
-          <Link to="/settings" search={{ tab: "ai" }}>
-            Set up AI mentor
-          </Link>
+          <Link to="/settings/ai">Set up AI mentor</Link>
         </Button>
       </EmptyContent>
     </Empty>

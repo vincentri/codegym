@@ -33,7 +33,7 @@ import {
   type RunResult,
   type TestResult,
 } from "@/schemas";
-import { formatValue, VERDICT_LABEL } from "./format";
+import { formatDuration, formatValue, VERDICT_LABEL } from "./format";
 
 export interface CustomCase {
   id: number;
@@ -204,11 +204,15 @@ function ResultView({ problem, result }: { problem: Problem; result: RunResult }
           {VERDICT_LABEL[result.verdict]}
         </span>
         <span className="text-sm text-muted-foreground">
-          {result.passed}/{result.total} passed · {result.totalTimeMs} ms
+          {result.passed}/{result.total} passed · {formatDuration(result.totalTimeMs)}
         </span>
       </div>
       {result.compileOutput && (
-        <ValueBlock label="Compiler output" value={result.compileOutput} tone="error" />
+        <ValueBlock
+          label={result.verdict === "compile_error" ? "Compiler output" : "Error"}
+          value={result.compileOutput}
+          tone="error"
+        />
       )}
       <div className="flex flex-wrap gap-1">
         {result.results.map((r, i) => (

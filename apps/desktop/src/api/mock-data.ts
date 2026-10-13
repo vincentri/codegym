@@ -1,4 +1,12 @@
-import type { Difficulty, Problem, ProblemSummary } from "@/schemas";
+import type {
+  CategoryColor,
+  Difficulty,
+  GeneratedQuestion,
+  Problem,
+  ProblemSummary,
+  QuestionRecord,
+  TestCase,
+} from "@/schemas";
 
 type Row = [id: string, title: string, difficulty: Difficulty, topics: string[]];
 
@@ -64,36 +72,21 @@ const ROWS: Row[] = [
   ["minimum-window-substring", "Minimum Window Substring", "hard", ["Sliding Window"]],
 ];
 
-const SOLVED = new Set([
+export const SEED_SOLVED = new Set([
   "two-sum",
   "valid-parentheses",
   "climbing-stairs",
   "binary-search",
   "group-anagrams",
 ]);
-const ATTEMPTED = new Set(["longest-substring-without-repeating-characters", "coin-change"]);
+export const SEED_ATTEMPTED = new Set([
+  "longest-substring-without-repeating-characters",
+  "coin-change",
+]);
 
-export const MOCK_SUMMARIES: ProblemSummary[] = ROWS.map(([id, title, difficulty, topics], i) => ({
-  id,
-  number: i + 1,
-  title,
-  difficulty,
-  topics,
-  source: "builtin",
-  status: SOLVED.has(id) ? "solved" : ATTEMPTED.has(id) ? "attempted" : "todo",
-}));
+type DetailSeed = Omit<Problem, keyof ProblemSummary>;
 
-MOCK_SUMMARIES.push({
-  id: "custom-rotate-string",
-  number: MOCK_SUMMARIES.length + 1,
-  title: "Rotate String (imported)",
-  difficulty: "easy",
-  topics: ["String", "Custom"],
-  source: "custom",
-  status: "todo",
-});
-
-const DETAILS: Record<string, Omit<Problem, keyof ProblemSummary>> = {
+const DETAILS: Record<string, DetailSeed> = {
   "two-sum": {
     descriptionMd: `You are given an array of integers \`nums\` and an integer \`target\`.
 
@@ -204,17 +197,253 @@ lists = [[1,4,5],[1,3,4],[2,6]]
   },
 };
 
-export function mockProblem(summary: ProblemSummary): Problem {
-  const detail = DETAILS[summary.id] ?? {
-    descriptionMd: `*This is a prototype.* The full statement for **${summary.title}** ships with the real question bank in the next milestone.
+const GENERIC: DetailSeed = {
+  descriptionMd: `*This is a prototype.* The full statement for this problem ships with the real question bank in the next milestone.
 
 The workspace, editor, test runner and mentor all behave the same for every problem.`,
-    constraints: ["See the full question bank in milestone 1."],
-    signature: { functionName: "solve", params: [{ name: "nums", type: "int[]" }], returns: "int" },
+  constraints: ["See the full question bank in milestone 1."],
+  signature: { functionName: "solve", params: [{ name: "nums", type: "int[]" }], returns: "int" },
+  comparator: "exact",
+  inPlaceArg: null,
+  examples: [{ input: [[1, 2, 3]], expected: 6, hidden: false }],
+  hiddenTestCount: 5,
+};
+
+export const slugify = (s: string) =>
+  s
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+
+const TOPIC_COLORS: Record<string, CategoryColor> = {
+  Array: "blue",
+  "Hash Map": "teal",
+  String: "violet",
+  Stack: "orange",
+  "Linked List": "pink",
+  Tree: "green",
+  DFS: "green",
+  BFS: "teal",
+  Graph: "amber",
+  "Dynamic Programming": "red",
+  "Binary Search": "blue",
+  "Two Pointers": "orange",
+  "Sliding Window": "violet",
+  Heap: "amber",
+};
+
+export interface CategoryRecord {
+  id: string;
+  name: string;
+  color: CategoryColor;
+  description: string;
+  builtin: boolean;
+}
+
+export function seedCategories(): CategoryRecord[] {
+  const builtin = [...new Set(ROWS.flatMap((r) => r[3]))].map((name) => ({
+    id: slugify(name),
+    name,
+    color: TOPIC_COLORS[name] ?? "slate",
+    description: "",
+    builtin: true,
+  }));
+  return [
+    ...builtin,
+    {
+      id: "warm-ups",
+      name: "Warm-ups",
+      color: "green",
+      description: "Quick problems to start a session.",
+      builtin: false,
+    },
+  ];
+}
+
+/** Two Sum gets real hidden tests so the editor's Verify button has something to check. */
+const TWO_SUM_HIDDEN: TestCase[] = [
+  { input: [[1, 5, 3, 7], 8], expected: [1, 2], hidden: true },
+  { input: [[-3, 4, 3, 90], 0], expected: [0, 2], hidden: true },
+  { input: [[0, 4, 3, 0], 0], expected: [0, 3], hidden: true },
+];
+
+function testsFor(id: string, d: DetailSeed): TestCase[] {
+  if (id === "two-sum") return [...d.examples, ...TWO_SUM_HIDDEN];
+  const hidden = Array.from({ length: d.hiddenTestCount }, (_, i) => ({
+    ...d.examples[i % d.examples.length]!,
+    hidden: true,
+  }));
+  return [...d.examples, ...hidden];
+}
+
+const TWO_SUM_REFERENCE = `function twoSum(nums, target) {
+  const seen = new Map();
+  for (let i = 0; i < nums.length; i++) {
+    if (seen.has(target - nums[i])) return [seen.get(target - nums[i]), i];
+    seen.set(nums[i], i);
+  }
+}
+`;
+
+export function seedQuestions(): QuestionRecord[] {
+  const builtins: QuestionRecord[] = ROWS.map(([id, title, difficulty, topics]) => {
+    const d = DETAILS[id] ?? GENERIC;
+    return {
+      id,
+      title,
+      difficulty,
+      categoryIds: topics.map(slugify),
+      descriptionMd: d.descriptionMd,
+      constraints: d.constraints,
+      hints: [],
+      signature: d.signature,
+      comparator: d.comparator,
+      inPlaceArg: d.inPlaceArg,
+      tests: testsFor(id, d),
+      reference: id === "two-sum" ? { language: "javascript", code: TWO_SUM_REFERENCE } : null,
+      origin: "builtin",
+      forkedFrom: null,
+    };
+  });
+  const rotateString: QuestionRecord = {
+    id: "rotate-string",
+    title: "Rotate String",
+    difficulty: "easy",
+    categoryIds: ["string", "warm-ups"],
+    descriptionMd: `Given two strings \`s\` and \`goal\`, return \`true\` if \`s\` can become \`goal\` after some number of **left rotations**. A left rotation moves the first character to the end.
+
+\`\`\`
+s = "abcde", goal = "cdeab" → true
+s = "abcde", goal = "abced" → false
+\`\`\``,
+    constraints: ["1 ≤ s.length, goal.length ≤ 100", "Lowercase English letters only"],
+    hints: ["What string contains every rotation of s?"],
+    signature: {
+      functionName: "rotateString",
+      params: [
+        { name: "s", type: "string" },
+        { name: "goal", type: "string" },
+      ],
+      returns: "bool",
+    },
     comparator: "exact",
     inPlaceArg: null,
-    examples: [{ input: [[1, 2, 3]], expected: 6, hidden: false }],
-    hiddenTestCount: 5,
+    tests: [
+      { input: ["abcde", "cdeab"], expected: true, hidden: false },
+      { input: ["abcde", "abced"], expected: false, hidden: false },
+      { input: ["a", "a"], expected: true, hidden: true },
+      { input: ["ab", "abc"], expected: false, hidden: true },
+    ],
+    reference: {
+      language: "javascript",
+      code: "function rotateString(s, goal) {\n  return s.length === goal.length && (s + s).includes(goal);\n}\n",
+    },
+    origin: "ai_imported",
+    forkedFrom: null,
   };
-  return { ...summary, ...detail };
+  return [...builtins, rotateString];
+}
+
+export interface PlanRecord {
+  id: string;
+  name: string;
+  description: string;
+  builtin: boolean;
+  problemIds: string[];
+  updatedAt: string;
+}
+
+export function seedPlans(): PlanRecord[] {
+  const now = Date.now();
+  return [
+    {
+      id: "interview-essentials",
+      name: "Interview Essentials",
+      description:
+        "The built-in question bank in a sensible order: easy warm-ups first, then the classic patterns.",
+      builtin: true,
+      problemIds: ROWS.map((r) => r[0]),
+      updatedAt: new Date(now - 3 * 86_400_000).toISOString(),
+    },
+    {
+      id: "week-1-arrays",
+      name: "Week 1: Arrays & Hashing",
+      description: "My first week: get comfortable with arrays and hash maps.",
+      builtin: false,
+      problemIds: [
+        "two-sum",
+        "contains-duplicate",
+        "valid-anagram",
+        "group-anagrams",
+        "top-k-frequent-elements",
+        "product-of-array-except-self",
+      ],
+      updatedAt: new Date(now - 3_600_000).toISOString(),
+    },
+  ];
+}
+
+/** Canned results for "Generate with AI" in the prototype. */
+export function cannedGenerated(topicId: string, difficulty: Difficulty): GeneratedQuestion[] {
+  const base = {
+    difficulty,
+    categoryIds: [topicId],
+    constraints: ["1 ≤ nums.length ≤ 10⁵", "-10⁴ ≤ nums[i] ≤ 10⁴"],
+    hints: [],
+    comparator: "exact" as const,
+    inPlaceArg: null,
+    origin: "ai_generated" as const,
+    forkedFrom: null,
+  };
+  return [
+    {
+      verifiedTests: 10,
+      droppedTests: 0,
+      question: {
+        ...base,
+        title: "Longest Run of Equal Neighbors",
+        descriptionMd:
+          "Given an integer array `nums`, return the length of the longest contiguous block where every element equals its neighbour.\n\n```\nnums = [1,1,2,2,2,3] → 3\n```",
+        signature: {
+          functionName: "longestRun",
+          params: [{ name: "nums", type: "int[]" }],
+          returns: "int",
+        },
+        tests: [
+          { input: [[1, 1, 2, 2, 2, 3]], expected: 3, hidden: false },
+          { input: [[5]], expected: 1, hidden: false },
+          { input: [[1, 2, 3]], expected: 1, hidden: true },
+          { input: [[7, 7, 7, 7]], expected: 4, hidden: true },
+        ],
+        reference: {
+          language: "javascript",
+          code: "function longestRun(nums) {\n  let best = 1, run = 1;\n  for (let i = 1; i < nums.length; i++) {\n    run = nums[i] === nums[i - 1] ? run + 1 : 1;\n    best = Math.max(best, run);\n  }\n  return best;\n}\n",
+        },
+      },
+    },
+    {
+      verifiedTests: 9,
+      droppedTests: 1,
+      question: {
+        ...base,
+        title: "Balanced Split Point",
+        descriptionMd:
+          "Return the smallest index `i` such that the sum of `nums[0..i]` equals the sum of `nums[i+1..]`, or `-1` if there is none.\n\n```\nnums = [1,2,3,3] → 2\n```",
+        signature: {
+          functionName: "splitPoint",
+          params: [{ name: "nums", type: "int[]" }],
+          returns: "int",
+        },
+        tests: [
+          { input: [[1, 2, 3, 3]], expected: 2, hidden: false },
+          { input: [[1, 1]], expected: 0, hidden: false },
+          { input: [[1, 2]], expected: -1, hidden: true },
+        ],
+        reference: {
+          language: "javascript",
+          code: "function splitPoint(nums) {\n  const total = nums.reduce((a, b) => a + b, 0);\n  let left = 0;\n  for (let i = 0; i < nums.length - 1; i++) {\n    left += nums[i];\n    if (left * 2 === total) return i;\n  }\n  return -1;\n}\n",
+        },
+      },
+    },
+  ];
 }

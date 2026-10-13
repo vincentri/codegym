@@ -1,0 +1,24 @@
+[package]
+name = "codegym-service"
+description = "The operations behind every CodeGym screen, on top of the store and the code runner."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+codegym-core.workspace = true
+codegym-ai.workspace = true
+codegym-runner.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+tokio = { version = "1", features = ["rt-multi-thread"] }
+uuid.workspace = true
+
+[dev-dependencies]
+codegym-ai = { workspace = true, features = ["testing"] }
+tempfile.workspace = true
+tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
+
+[lints]
+workspace = true

@@ -1,0 +1,28 @@
+{
+  "id": "word-break",
+  "title": "Word Break",
+  "difficulty": "medium",
+  "categories": ["dynamic-programming", "string"],
+  "descriptionMd": "You are given a string `s` and a list of dictionary words `wordDict`.\n\nReturn `true` if `s` can be cut into pieces so that **every piece is a word from the dictionary**, with nothing left over. A dictionary word may be used any number of times, or not at all.\n\n**Example 1**\n\n```\ns = \"leetcode\", wordDict = [\"leet\", \"code\"]\n→ true\n```\n`\"leet\" + \"code\"`.\n\n**Example 2**\n\n```\ns = \"applepenapple\", wordDict = [\"apple\", \"pen\"]\n→ true\n```\n`\"apple\" + \"pen\" + \"apple\"` — words can repeat.\n\n**Example 3**\n\n```\ns = \"catsandog\", wordDict = [\"cats\", \"dog\", \"sand\", \"and\", \"cat\"]\n→ false\n```\nEvery way of splitting off a prefix leaves an `\"og\"` that no word covers.",
+  "constraints": ["1 ≤ s.length ≤ 300", "1 ≤ wordDict.length ≤ 1000", "1 ≤ wordDict[i].length ≤ 20", "s and wordDict[i] consist of lowercase English letters", "All words in wordDict are distinct"],
+  "hints": ["Trying every split recursively repeats the same work — the question \"can the suffix starting at index i be split?\" gets asked many times.", "Work out, for each prefix length, whether that prefix can be segmented. The last piece of a valid split must be a dictionary word."],
+  "signature": {
+    "functionName": "wordBreak",
+    "params": [{ "name": "s", "type": "string" }, { "name": "wordDict", "type": "string[]" }],
+    "returns": "bool"
+  },
+  "comparator": "exact",
+  "tests": [
+    {"input": ["leetcode", ["leet", "code"]], "expected": true},
+    {"input": ["applepenapple", ["apple", "pen"]], "expected": true},
+    {"input": ["catsandog", ["cats", "dog", "sand", "and", "cat"]], "expected": false},
+    {"input": ["a", ["a"]], "expected": true, "hidden": true},
+    {"input": ["a", ["b"]], "expected": false, "hidden": true},
+    {"input": ["aaaaaaa", ["aaaa", "aaa"]], "expected": true, "hidden": true},
+    {"input": ["cars", ["car", "ca", "rs"]], "expected": true, "hidden": true},
+    {"input": ["goalspecial", ["go", "goal", "goals", "special"]], "expected": true, "hidden": true},
+    {"input": ["aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab", ["a", "aa", "aaa", "aaaa", "aaaaa", "aaaaaa", "aaaaaaa", "aaaaaaaa", "aaaaaaaaa", "aaaaaaaaaa"]], "expected": false, "hidden": true},
+    {"input": ["aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab", ["a", "aa", "aaa", "ab"]], "expected": true, "hidden": true},
+    {"input": ["bb", ["a", "b", "bbb", "bbbb"]], "expected": true, "hidden": true}
+  ]
+}

@@ -54,7 +54,11 @@ export const chatInputSchema = z.object({
 });
 export type ChatInput = z.infer<typeof chatInputSchema>;
 
-export type MentorStreamEvent =
-  | { type: "delta"; text: string }
-  | { type: "done"; message: ChatMessage }
-  | { type: "error"; message: string };
+export const mentorStreamEventSchema = z.discriminatedUnion("type", [
+  z.object({ type: z.literal("delta"), text: z.string() }),
+  /** The text so far was withdrawn (a model declined and another took over). */
+  z.object({ type: z.literal("reset") }),
+  z.object({ type: z.literal("done"), message: chatMessageSchema }),
+  z.object({ type: z.literal("error"), message: z.string() }),
+]);
+export type MentorStreamEvent = z.infer<typeof mentorStreamEventSchema>;

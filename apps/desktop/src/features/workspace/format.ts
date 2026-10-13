@@ -5,6 +5,14 @@ export function formatValue(value: unknown): string {
   return JSON.stringify(value);
 }
 
+/** Run time as people read it: "<1 ms", "4.2 ms", "38 ms", "1.25 s". */
+export function formatDuration(ms: number): string {
+  if (ms < 1) return "<1 ms";
+  if (ms < 10) return `${ms.toFixed(1)} ms`;
+  if (ms < 1000) return `${Math.round(ms)} ms`;
+  return `${(ms / 1000).toFixed(2)} s`;
+}
+
 export const VERDICT_LABEL: Record<Verdict, string> = {
   accepted: "Accepted",
   wrong_answer: "Wrong Answer",
@@ -21,5 +29,9 @@ export function relativeTime(date: Date, now = new Date()): string {
   if (s < 60) return `${s}s ago`;
   const m = Math.round(s / 60);
   if (m < 60) return `${m}m ago`;
-  return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  const h = Math.round(m / 60);
+  if (h < 24) return `${h}h ago`;
+  const d = Math.round(h / 24);
+  if (d < 30) return `${d}d ago`;
+  return date.toLocaleDateString();
 }

@@ -20,7 +20,7 @@ createRoot(document.getElementById("root")!).render(
       <TooltipProvider delayDuration={300}>
         <ThemeSync />
         <RouterProvider router={router} />
-        <Toaster position="top-center" richColors />
+        <Toaster position="bottom-center" richColors />
       </TooltipProvider>
     </QueryClientProvider>
   </StrictMode>,

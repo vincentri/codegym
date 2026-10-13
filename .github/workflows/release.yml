@@ -1,0 +1,70 @@
+# Every merge to main: run CI, build the macOS app (Apple Silicon and Intel in one universal
+# build) and publish it as a GitHub Release with a .dmg to download.
+name: Release
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  ci:
+    uses: ./.github/workflows/ci.yml
+
+  macos:
+    name: Build and publish (macOS)
+    needs: ci
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Version
+        run: |
+          VERSION="0.1.${{ github.run_number }}"
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+          CONF=apps/desktop/src-tauri/tauri.conf.json
+          jq --arg v "$VERSION" '.version = $v' "$CONF" > "$CONF.tmp" && mv "$CONF.tmp" "$CONF"
+
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-darwin,x86_64-apple-darwin
+      - uses: Swatinem/rust-cache@v2
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: python-wasi
+          path: apps/desktop/src-tauri/resources/python
+
+      - uses: tauri-apps/tauri-action@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          projectPath: apps/desktop
+          tauriScript: pnpm tauri
+          args: --target universal-apple-darwin
+          tagName: v${{ env.VERSION }}
+          releaseName: CodeGym ${{ env.VERSION }}
+          releaseCommitish: ${{ github.sha }}
+          releaseDraft: false
+          prerelease: false
+          releaseBody: |
+            **Install on a Mac** (Apple Silicon or Intel):
+            1. Download `CodeGym_${{ env.VERSION }}_universal.dmg` below, open it, and drag **CodeGym** into **Applications**.
+            2. The app isn't notarized by Apple yet, so the first launch is blocked. Open it once, then go to **System Settings → Privacy & Security** and click **Open Anyway**.
+               Or, in Terminal: `xattr -dr com.apple.quarantine /Applications/CodeGym.app`
+
+            Built from ${{ github.sha }}.

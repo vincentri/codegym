@@ -1,0 +1,184 @@
+{
+  "version": "2026.10.2",
+  "categories": [
+    {
+      "id": "array",
+      "name": "Array",
+      "color": "blue"
+    },
+    {
+      "id": "hash-map",
+      "name": "Hash Map",
+      "color": "teal"
+    },
+    {
+      "id": "string",
+      "name": "String",
+      "color": "violet"
+    },
+    {
+      "id": "stack",
+      "name": "Stack",
+      "color": "orange"
+    },
+    {
+      "id": "linked-list",
+      "name": "Linked List",
+      "color": "pink"
+    },
+    {
+      "id": "tree",
+      "name": "Tree",
+      "color": "green"
+    },
+    {
+      "id": "dfs",
+      "name": "DFS",
+      "color": "green"
+    },
+    {
+      "id": "bfs",
+      "name": "BFS",
+      "color": "teal"
+    },
+    {
+      "id": "graph",
+      "name": "Graph",
+      "color": "amber"
+    },
+    {
+      "id": "dynamic-programming",
+      "name": "Dynamic Programming",
+      "color": "red"
+    },
+    {
+      "id": "binary-search",
+      "name": "Binary Search",
+      "color": "blue"
+    },
+    {
+      "id": "two-pointers",
+      "name": "Two Pointers",
+      "color": "orange"
+    },
+    {
+      "id": "sliding-window",
+      "name": "Sliding Window",
+      "color": "violet"
+    },
+    {
+      "id": "heap",
+      "name": "Heap",
+      "color": "amber"
+    },
+    {
+      "id": "greedy",
+      "name": "Greedy",
+      "color": "slate"
+    },
+    {
+      "id": "sorting",
+      "name": "Sorting",
+      "color": "slate"
+    },
+    {
+      "id": "intervals",
+      "name": "Intervals",
+      "color": "slate"
+    },
+    {
+      "id": "prefix-sum",
+      "name": "Prefix Sum",
+      "color": "slate"
+    },
+    {
+      "id": "monotonic-stack",
+      "name": "Monotonic Stack",
+      "color": "orange"
+    },
+    {
+      "id": "topological-sort",
+      "name": "Topological Sort",
+      "color": "amber"
+    }
+  ],
+  "plans": [
+    {
+      "id": "interview-essentials",
+      "name": "Interview Essentials",
+      "description": "The built-in question bank in a sensible order: easy warm-ups first, then the classic patterns.",
+      "problemIds": [
+        "two-sum",
+        "valid-parentheses",
+        "merge-two-sorted-lists",
+        "best-time-to-buy-and-sell-stock",
+        "valid-anagram",
+        "binary-search",
+        "reverse-linked-list",
+        "maximum-depth-of-binary-tree",
+        "invert-binary-tree",
+        "climbing-stairs",
+        "contains-duplicate",
+        "move-zeroes",
+        "group-anagrams",
+        "top-k-frequent-elements",
+        "product-of-array-except-self",
+        "longest-substring-without-repeating-characters",
+        "three-sum",
+        "container-with-most-water",
+        "number-of-islands",
+        "coin-change",
+        "longest-increasing-subsequence",
+        "merge-intervals",
+        "kth-largest-element-in-an-array",
+        "binary-tree-level-order-traversal",
+        "validate-binary-search-tree",
+        "course-schedule",
+        "search-in-rotated-sorted-array",
+        "daily-temperatures",
+        "word-break",
+        "edit-distance",
+        "trapping-rain-water",
+        "median-of-two-sorted-arrays",
+        "merge-k-sorted-lists",
+        "minimum-window-substring"
+      ]
+    }
+  ],
+  "problems": [
+    "two-sum",
+    "valid-parentheses",
+    "merge-two-sorted-lists",
+    "best-time-to-buy-and-sell-stock",
+    "valid-anagram",
+    "binary-search",
+    "reverse-linked-list",
+    "maximum-depth-of-binary-tree",
+    "invert-binary-tree",
+    "climbing-stairs",
+    "contains-duplicate",
+    "move-zeroes",
+    "group-anagrams",
+    "top-k-frequent-elements",
+    "product-of-array-except-self",
+    "longest-substring-without-repeating-characters",
+    "three-sum",
+    "container-with-most-water",
+    "number-of-islands",
+    "coin-change",
+    "longest-increasing-subsequence",
+    "merge-intervals",
+    "kth-largest-element-in-an-array",
+    "binary-tree-level-order-traversal",
+    "validate-binary-search-tree",
+    "course-schedule",
+    "search-in-rotated-sorted-array",
+    "daily-temperatures",
+    "word-break",
+    "edit-distance",
+    "trapping-rain-water",
+    "median-of-two-sorted-arrays",
+    "merge-k-sorted-lists",
+    "minimum-window-substring"
+  ]
+}

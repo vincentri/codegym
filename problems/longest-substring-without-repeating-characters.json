@@ -1,0 +1,28 @@
+{
+  "id": "longest-substring-without-repeating-characters",
+  "title": "Longest Substring Without Repeating Characters",
+  "difficulty": "medium",
+  "categories": ["sliding-window", "hash-map", "string"],
+  "descriptionMd": "Given a string `s`, find the length of the longest **contiguous** stretch of `s` in which no character appears more than once.\n\nNote that a substring must be contiguous — picking scattered characters (a subsequence) does not count.\n\n**Example 1**\n\n```\ns = \"abcabcbb\"\n→ 3\n```\n`\"abc\"` is the longest run with all-distinct characters.\n\n**Example 2**\n\n```\ns = \"pwwkew\"\n→ 3\n```\n`\"wke\"` works; `\"pwke\"` is longer but is not contiguous.\n\n**Follow-up:** can you solve it in a single pass over the string?",
+  "constraints": ["0 ≤ s.length ≤ 5 · 10⁴", "`s` consists of English letters, digits, symbols and spaces."],
+  "hints": ["Think of a window [left, right] that always contains distinct characters. What should happen when the next character is already inside the window?", "Remembering the last index where each character appeared lets you move `left` forward in one jump instead of step by step."],
+  "signature": {
+    "functionName": "lengthOfLongestSubstring",
+    "params": [{ "name": "s", "type": "string" }],
+    "returns": "int"
+  },
+  "comparator": "exact",
+  "tests": [
+    { "input": ["abcabcbb"], "expected": 3 },
+    { "input": ["pwwkew"], "expected": 3 },
+    { "input": ["bbbbb"], "expected": 1 },
+    { "input": [""], "expected": 0, "hidden": true },
+    { "input": ["a"], "expected": 1, "hidden": true },
+    { "input": [" "], "expected": 1, "hidden": true },
+    { "input": ["abba"], "expected": 2, "hidden": true },
+    { "input": ["dvdf"], "expected": 3, "hidden": true },
+    { "input": ["tmmzuxt"], "expected": 5, "hidden": true },
+    { "input": ["a1 b2!c3@"], "expected": 9, "hidden": true },
+    { "input": ["cjkvkiwxbdhupanmeepdflxbdvgcwqfbqmnedkxxykocgqqoebwpceadmvoxonkrqybstzqdjubjuojjlepyduidnwfjiqazvynjqqnvnkcjmvtsycnoyejesqlgzmgsbgtcjjpnybtwvulpmcxqbdzdibbbfpzfjpluaeqyikdtuksjbfjiveqxddgrqiysosmytqaljnpeidogiorlixcosyqelnukyzvtggvkieemsmmytoesmfpqusbdzntqkvcrjudshzjecakoeljciakeajlxgpxscwlmggqweaipdmjkzuoxcpbxipedclvcjzvtrmbsrqkecdihosfsoyilavncfctatnynbyqrwgtgiueugkkmbfndyfihkboiipdtdcwrshtkhdhv"], "expected": 16, "hidden": true }
+  ]
+}

@@ -44,15 +44,25 @@ export const testCaseSchema = z.object({
 });
 export type TestCase = z.infer<typeof testCaseSchema>;
 
-export const problemSourceSchema = z.enum(["builtin", "custom"]);
+/** Where a question came from. Only "builtin" questions are read-only. */
+export const problemOriginSchema = z.enum(["builtin", "manual", "ai_imported", "ai_generated"]);
+export type ProblemOrigin = z.infer<typeof problemOriginSchema>;
+
+export const categoryRefSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  color: z.string(),
+});
+export type CategoryRef = z.infer<typeof categoryRefSchema>;
 
 export const problemSummarySchema = z.object({
   id: z.string(),
   number: z.number().int(),
   title: z.string(),
   difficulty: difficultySchema,
-  topics: z.array(z.string()),
-  source: problemSourceSchema,
+  categories: z.array(categoryRefSchema),
+  origin: problemOriginSchema,
+  hidden: z.boolean(),
   status: z.enum(["todo", "attempted", "solved"]),
 });
 export type ProblemSummary = z.infer<typeof problemSummarySchema>;

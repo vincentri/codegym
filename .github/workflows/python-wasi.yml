@@ -1,0 +1,38 @@
+# Builds CPython for WebAssembly (bundled with the app as the sandboxed Python runtime).
+# The output is platform-independent, so it is built once on Linux, cached, and shared with the
+# other jobs as an artifact.
+name: Python (WebAssembly)
+
+on:
+  workflow_call:
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Restore cached build
+        id: cache
+        uses: actions/cache@v6
+        with:
+          path: apps/desktop/src-tauri/resources/python
+          key: python-wasi-${{ hashFiles('scripts/build-python-wasi.sh') }}
+
+      - name: Install the WebAssembly toolchain
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            build-essential clang-18 lld-18 llvm-18 wasi-libc libclang-rt-18-dev-wasm32
+
+      - name: Build
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: ./scripts/build-python-wasi.sh
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: python-wasi
+          path: apps/desktop/src-tauri/resources/python
+          if-no-files-found: error
+          retention-days: 7
