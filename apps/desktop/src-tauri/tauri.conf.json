@@ -44,6 +44,12 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ],
-    "resources": { "resources/python/": "python/" }
+    "resources": {
+      "resources/python/": "python/"
+    },
+    "macOS": {
+      "signingIdentity": "-",
+      "minimumSystemVersion": "11.0"
+    }
   }
 }

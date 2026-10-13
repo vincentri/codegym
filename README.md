@@ -55,6 +55,29 @@ Pick one in **Settings → AI Mentor**:
 
 **On Linux:** saving keys needs a Secret Service keyring, such as GNOME Keyring or KWallet. Ollama needs no key.
 
+## Download and install (macOS)
+
+Every merge to `main` publishes a release on the repository's **Releases** page.
+- It contains one `.dmg` that runs on both Apple Silicon and Intel Macs.
+- The version is `0.1.<build number>`.
+
+To install:
+1. Open the `.dmg` and drag **CodeGym** into **Applications**.
+2. The app isn't notarized by Apple yet, so macOS blocks the first launch.
+3. Open it once, then choose **System Settings → Privacy & Security → Open Anyway**.
+
+   Or run `xattr -dr com.apple.quarantine /Applications/CodeGym.app` in Terminal.
+
+## CI and releases
+
+| Workflow | When | What |
+|---|---|---|
+| `ci.yml` | pull requests and pushes to other branches | UI format/lint/types/tests; Rust fmt, clippy (warnings are errors) and every test, including all built-in problems in JS, Python and Go |
+| `release.yml` | push to `main` | runs CI, builds the universal macOS app with the bundled WebAssembly Python, creates the GitHub Release `v0.1.<run>` with the `.dmg` |
+| `python-wasi.yml` | used by both | builds the WebAssembly Python once (cached by the build script's hash) and shares it as an artifact |
+
+Apple signing and notarization can be added later by giving the release job the `APPLE_*` secrets that Tauri reads. That removes the "Open Anyway" step.
+
 ## Develop
 
 ```bash
