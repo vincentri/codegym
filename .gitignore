@@ -11,7 +11,8 @@ dist-ssr
 # Rust / Tauri
 target/
 apps/desktop/src-tauri/gen/
-apps/desktop/src-tauri/resources/python/
+apps/desktop/src-tauri/resources/python/*
+!apps/desktop/src-tauri/resources/python/README.md
 
 # dotenv environment variable files
 .env
