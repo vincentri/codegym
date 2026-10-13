@@ -1,0 +1,30 @@
+# Logs
+logs
+*.log
+pnpm-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Rust / Tauri
+target/
+apps/desktop/src-tauri/gen/
+apps/desktop/src-tauri/resources/python/
+
+# dotenv environment variable files
+.env
+.env.*
+!.env.example
+
+# Editor directories and files
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.sw?
+
+# AI agent worktrees
+.claude/worktrees/
