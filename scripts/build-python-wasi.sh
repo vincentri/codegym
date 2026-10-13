@@ -54,7 +54,9 @@ if [ ! -f "$SRC/builddir/wasi/python.wasm" ]; then
 fi
 
 # 3. Package: a stripped binary plus the pure-Python standard library.
-rm -rf "$OUT"
+# Keep the tracked README that holds the folder in git.
+mkdir -p "$OUT"
+find "$OUT" -mindepth 1 -maxdepth 1 ! -name README.md -exec rm -rf {} +
 mkdir -p "$OUT/lib/python3.12"
 llvm-strip-18 -o "$OUT/python.wasm" "$SRC/builddir/wasi/python.wasm"
 (
