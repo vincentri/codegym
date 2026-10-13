@@ -227,7 +227,7 @@ export function EditorSettings() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Editor</CardTitle>
+        <CardTitle>Editing and auto-save</CardTitle>
         <CardDescription>Auto-save, appearance and how code runs.</CardDescription>
       </CardHeader>
       <CardContent>

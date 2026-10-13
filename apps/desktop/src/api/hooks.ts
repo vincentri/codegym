@@ -1,5 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { AiProfileForm, AppSettings, Language, RunRequest } from "@/schemas";
+import type {
+  AiProfileForm,
+  AppSettings,
+  Language,
+  ResetProgressRequest,
+  RunRequest,
+} from "@/schemas";
 import { api } from "./client";
 import { queryKeys } from "./keys";
 import type { ActivityEvent } from "./types";
@@ -10,6 +16,19 @@ export function useProblems() {
 
 export function useProblem(id: string) {
   return useQuery({ queryKey: queryKeys.problem(id), queryFn: () => api.getProblem(id) });
+}
+
+export function useDashboard() {
+  return useQuery({ queryKey: queryKeys.dashboard, queryFn: () => api.getDashboard() });
+}
+
+/** Wipes progress, then drops every cached query so all screens refetch fresh data. */
+export function useResetProgress() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (req: ResetProgressRequest) => api.resetProgress(req),
+    onSuccess: () => qc.resetQueries(),
+  });
 }
 
 export function useStats() {
@@ -55,6 +74,7 @@ export function useSubmitCode() {
     mutationFn: (req: RunRequest) => api.submitCode(req),
     onSuccess: (_, req) => {
       void qc.invalidateQueries({ queryKey: queryKeys.submissions(req.problemId) });
+      void qc.invalidateQueries({ queryKey: queryKeys.dashboard });
       void qc.invalidateQueries({ queryKey: queryKeys.problems });
       void qc.invalidateQueries({ queryKey: queryKeys.stats });
     },

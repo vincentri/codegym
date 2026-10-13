@@ -3,11 +3,13 @@ import type {
   AiProfileForm,
   AppSettings,
   ChatMessage,
+  Dashboard,
   Draft,
   Language,
   MentorMode,
   ParamType,
   Problem,
+  ProblemSummary,
   RunRequest,
   RunResult,
   Signature,
@@ -102,8 +104,44 @@ export function createMockApi(): CodegymApi {
     autosaveSeconds: 5,
     runTimeoutSeconds: 10,
   };
+  // Each mock instance gets its own copy so tests do not share state.
+  let problems: ProblemSummary[] = MOCK_SUMMARIES.map((p) => ({ ...p }));
+  let streakDays = 3;
   const drafts = new Map<string, Draft>();
-  const submissions: Submission[] = [];
+  const minutesAgo = (m: number) => new Date(Date.now() - m * 60_000).toISOString();
+  const seed = (
+    problemId: string,
+    language: Language,
+    verdict: Submission["verdict"],
+    passed: number,
+    total: number,
+    createdAt: string,
+  ): Submission => ({
+    id: newId(),
+    problemId,
+    language,
+    verdict,
+    passed,
+    total,
+    runtimeMs: verdict === "accepted" ? 14 : null,
+    createdAt,
+    code: "",
+  });
+  // Sample history so the prototype dashboard is not empty.
+  const submissions: Submission[] = [
+    seed("coin-change", "go", "wrong_answer", 6, 10, minutesAgo(25)),
+    seed(
+      "longest-substring-without-repeating-characters",
+      "python",
+      "time_limit",
+      7,
+      10,
+      minutesAgo(90),
+    ),
+    seed("group-anagrams", "python", "accepted", 10, 10, minutesAgo(60 * 20)),
+    seed("binary-search", "javascript", "accepted", 8, 8, minutesAgo(60 * 26)),
+    seed("climbing-stairs", "python", "accepted", 9, 9, minutesAgo(60 * 50)),
+  ];
   const chats = new Map<string, ChatMessage[]>();
   let profiles: AiProfile[] = [
     {
@@ -131,7 +169,7 @@ export function createMockApi(): CodegymApi {
   ];
 
   const getProblem = (id: string): Problem => {
-    const summary = MOCK_SUMMARIES.find((p) => p.id === id);
+    const summary = problems.find((p) => p.id === id);
     if (!summary) throw new Error(`Unknown problem: ${id}`);
     return mockProblem(summary);
   };
@@ -198,7 +236,7 @@ export function createMockApi(): CodegymApi {
   return {
     async listProblems() {
       await sleep(80);
-      return MOCK_SUMMARIES;
+      return problems;
     },
     async getProblem(id) {
       await sleep(60);
@@ -210,16 +248,62 @@ export function createMockApi(): CodegymApi {
         medium: { solved: 0, total: 0 },
         hard: { solved: 0, total: 0 },
       };
-      for (const p of MOCK_SUMMARIES) {
+      for (const p of problems) {
         byDifficulty[p.difficulty].total++;
         if (p.status === "solved") byDifficulty[p.difficulty].solved++;
       }
       return {
-        solved: MOCK_SUMMARIES.filter((p) => p.status === "solved").length,
-        total: MOCK_SUMMARIES.length,
+        solved: problems.filter((p) => p.status === "solved").length,
+        total: problems.length,
         byDifficulty,
-        streakDays: 3,
+        streakDays,
       };
+    },
+    async getDashboard() {
+      await sleep(80);
+      const title = (id: string) => problems.find((p) => p.id === id)?.title ?? id;
+      const lastAttempt = submissions.find(
+        (s) => problems.find((p) => p.id === s.problemId)?.status === "attempted",
+      );
+      const continueProblem = lastAttempt
+        ? {
+            problem: problems.find((p) => p.id === lastAttempt.problemId)!,
+            attempts: submissions.filter((s) => s.problemId === lastAttempt.problemId).length,
+            language: lastAttempt.language,
+            lastActiveAt: lastAttempt.createdAt,
+          }
+        : null;
+
+      const byTopic = new Map<string, ProblemSummary[]>();
+      for (const p of problems.filter((p) => p.source === "builtin")) {
+        for (const t of p.topics) byTopic.set(t, [...(byTopic.get(t) ?? []), p]);
+      }
+      let suggestion: Dashboard["suggestion"] = null;
+      for (const [topic, list] of byTopic) {
+        const unsolved = list.filter((p) => p.status !== "solved");
+        if (list.length < 3 || unsolved.length === 0) continue;
+        const solved = list.length - unsolved.length;
+        if (!suggestion || solved / list.length < suggestion.solved / suggestion.total) {
+          suggestion = { topic, solved, total: list.length, problems: unsolved.slice(0, 3) };
+        }
+      }
+      return {
+        continueProblem,
+        recentSubmissions: submissions
+          .slice(0, 6)
+          .map((s) => ({ ...s, problemTitle: title(s.problemId) })),
+        suggestion,
+      };
+    },
+    async resetProgress({ includeCustomProblems }) {
+      await sleep(300);
+      submissions.length = 0;
+      drafts.clear();
+      chats.clear();
+      streakDays = 0;
+      problems = problems
+        .filter((p) => !(includeCustomProblems && p.source === "custom"))
+        .map((p) => ({ ...p, status: "todo" as const }));
     },
     async getDraft(problemId, language) {
       return drafts.get(`${problemId}:${language}`) ?? null;
@@ -250,7 +334,7 @@ export function createMockApi(): CodegymApi {
         code: req.code,
       };
       submissions.unshift(submission);
-      const summary = MOCK_SUMMARIES.find((p) => p.id === req.problemId);
+      const summary = problems.find((p) => p.id === req.problemId);
       if (summary) {
         summary.status =
           run.verdict === "accepted"
@@ -304,8 +388,8 @@ export function createMockApi(): CodegymApi {
     async dataInfo() {
       return {
         dbPath: "~/.local/share/com.codegym.app/codegym.db",
-        builtinProblems: MOCK_SUMMARIES.filter((p) => p.source === "builtin").length,
-        customProblems: MOCK_SUMMARIES.filter((p) => p.source === "custom").length,
+        builtinProblems: problems.filter((p) => p.source === "builtin").length,
+        customProblems: problems.filter((p) => p.source === "custom").length,
         bankVersion: "2026.10.0",
       };
     },

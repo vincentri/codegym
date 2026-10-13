@@ -21,5 +21,9 @@ export function relativeTime(date: Date, now = new Date()): string {
   if (s < 60) return `${s}s ago`;
   const m = Math.round(s / 60);
   if (m < 60) return `${m}m ago`;
-  return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  const h = Math.round(m / 60);
+  if (h < 24) return `${h}h ago`;
+  const d = Math.round(h / 24);
+  if (d < 30) return `${d}d ago`;
+  return date.toLocaleDateString();
 }

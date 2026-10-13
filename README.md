@@ -4,7 +4,7 @@ A desktop app for practicing coding-interview problems offline, with an AI mento
 instead of handing you the answer. Bring your own AI: a free local model through Ollama, OpenCode
 Zen, Claude, or any OpenAI-compatible endpoint.
 
-> **Status:** milestone 0, a clickable UI prototype running on sample data. The Rust backend
+> **Status:** milestone 0.1, a clickable UI prototype (dashboard layout with sidebar) running on sample data. The Rust backend
 > (Tauri 2, SQLite, code runners for Python/JavaScript/Go, AI providers) lands in the next
 > milestones.
 

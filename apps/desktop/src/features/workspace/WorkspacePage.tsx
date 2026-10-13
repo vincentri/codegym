@@ -21,6 +21,7 @@ import {
   useSubmitCode,
 } from "@/api/hooks";
 import { DifficultyBadge } from "@/components/common/DifficultyBadge";
+import { LogoMark } from "@/components/common/Logo";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -354,9 +355,12 @@ function Workspace({ problem, settings }: { problem: Problem; settings: AppSetti
 
   return (
     <div className="flex h-full flex-col">
-      <div className="flex h-10 shrink-0 items-center gap-2 border-b px-2">
+      <div className="flex h-10 shrink-0 items-center gap-2 border-b bg-sidebar px-2">
+        <Link to="/" aria-label="CodeGym dashboard" className="ml-1">
+          <LogoMark className="size-6" />
+        </Link>
         <Button variant="ghost" size="sm" className="h-7" asChild>
-          <Link to="/">
+          <Link to="/problems">
             <ChevronLeftIcon /> Problems
           </Link>
         </Button>

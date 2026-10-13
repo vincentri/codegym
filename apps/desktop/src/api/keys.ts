@@ -4,6 +4,7 @@ export const queryKeys = {
   problems: ["problems"] as const,
   problem: (id: string) => ["problems", id] as const,
   stats: ["stats"] as const,
+  dashboard: ["dashboard"] as const,
   draft: (problemId: string, language: Language) => ["draft", problemId, language] as const,
   starter: (problemId: string, language: Language) => ["starter", problemId, language] as const,
   submissions: (problemId: string) => ["submissions", problemId] as const,

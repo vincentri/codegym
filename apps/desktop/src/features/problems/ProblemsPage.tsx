@@ -1,12 +1,12 @@
-import { useNavigate } from "@tanstack/react-router";
-import { CheckCircle2Icon, CircleDotIcon, FlameIcon, SearchIcon, StarIcon } from "lucide-react";
+import { useNavigate, useSearch } from "@tanstack/react-router";
+import { CheckCircle2Icon, CircleDotIcon, SearchIcon, StarIcon } from "lucide-react";
 import { useMemo, useState } from "react";
-import { useProblems, useStats } from "@/api/hooks";
+import { useProblems } from "@/api/hooks";
 import { DifficultyBadge } from "@/components/common/DifficultyBadge";
+import { PageBody, PageHeader } from "@/components/common/PageHeader";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Progress } from "@/components/ui/progress";
 import {
   Select,
   SelectContent,
@@ -38,75 +38,15 @@ function StatusIcon({ status, custom }: { status: ProblemSummary["status"]; cust
   return <span className="block size-4" />;
 }
 
-function StatsBar() {
-  const { data: stats } = useStats();
-  if (!stats) return <Skeleton className="h-24 w-full" />;
-  const pct = stats.total ? Math.round((stats.solved / stats.total) * 100) : 0;
-  const rows: { key: Difficulty; label: string; color: string }[] = [
-    { key: "easy", label: "Easy", color: "[&>[data-slot=progress-indicator]]:bg-easy" },
-    { key: "medium", label: "Medium", color: "[&>[data-slot=progress-indicator]]:bg-medium" },
-    { key: "hard", label: "Hard", color: "[&>[data-slot=progress-indicator]]:bg-hard" },
-  ];
-  return (
-    <div className="grid gap-3 md:grid-cols-[220px_1fr_180px]">
-      <Card className="py-4">
-        <CardContent className="flex items-center gap-4 px-4">
-          <div
-            className="relative flex size-16 items-center justify-center rounded-full"
-            style={{
-              background: `conic-gradient(var(--primary) ${pct * 3.6}deg, var(--muted) 0deg)`,
-            }}
-          >
-            <div className="flex size-12 items-center justify-center rounded-full bg-card text-sm font-semibold">
-              {pct}%
-            </div>
-          </div>
-          <div>
-            <div className="text-2xl font-semibold">
-              {stats.solved}
-              <span className="text-base text-muted-foreground">/{stats.total}</span>
-            </div>
-            <div className="text-xs text-muted-foreground">problems solved</div>
-          </div>
-        </CardContent>
-      </Card>
-      <Card className="py-4">
-        <CardContent className="grid gap-2.5 px-4">
-          {rows.map((r) => {
-            const d = stats.byDifficulty[r.key];
-            return (
-              <div
-                key={r.key}
-                className="grid grid-cols-[64px_1fr_56px] items-center gap-3 text-sm"
-              >
-                <DifficultyBadge difficulty={r.key} className="text-sm" />
-                <Progress
-                  value={d.total ? (d.solved / d.total) * 100 : 0}
-                  className={`h-2 ${r.color}`}
-                />
-                <span className="text-right tabular-nums text-muted-foreground">
-                  {d.solved}/{d.total}
-                </span>
-              </div>
-            );
-          })}
-        </CardContent>
-      </Card>
-      <Card className="py-4">
-        <CardContent className="flex items-center gap-3 px-4">
-          <FlameIcon className="size-8 text-medium" />
-          <div>
-            <div className="text-2xl font-semibold">{stats.streakDays} days</div>
-            <div className="text-xs text-muted-foreground">current streak</div>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  );
-}
-
 export function ProblemsPage() {
-  const { data: problems, isLoading } = useProblems();
+  const { source } = useSearch({ from: "/app/problems" });
+  const mine = source === "custom";
+  const { data: allProblems, isLoading } = useProblems();
+  const problems = useMemo(
+    () => allProblems?.filter((p) => !mine || p.source === "custom"),
+    [allProblems, mine],
+  );
+  const solvedCount = problems?.filter((p) => p.status === "solved").length ?? 0;
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [difficulty, setDifficulty] = useState<"all" | Difficulty>("all");
@@ -131,10 +71,17 @@ export function ProblemsPage() {
   }, [problems, search, difficulty, topic, status]);
 
   return (
-    <div className="h-full overflow-y-auto">
-      <div className="mx-auto flex max-w-6xl flex-col gap-5 p-6">
-        <StatsBar />
-
+    <>
+      <PageHeader
+        title={mine ? "My problems" : "Problems"}
+        description={
+          problems
+            ? `${solvedCount} of ${problems.length} solved${mine ? " · problems you imported" : ""}`
+            : undefined
+        }
+        actions={<ImportProblemDialog />}
+      />
+      <PageBody>
         <div className="flex flex-wrap items-center gap-2">
           <div className="relative min-w-60 flex-1">
             <SearchIcon className="absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
@@ -181,7 +128,6 @@ export function ProblemsPage() {
               <SelectItem value="solved">Solved</SelectItem>
             </SelectContent>
           </Select>
-          <ImportProblemDialog />
         </div>
 
         <Card className="py-0">
@@ -239,14 +185,16 @@ export function ProblemsPage() {
               {!isLoading && filtered.length === 0 && (
                 <TableRow>
                   <TableCell colSpan={5} className="py-10 text-center text-muted-foreground">
-                    No problems match these filters.
+                    {mine && !allProblems?.some((p) => p.source === "custom")
+                      ? "You haven't imported any problems yet. Use Import problem to add one."
+                      : "No problems match these filters."}
                   </TableCell>
                 </TableRow>
               )}
             </TableBody>
           </Table>
         </Card>
-      </div>
-    </div>
+      </PageBody>
+    </>
   );
 }

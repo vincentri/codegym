@@ -37,14 +37,22 @@ describe("editor settings form", () => {
   });
 
   it.each(["0", "301", "abc", "", "2.5"])("rejects custom interval %j", (value) => {
-    const form = { ...editorFormFromSettings(settings), autosavePreset: "custom" as const, autosaveCustom: value };
+    const form = {
+      ...editorFormFromSettings(settings),
+      autosavePreset: "custom" as const,
+      autosaveCustom: value,
+    };
     const result = editorSettingsFormSchema.safeParse(form);
     expect(result.success).toBe(false);
     expect(result.error?.issues[0]?.path).toEqual(["autosaveCustom"]);
   });
 
   it.each(["1", "300"])("accepts custom interval %s", (value) => {
-    const form = { ...editorFormFromSettings(settings), autosavePreset: "custom" as const, autosaveCustom: value };
+    const form = {
+      ...editorFormFromSettings(settings),
+      autosavePreset: "custom" as const,
+      autosaveCustom: value,
+    };
     expect(editorSettingsFormSchema.safeParse(form).success).toBe(true);
   });
 
@@ -80,9 +88,9 @@ describe("AI profile form", () => {
     expect(result.success).toBe(false);
     const paths = result.error!.issues.map((i) => i.path[0]);
     expect(paths).toEqual(expect.arrayContaining(["baseUrl", "model"]));
-    expect(
-      aiProfileFormSchema.safeParse({ ...form, baseUrl: "ftp://x", model: "m" }).success,
-    ).toBe(false);
+    expect(aiProfileFormSchema.safeParse({ ...form, baseUrl: "ftp://x", model: "m" }).success).toBe(
+      false,
+    );
     expect(
       aiProfileFormSchema.safeParse({ ...form, baseUrl: "http://localhost:1234/v1", model: "m" })
         .success,

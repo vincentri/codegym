@@ -4,12 +4,14 @@ import type {
   AppSettings,
   ChatMessage,
   ConnectionTest,
+  Dashboard,
   Draft,
   Language,
   MentorMode,
   MentorStreamEvent,
   Problem,
   ProblemSummary,
+  ResetProgressRequest,
   RunRequest,
   RunResult,
   RuntimeInfo,
@@ -47,6 +49,7 @@ export interface CodegymApi {
   listProblems(): Promise<ProblemSummary[]>;
   getProblem(id: string): Promise<Problem>;
   getStats(): Promise<Stats>;
+  getDashboard(): Promise<Dashboard>;
 
   getDraft(problemId: string, language: Language): Promise<Draft | null>;
   saveDraft(problemId: string, language: Language, code: string): Promise<Draft>;
@@ -61,6 +64,8 @@ export interface CodegymApi {
   updateSettings(settings: AppSettings): Promise<AppSettings>;
   detectRuntimes(): Promise<RuntimeInfo[]>;
   dataInfo(): Promise<DataInfo>;
+  /** Deletes all progress, submissions, drafts, chats and activity records. Settings and AI profiles stay. */
+  resetProgress(req: ResetProgressRequest): Promise<void>;
 
   listAiProfiles(): Promise<AiProfile[]>;
   saveAiProfile(form: AiProfileForm): Promise<AiProfile>;
