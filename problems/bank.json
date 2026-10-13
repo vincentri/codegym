@@ -1,0 +1,34 @@
+{
+  "version": "2026.10.1",
+  "categories": [
+    { "id": "array", "name": "Array", "color": "blue" },
+    { "id": "hash-map", "name": "Hash Map", "color": "teal" },
+    { "id": "string", "name": "String", "color": "violet" },
+    { "id": "stack", "name": "Stack", "color": "orange" },
+    { "id": "linked-list", "name": "Linked List", "color": "pink" },
+    { "id": "tree", "name": "Tree", "color": "green" },
+    { "id": "dfs", "name": "DFS", "color": "green" },
+    { "id": "bfs", "name": "BFS", "color": "teal" },
+    { "id": "graph", "name": "Graph", "color": "amber" },
+    { "id": "dynamic-programming", "name": "Dynamic Programming", "color": "red" },
+    { "id": "binary-search", "name": "Binary Search", "color": "blue" },
+    { "id": "two-pointers", "name": "Two Pointers", "color": "orange" },
+    { "id": "sliding-window", "name": "Sliding Window", "color": "violet" },
+    { "id": "heap", "name": "Heap", "color": "amber" },
+    { "id": "greedy", "name": "Greedy", "color": "slate" },
+    { "id": "sorting", "name": "Sorting", "color": "slate" },
+    { "id": "intervals", "name": "Intervals", "color": "slate" },
+    { "id": "prefix-sum", "name": "Prefix Sum", "color": "slate" },
+    { "id": "monotonic-stack", "name": "Monotonic Stack", "color": "orange" },
+    { "id": "topological-sort", "name": "Topological Sort", "color": "amber" }
+  ],
+  "plans": [
+    {
+      "id": "interview-essentials",
+      "name": "Interview Essentials",
+      "description": "The built-in question bank in a sensible order: easy warm-ups first, then the classic patterns.",
+      "problemIds": ["two-sum"]
+    }
+  ],
+  "problems": ["two-sum"]
+}

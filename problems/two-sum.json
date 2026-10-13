@@ -1,0 +1,25 @@
+{
+  "id": "two-sum",
+  "title": "Two Sum",
+  "difficulty": "easy",
+  "categories": ["array", "hash-map"],
+  "descriptionMd": "You are given an array of integers `nums` and an integer `target`.\n\nReturn the **indices of the two numbers** that add up to `target`. Each input has exactly one valid answer, and you may not use the same element twice. Return the two indices in any order.\n\n**Example 1**\n\n```\nnums = [2, 7, 11, 15], target = 9\n→ [0, 1]\n```\nBecause `nums[0] + nums[1] == 9`.\n\n**Example 2**\n\n```\nnums = [3, 2, 4], target = 6\n→ [1, 2]\n```\n\n**Follow-up:** can you do better than checking every pair?",
+  "constraints": ["2 ≤ nums.length ≤ 10⁴", "-10⁹ ≤ nums[i], target ≤ 10⁹", "Exactly one valid answer exists."],
+  "hints": ["For each number, which other number would you need to have seen already?"],
+  "signature": {
+    "functionName": "twoSum",
+    "params": [{ "name": "nums", "type": "int[]" }, { "name": "target", "type": "int" }],
+    "returns": "int[]"
+  },
+  "comparator": "unordered",
+  "tests": [
+    { "input": [[2, 7, 11, 15], 9], "expected": [0, 1] },
+    { "input": [[3, 2, 4], 6], "expected": [1, 2] },
+    { "input": [[3, 3], 6], "expected": [0, 1] },
+    { "input": [[1, 5, 3, 7], 8], "expected": [1, 2], "hidden": true },
+    { "input": [[-3, 4, 3, 90], 0], "expected": [0, 2], "hidden": true },
+    { "input": [[0, 4, 3, 0], 0], "expected": [0, 3], "hidden": true },
+    { "input": [[-1, -2, -3, -4, -5], -8], "expected": [2, 4], "hidden": true },
+    { "input": [[1000000000, -1000000000, 5], 5], "expected": [0, 1], "hidden": true }
+  ]
+}

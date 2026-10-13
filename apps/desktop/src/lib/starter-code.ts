@@ -40,8 +40,8 @@ const GO_TYPES: Record<ParamType, string> = {
 export function starterCode(sig: Signature, lang: Language): string {
   const names = sig.params.map((p) => p.name);
   if (lang === "python") {
-    const args = sig.params.map((p) => `${p.name}: ${PY_TYPES[p.type]}`).join(", ");
-    return `class Solution:\n    def ${sig.functionName}(self, ${args}) -> ${PY_TYPES[sig.returns]}:\n        pass\n`;
+    const args = ["self", ...sig.params.map((p) => `${p.name}: ${PY_TYPES[p.type]}`)].join(", ");
+    return `class Solution:\n    def ${sig.functionName}(${args}) -> ${PY_TYPES[sig.returns]}:\n        pass\n`;
   }
   if (lang === "javascript") {
     const doc = sig.params.map((p) => ` * @param {${p.type}} ${p.name}`).join("\n");
