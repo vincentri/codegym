@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { languageSchema } from "./language";
+import { planSummarySchema } from "./plan";
 import { problemSummarySchema } from "./problem";
 import { submissionSchema } from "./run";
 
@@ -13,6 +14,8 @@ export const dashboardSchema = z.object({
       lastActiveAt: z.string(),
     })
     .nullable(),
+  /** The study plan you touched most recently. */
+  plan: planSummarySchema.nullable(),
   recentSubmissions: z.array(submissionSchema.extend({ problemTitle: z.string() })),
   /** Unsolved problems in the topic where you have solved the smallest share. */
   suggestion: z

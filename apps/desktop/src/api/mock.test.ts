@@ -17,13 +17,13 @@ describe("mock resetProgress", () => {
     expect(dashboard.continueProblem).toBeNull();
     const problems = await api.listProblems();
     expect(problems.every((p) => p.status === "todo")).toBe(true);
-    expect(problems.some((p) => p.source === "custom")).toBe(true);
+    expect(problems.some((p) => p.origin !== "builtin")).toBe(true);
   });
 
   it("deletes imported problems when asked", async () => {
     const api = createMockApi();
     await api.resetProgress({ includeCustomProblems: true });
-    expect((await api.listProblems()).some((p) => p.source === "custom")).toBe(false);
+    expect((await api.listProblems()).some((p) => p.origin !== "builtin")).toBe(false);
   });
 
   it("keeps settings and AI profiles", async () => {

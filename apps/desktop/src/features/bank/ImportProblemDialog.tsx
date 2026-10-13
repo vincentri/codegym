@@ -1,10 +1,9 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CheckIcon, SparklesIcon } from "lucide-react";
+import { FileInputIcon, SparklesIcon } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { useImportProblem } from "@/api/hooks";
-import { DifficultyBadge } from "@/components/common/DifficultyBadge";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -26,11 +25,12 @@ import {
 } from "@/components/ui/form";
 import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
-import { importProblemFormSchema, type ImportProblemForm, type Problem } from "@/schemas";
+import { importProblemFormSchema, type GeneratedQuestion, type ImportProblemForm } from "@/schemas";
+import { GeneratedReview } from "./GeneratedReview";
 
 export function ImportProblemDialog() {
   const [open, setOpen] = useState(false);
-  const [preview, setPreview] = useState<Problem | null>(null);
+  const [preview, setPreview] = useState<GeneratedQuestion | null>(null);
   const importProblem = useImportProblem();
   const form = useForm<ImportProblemForm>({
     resolver: zodResolver(importProblemFormSchema),
@@ -45,66 +45,30 @@ export function ImportProblemDialog() {
     }
   });
 
-  const reset = () => {
+  const close = () => {
+    setOpen(false);
     setPreview(null);
     form.reset();
   };
 
   return (
-    <Dialog
-      open={open}
-      onOpenChange={(o) => {
-        setOpen(o);
-        if (!o) reset();
-      }}
-    >
+    <Dialog open={open} onOpenChange={(o) => (o ? setOpen(true) : close())}>
       <DialogTrigger asChild>
-        <Button>
-          <SparklesIcon /> Import problem
+        <Button variant="outline">
+          <FileInputIcon /> Import text
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Import a problem with AI</DialogTitle>
+          <DialogTitle>Import a problem from text</DialogTitle>
           <DialogDescription>
-            Paste any coding problem. The AI writes the function signature and test cases, then
+            Paste a problem you found. The AI writes the function signature and test cases, then
             CodeGym runs a reference solution to double-check every expected answer.
           </DialogDescription>
         </DialogHeader>
 
         {preview ? (
-          <div className="grid gap-3 text-sm">
-            <div className="rounded-md border p-4">
-              <div className="flex items-center justify-between gap-2">
-                <div className="font-semibold">{preview.title}</div>
-                <DifficultyBadge difficulty={preview.difficulty} />
-              </div>
-              <code className="mt-2 block font-mono text-xs text-muted-foreground">
-                {preview.signature.functionName}(
-                {preview.signature.params.map((p) => `${p.name}: ${p.type}`).join(", ")}) →{" "}
-                {preview.signature.returns}
-              </code>
-              <div className="mt-3 flex items-center gap-2 text-muted-foreground">
-                <CheckIcon className="size-4 text-primary" />
-                {preview.examples.length + preview.hiddenTestCount} test cases verified against the
-                reference solution
-              </div>
-            </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={reset}>
-                Start over
-              </Button>
-              <Button
-                onClick={() => {
-                  toast.success("Saved to your problems", { description: preview.title });
-                  setOpen(false);
-                  reset();
-                }}
-              >
-                Save to my problems
-              </Button>
-            </DialogFooter>
-          </div>
+          <GeneratedReview items={[preview]} planId={null} onDone={close} />
         ) : (
           <Form {...form}>
             <form noValidate onSubmit={onSubmit} className="grid gap-4">

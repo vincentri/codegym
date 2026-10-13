@@ -3,9 +3,11 @@ import {
   BotIcon,
   CodeIcon,
   DatabaseIcon,
+  FilePenLineIcon,
   LayoutDashboardIcon,
   ListIcon,
-  StarIcon,
+  MapIcon,
+  TagsIcon,
   TerminalIcon,
   type LucideIcon,
 } from "lucide-react";
@@ -31,6 +33,9 @@ import { useUiStore } from "@/stores/ui";
 type NavPath =
   | "/"
   | "/problems"
+  | "/plans"
+  | "/bank/questions"
+  | "/bank/categories"
   | "/settings/ai"
   | "/settings/editor"
   | "/settings/languages"
@@ -40,53 +45,47 @@ type NavItem = {
   label: string;
   icon: LucideIcon;
   to: NavPath;
-  search?: { source: "custom" };
-  isActive: (path: string, search: Record<string, unknown>) => boolean;
+  isActive: (path: string) => boolean;
 };
 
+const exact = (target: string) => (p: string) => p === target;
+const prefix = (target: string) => (p: string) => p === target || p.startsWith(`${target}/`);
+
 const OVERVIEW: NavItem[] = [
-  { label: "Dashboard", icon: LayoutDashboardIcon, to: "/", isActive: (p) => p === "/" },
+  { label: "Dashboard", icon: LayoutDashboardIcon, to: "/", isActive: exact("/") },
+  { label: "Problems", icon: ListIcon, to: "/problems", isActive: exact("/problems") },
+  { label: "Study plans", icon: MapIcon, to: "/plans", isActive: prefix("/plans") },
+];
+
+const BANK: NavItem[] = [
   {
-    label: "Problems",
-    icon: ListIcon,
-    to: "/problems",
-    isActive: (p, s) => p === "/problems" && s.source !== "custom",
+    label: "Questions",
+    icon: FilePenLineIcon,
+    to: "/bank/questions",
+    isActive: prefix("/bank/questions"),
   },
   {
-    label: "My problems",
-    icon: StarIcon,
-    to: "/problems",
-    search: { source: "custom" },
-    isActive: (p, s) => p === "/problems" && s.source === "custom",
+    label: "Categories",
+    icon: TagsIcon,
+    to: "/bank/categories",
+    isActive: exact("/bank/categories"),
   },
 ];
 
 const SETTINGS: NavItem[] = [
-  { label: "AI Mentor", icon: BotIcon, to: "/settings/ai", isActive: (p) => p === "/settings/ai" },
-  {
-    label: "Editor",
-    icon: CodeIcon,
-    to: "/settings/editor",
-    isActive: (p) => p === "/settings/editor",
-  },
+  { label: "AI Mentor", icon: BotIcon, to: "/settings/ai", isActive: exact("/settings/ai") },
+  { label: "Editor", icon: CodeIcon, to: "/settings/editor", isActive: exact("/settings/editor") },
   {
     label: "Languages",
     icon: TerminalIcon,
     to: "/settings/languages",
-    isActive: (p) => p === "/settings/languages",
+    isActive: exact("/settings/languages"),
   },
-  {
-    label: "Data",
-    icon: DatabaseIcon,
-    to: "/settings/data",
-    isActive: (p) => p === "/settings/data",
-  },
+  { label: "Data", icon: DatabaseIcon, to: "/settings/data", isActive: exact("/settings/data") },
 ];
 
 function NavGroup({ label, items }: { label: string; items: NavItem[] }) {
-  const { pathname, search } = useRouterState({
-    select: (s) => ({ pathname: s.location.pathname, search: s.location.search }),
-  });
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
   return (
     <SidebarGroup>
       <SidebarGroupLabel>{label}</SidebarGroupLabel>
@@ -94,12 +93,8 @@ function NavGroup({ label, items }: { label: string; items: NavItem[] }) {
         <SidebarMenu>
           {items.map((item) => (
             <SidebarMenuItem key={item.label}>
-              <SidebarMenuButton
-                asChild
-                tooltip={item.label}
-                isActive={item.isActive(pathname, search as Record<string, unknown>)}
-              >
-                <Link to={item.to} search={item.search ?? {}}>
+              <SidebarMenuButton asChild tooltip={item.label} isActive={item.isActive(pathname)}>
+                <Link to={item.to}>
                   <item.icon />
                   <span>{item.label}</span>
                 </Link>
@@ -156,6 +151,7 @@ export function AppSidebar() {
       </SidebarHeader>
       <SidebarContent>
         <NavGroup label="Overview" items={OVERVIEW} />
+        <NavGroup label="Question bank" items={BANK} />
         <NavGroup label="Settings" items={SETTINGS} />
       </SidebarContent>
       <SidebarFooter>

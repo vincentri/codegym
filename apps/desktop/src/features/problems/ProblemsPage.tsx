@@ -1,10 +1,12 @@
-import { useNavigate, useSearch } from "@tanstack/react-router";
-import { CheckCircle2Icon, CircleDotIcon, SearchIcon, StarIcon } from "lucide-react";
+import { Link, useNavigate, useSearch } from "@tanstack/react-router";
+import { CheckCircle2Icon, CircleDotIcon, FilePenLineIcon, SearchIcon, XIcon } from "lucide-react";
 import { useMemo, useState } from "react";
-import { useProblems } from "@/api/hooks";
+import { usePlan, usePlans, useProblems } from "@/api/hooks";
+import { CategoryBadges } from "@/components/common/CategoryBadge";
+import { CategoryPicker } from "@/components/common/CategoryPicker";
 import { DifficultyBadge } from "@/components/common/DifficultyBadge";
 import { PageBody, PageHeader } from "@/components/common/PageHeader";
-import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
@@ -24,62 +26,66 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import type { Difficulty, ProblemSummary } from "@/schemas";
-import { ImportProblemDialog } from "./ImportProblemDialog";
 
 type StatusFilter = "all" | ProblemSummary["status"];
 
-function StatusIcon({ status, custom }: { status: ProblemSummary["status"]; custom: boolean }) {
+export function StatusIcon({ status }: { status: ProblemSummary["status"] }) {
   if (status === "solved")
     return <CheckCircle2Icon className="size-4 text-primary" aria-label="Solved" />;
   if (status === "attempted")
     return <CircleDotIcon className="size-4 text-medium" aria-label="Attempted" />;
-  if (custom)
-    return <StarIcon className="size-4 text-muted-foreground" aria-label="Custom problem" />;
   return <span className="block size-4" />;
 }
 
 export function ProblemsPage() {
-  const { source } = useSearch({ from: "/app/problems" });
-  const mine = source === "custom";
-  const { data: allProblems, isLoading } = useProblems();
-  const problems = useMemo(
-    () => allProblems?.filter((p) => !mine || p.source === "custom"),
-    [allProblems, mine],
-  );
-  const solvedCount = problems?.filter((p) => p.status === "solved").length ?? 0;
-  const navigate = useNavigate();
-  const [search, setSearch] = useState("");
+  const search = useSearch({ from: "/app/problems" });
+  const navigate = useNavigate({ from: "/problems" });
+  const { data: problems, isLoading } = useProblems();
+  const { data: plans } = usePlans();
+  const plan = usePlan(search.plan ?? "");
+  const [query, setQuery] = useState("");
   const [difficulty, setDifficulty] = useState<"all" | Difficulty>("all");
-  const [topic, setTopic] = useState("all");
   const [status, setStatus] = useState<StatusFilter>("all");
+  const categoryParam = search.category ?? "";
+  const categoryIds = useMemo(
+    () => (categoryParam ? categoryParam.split(",") : []),
+    [categoryParam],
+  );
+  const source = search.source ?? "all";
 
-  const topics = useMemo(
-    () =>
-      [...new Set((problems ?? []).flatMap((p) => p.topics))].sort((a, b) => a.localeCompare(b)),
-    [problems],
+  const planIds = useMemo(
+    () => (search.plan && plan.data ? new Set(plan.data.items.map((p) => p.id)) : null),
+    [search.plan, plan.data],
   );
 
   const filtered = useMemo(() => {
-    const q = search.trim().toLowerCase();
+    const q = query.trim().toLowerCase();
     return (problems ?? []).filter(
       (p) =>
         (!q || p.title.toLowerCase().includes(q) || String(p.number) === q) &&
         (difficulty === "all" || p.difficulty === difficulty) &&
-        (topic === "all" || p.topics.includes(topic)) &&
-        (status === "all" || p.status === status),
+        (status === "all" || p.status === status) &&
+        (source === "all" || (source === "builtin") === (p.origin === "builtin")) &&
+        (categoryIds.length === 0 || p.categories.some((c) => categoryIds.includes(c.id))) &&
+        (!planIds || planIds.has(p.id)),
     );
-  }, [problems, search, difficulty, topic, status]);
+  }, [problems, query, difficulty, status, source, categoryIds, planIds]);
+
+  const solved = filtered.filter((p) => p.status === "solved").length;
+  const hasUrlFilters = !!(search.category || search.plan || search.source);
 
   return (
     <>
       <PageHeader
-        title={mine ? "My problems" : "Problems"}
-        description={
-          problems
-            ? `${solvedCount} of ${problems.length} solved${mine ? " · problems you imported" : ""}`
-            : undefined
+        title="Problems"
+        description={problems ? `${solved} of ${filtered.length} solved` : undefined}
+        actions={
+          <Button variant="outline" asChild>
+            <Link to="/bank/questions">
+              <FilePenLineIcon /> Manage questions
+            </Link>
+          </Button>
         }
-        actions={<ImportProblemDialog />}
       />
       <PageBody>
         <div className="flex flex-wrap items-center gap-2">
@@ -89,10 +95,59 @@ export function ProblemsPage() {
               aria-label="Search problems"
               placeholder="Search by title or number…"
               className="pl-8"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
             />
           </div>
+          <div className="w-56">
+            <CategoryPicker
+              value={categoryIds}
+              placeholder="All categories"
+              onChange={(ids) =>
+                void navigate({
+                  search: (s) => ({ ...s, category: ids.length ? ids.join(",") : undefined }),
+                })
+              }
+            />
+          </div>
+          <Select
+            value={search.plan ?? "all"}
+            onValueChange={(v) =>
+              void navigate({ search: (s) => ({ ...s, plan: v === "all" ? undefined : v }) })
+            }
+          >
+            <SelectTrigger className="w-48" aria-label="Study plan">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Any study plan</SelectItem>
+              {plans?.map((p) => (
+                <SelectItem key={p.id} value={p.id}>
+                  {p.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select
+            value={source}
+            onValueChange={(v) =>
+              void navigate({
+                search: (s) => ({
+                  ...s,
+                  source: v === "all" ? undefined : (v as "builtin" | "mine"),
+                }),
+              })
+            }
+          >
+            <SelectTrigger className="w-36" aria-label="Source">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All sources</SelectItem>
+              <SelectItem value="builtin">Built-in</SelectItem>
+              <SelectItem value="mine">Mine</SelectItem>
+            </SelectContent>
+          </Select>
           <Select value={difficulty} onValueChange={(v) => setDifficulty(v as typeof difficulty)}>
             <SelectTrigger className="w-36" aria-label="Difficulty">
               <SelectValue />
@@ -102,19 +157,6 @@ export function ProblemsPage() {
               <SelectItem value="easy">Easy</SelectItem>
               <SelectItem value="medium">Medium</SelectItem>
               <SelectItem value="hard">Hard</SelectItem>
-            </SelectContent>
-          </Select>
-          <Select value={topic} onValueChange={setTopic}>
-            <SelectTrigger className="w-44" aria-label="Topic">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All topics</SelectItem>
-              {topics.map((t) => (
-                <SelectItem key={t} value={t}>
-                  {t}
-                </SelectItem>
-              ))}
             </SelectContent>
           </Select>
           <Select value={status} onValueChange={(v) => setStatus(v as StatusFilter)}>
@@ -128,6 +170,11 @@ export function ProblemsPage() {
               <SelectItem value="solved">Solved</SelectItem>
             </SelectContent>
           </Select>
+          {hasUrlFilters && (
+            <Button variant="ghost" size="sm" onClick={() => void navigate({ search: {} })}>
+              <XIcon /> Clear filters
+            </Button>
+          )}
         </div>
 
         <Card className="py-0">
@@ -138,7 +185,7 @@ export function ProblemsPage() {
                 <TableHead className="w-12">#</TableHead>
                 <TableHead>Title</TableHead>
                 <TableHead className="w-24">Difficulty</TableHead>
-                <TableHead>Topics</TableHead>
+                <TableHead>Categories</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -164,7 +211,7 @@ export function ProblemsPage() {
                   }}
                 >
                   <TableCell>
-                    <StatusIcon status={p.status} custom={p.source === "custom"} />
+                    <StatusIcon status={p.status} />
                   </TableCell>
                   <TableCell className="text-muted-foreground tabular-nums">{p.number}</TableCell>
                   <TableCell className="font-medium">{p.title}</TableCell>
@@ -172,22 +219,14 @@ export function ProblemsPage() {
                     <DifficultyBadge difficulty={p.difficulty} />
                   </TableCell>
                   <TableCell>
-                    <div className="flex flex-wrap gap-1">
-                      {p.topics.map((t) => (
-                        <Badge key={t} variant="secondary" className="font-normal">
-                          {t}
-                        </Badge>
-                      ))}
-                    </div>
+                    <CategoryBadges categories={p.categories} />
                   </TableCell>
                 </TableRow>
               ))}
               {!isLoading && filtered.length === 0 && (
                 <TableRow>
                   <TableCell colSpan={5} className="py-10 text-center text-muted-foreground">
-                    {mine && !allProblems?.some((p) => p.source === "custom")
-                      ? "You haven't imported any problems yet. Use Import problem to add one."
-                      : "No problems match these filters."}
+                    No problems match these filters.
                   </TableCell>
                 </TableRow>
               )}

@@ -1,5 +1,6 @@
 import { CheckCircle2Icon, XCircleIcon } from "lucide-react";
 import { useSubmissions } from "@/api/hooks";
+import { CategoryBadge } from "@/components/common/CategoryBadge";
 import { DifficultyBadge } from "@/components/common/DifficultyBadge";
 import { Markdown } from "@/components/common/Markdown";
 import { Badge } from "@/components/ui/badge";
@@ -67,10 +68,8 @@ export function DescriptionPanel({ problem }: { problem: Problem }) {
             </h1>
             <div className="mt-2 mb-4 flex flex-wrap items-center gap-2">
               <DifficultyBadge difficulty={problem.difficulty} />
-              {problem.topics.map((t) => (
-                <Badge key={t} variant="secondary" className="font-normal">
-                  {t}
-                </Badge>
+              {problem.categories.map((c) => (
+                <CategoryBadge key={c.id} category={c} />
               ))}
             </div>
             <Markdown>{problem.descriptionMd}</Markdown>

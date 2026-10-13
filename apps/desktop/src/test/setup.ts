@@ -25,6 +25,12 @@ if (typeof globalThis.ResizeObserver === "undefined") {
   };
 }
 
+// Radix menus and selects use pointer capture and scrollIntoView, which jsdom lacks.
+const proto = Element.prototype as unknown as Record<string, unknown>;
+proto.hasPointerCapture ??= () => false;
+proto.releasePointerCapture ??= () => {};
+proto.scrollIntoView ??= () => {};
+
 afterEach(() => {
   cleanup();
 });

@@ -1,5 +1,12 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowRightIcon, CheckCircle2Icon, CompassIcon, PlayIcon, XCircleIcon } from "lucide-react";
+import {
+  ArrowRightIcon,
+  CheckCircle2Icon,
+  CompassIcon,
+  MapIcon,
+  PlayIcon,
+  XCircleIcon,
+} from "lucide-react";
 import { useDashboard } from "@/api/hooks";
 import { DifficultyBadge } from "@/components/common/DifficultyBadge";
 import { PageBody, PageHeader } from "@/components/common/PageHeader";
@@ -8,11 +15,44 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { relativeTime, VERDICT_LABEL } from "@/features/workspace/format";
-import { ImportProblemDialog } from "@/features/problems/ImportProblemDialog";
+import { GenerateQuestionsDialog } from "@/features/bank/GenerateQuestionsDialog";
+import { PlanProgress } from "@/features/plans/PlansPage";
 import { languageLabel, type Dashboard } from "@/schemas";
 import { StatsBar } from "./StatsBar";
 
-function ContinueCard({ data }: { data: Dashboard["continueProblem"] }) {
+function PlanCard({ plan }: { plan: NonNullable<Dashboard["plan"]> }) {
+  return (
+    <div className="grid gap-2 border-t pt-4">
+      <div className="flex items-center justify-between gap-2 text-sm">
+        <Link
+          to="/plans/$planId"
+          params={{ planId: plan.id }}
+          className="flex items-center gap-1.5 font-medium hover:underline"
+        >
+          <MapIcon className="size-4 text-primary" /> {plan.name}
+        </Link>
+        {plan.next && (
+          <Link
+            to="/problems/$problemId"
+            params={{ problemId: plan.next.id }}
+            className="truncate text-xs text-muted-foreground hover:text-foreground"
+          >
+            Next: {plan.next.title} →
+          </Link>
+        )}
+      </div>
+      <PlanProgress plan={plan} />
+    </div>
+  );
+}
+
+function ContinueCard({
+  data,
+  plan,
+}: {
+  data: Dashboard["continueProblem"];
+  plan: Dashboard["plan"];
+}) {
   return (
     <Card>
       <CardHeader>
@@ -52,6 +92,7 @@ function ContinueCard({ data }: { data: Dashboard["continueProblem"] }) {
             </Button>
           </div>
         )}
+        {plan && <PlanCard plan={plan} />}
       </CardContent>
     </Card>
   );
@@ -143,14 +184,14 @@ export function DashboardPage() {
       <PageHeader
         title="Dashboard"
         description="Your progress at a glance. Pick up where you left off."
-        actions={<ImportProblemDialog />}
+        actions={<GenerateQuestionsDialog />}
       />
       <PageBody>
         <StatsBar />
         {data ? (
           <>
             <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
-              <ContinueCard data={data.continueProblem} />
+              <ContinueCard data={data.continueProblem} plan={data.plan} />
               <RecentCard items={data.recentSubmissions} />
             </div>
             <SuggestionCard data={data.suggestion} />

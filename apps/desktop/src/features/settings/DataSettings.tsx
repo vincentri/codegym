@@ -47,7 +47,12 @@ const DELETED = [
   "Mentor conversations",
   "Solve history, practice time and streaks",
 ];
-const KEPT = ["Your settings", "AI profiles and API keys", "The built-in problems"];
+const KEPT = [
+  "Your settings",
+  "AI profiles and API keys",
+  "Built-in problems",
+  "Your categories and study plans",
+];
 
 export function ResetProgressDialog() {
   const [open, setOpen] = useState(false);
@@ -69,8 +74,8 @@ export function ResetProgressDialog() {
       setOpen(false);
       toast.success("Progress reset", {
         description: includeCustomProblems
-          ? "Everything is back to zero, including your imported problems."
-          : "Everything is back to zero. Your imported problems are still here.",
+          ? "Everything is back to zero, including the questions you created."
+          : "Everything is back to zero. Your questions, categories and plans are still here.",
       });
       void navigate({ to: "/" });
     } catch (e) {
@@ -132,8 +137,11 @@ export function ResetProgressDialog() {
                     />
                   </FormControl>
                   <div className="grid gap-1">
-                    <FormLabel>Also delete my imported problems</FormLabel>
-                    <FormDescription>Leave unticked to keep problems you imported.</FormDescription>
+                    <FormLabel>Also delete questions I created</FormLabel>
+                    <FormDescription>
+                      Imported, AI-generated and hand-written questions. Leave unticked to keep
+                      them.
+                    </FormDescription>
                   </div>
                 </FormItem>
               )}

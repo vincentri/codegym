@@ -13,4 +13,9 @@ export const queryKeys = {
   dataInfo: ["dataInfo"] as const,
   aiProfiles: ["aiProfiles"] as const,
   chat: (problemId: string) => ["chat", problemId] as const,
+  bank: ["bank"] as const,
+  question: (id: string) => ["bank", id] as const,
+  categories: ["categories"] as const,
+  plans: ["plans"] as const,
+  plan: (id: string) => ["plans", id] as const,
 };

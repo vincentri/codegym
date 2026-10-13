@@ -1,15 +1,20 @@
 import {
   createHashHistory,
-  type RouterHistory,
   createRootRoute,
   createRoute,
   createRouter,
   lazyRouteComponent,
   Outlet,
   redirect,
+  type RouterHistory,
 } from "@tanstack/react-router";
 import { z } from "zod";
+import { CategoriesPage } from "@/features/bank/CategoriesPage";
+import { QuestionEditorPage } from "@/features/bank/QuestionEditorPage";
+import { QuestionsPage } from "@/features/bank/QuestionsPage";
 import { DashboardPage } from "@/features/dashboard/DashboardPage";
+import { PlanPage } from "@/features/plans/PlanPage";
+import { PlansPage } from "@/features/plans/PlansPage";
 import { ProblemsPage } from "@/features/problems/ProblemsPage";
 import {
   AiSettingsPage,
@@ -31,8 +36,13 @@ const dashboardRoute = createRoute({
   component: DashboardPage,
 });
 
+export const sourceFilterSchema = z.enum(["all", "builtin", "mine"]);
+export type SourceFilter = z.infer<typeof sourceFilterSchema>;
+
 export const problemsSearchSchema = z.object({
-  source: z.enum(["custom"]).optional().catch(undefined),
+  source: sourceFilterSchema.optional().catch(undefined),
+  category: z.string().optional().catch(undefined),
+  plan: z.string().optional().catch(undefined),
 });
 
 const problemsRoute = createRoute({
@@ -42,6 +52,53 @@ const problemsRoute = createRoute({
   component: ProblemsPage,
 });
 
+const plansRoute = createRoute({
+  getParentRoute: () => appLayout,
+  path: "/plans",
+  component: PlansPage,
+});
+const planRoute = createRoute({
+  getParentRoute: () => appLayout,
+  path: "/plans/$planId",
+  component: PlanPage,
+});
+
+const bankIndexRoute = createRoute({
+  getParentRoute: () => appLayout,
+  path: "/bank",
+  beforeLoad: () => {
+    throw redirect({ to: "/bank/questions" });
+  },
+});
+const questionsRoute = createRoute({
+  getParentRoute: () => appLayout,
+  path: "/bank/questions",
+  validateSearch: z.object({
+    source: z.enum(["builtin", "mine", "ai_generated"]).optional().catch(undefined),
+  }),
+  component: QuestionsPage,
+});
+const newQuestionRoute = createRoute({
+  getParentRoute: () => appLayout,
+  path: "/bank/questions/new",
+  /** `from`: duplicate an existing question; `draft`: open the unsaved AI draft. */
+  validateSearch: z.object({
+    from: z.string().optional().catch(undefined),
+    draft: z.boolean().optional().catch(undefined),
+  }),
+  component: QuestionEditorPage,
+});
+const editQuestionRoute = createRoute({
+  getParentRoute: () => appLayout,
+  path: "/bank/questions/$questionId/edit",
+  component: QuestionEditorPage,
+});
+const categoriesRoute = createRoute({
+  getParentRoute: () => appLayout,
+  path: "/bank/categories",
+  component: CategoriesPage,
+});
+
 const settingsIndexRoute = createRoute({
   getParentRoute: () => appLayout,
   path: "/settings",
@@ -49,7 +106,6 @@ const settingsIndexRoute = createRoute({
     throw redirect({ to: "/settings/ai" });
   },
 });
-
 const aiSettingsRoute = createRoute({
   getParentRoute: () => appLayout,
   path: "/settings/ai",
@@ -85,6 +141,13 @@ const routeTree = rootRoute.addChildren([
   appLayout.addChildren([
     dashboardRoute,
     problemsRoute,
+    plansRoute,
+    planRoute,
+    bankIndexRoute,
+    questionsRoute,
+    newQuestionRoute,
+    editQuestionRoute,
+    categoriesRoute,
     settingsIndexRoute,
     aiSettingsRoute,
     editorSettingsRoute,

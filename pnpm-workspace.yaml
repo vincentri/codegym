@@ -1,19 +1,23 @@
 packages:
   - apps/*
 
-catalogMode: prefer
-
 catalog:
   "@types/node": ^24
+  cmdk: ^1.1.1
   typescript: ^7.0.2
   vite: npm:@voidzero-dev/vite-plus-core@1.1.0
   vite-plus: 1.1.0
+
+catalogMode: prefer
+
+onlyBuiltDependencies:
+  - esbuild
+
 overrides:
   vite@*: "catalog:"
+
 peerDependencyRules:
   allowAny:
     - vite
   allowedVersions:
     vite: "*"
-onlyBuiltDependencies:
-  - esbuild

@@ -1,23 +1,39 @@
+import { answersMatch } from "@/lib/compare";
+import { starterCode } from "@/lib/starter-code";
 import type {
   AiProfile,
   AiProfileForm,
   AppSettings,
+  BankQuestion,
+  Category,
   ChatMessage,
   Dashboard,
   Draft,
+  GeneratedQuestion,
   Language,
-  MentorMode,
-  ParamType,
+  PlanSummary,
   Problem,
   ProblemSummary,
+  QuestionInput,
+  QuestionRecord,
   RunRequest,
   RunResult,
-  Signature,
   Submission,
   TestResult,
 } from "@/schemas";
-import { MOCK_SUMMARIES, mockProblem } from "./mock-data";
-import type { CodegymApi, MentorRequest } from "./types";
+import {
+  cannedGenerated,
+  type CategoryRecord,
+  type PlanRecord,
+  SEED_ATTEMPTED,
+  SEED_SOLVED,
+  seedCategories,
+  seedPlans,
+  seedQuestions,
+  slugify,
+} from "./mock-data";
+import { MENTOR_REPLIES } from "./mock-replies";
+import type { CodegymApi, MentorRequest, VerifyRequest } from "./types";
 
 // In-memory backend used by the browser prototype and by tests. Milestone 1 replaces it with
 // Rust commands behind the same interface.
@@ -25,75 +41,43 @@ import type { CodegymApi, MentorRequest } from "./types";
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 const now = () => new Date().toISOString();
 let idCounter = 1;
-const newId = () => `mock-${idCounter++}`;
+const newId = (prefix = "mock") => `${prefix}-${idCounter++}`;
 
-const PY_TYPES: Record<ParamType, string> = {
-  int: "int",
-  float: "float",
-  bool: "bool",
-  string: "str",
-  "int[]": "List[int]",
-  "float[]": "List[float]",
-  "string[]": "List[str]",
-  "bool[]": "List[bool]",
-  "int[][]": "List[List[int]]",
-  "string[][]": "List[List[str]]",
-  "char[][]": "List[List[str]]",
-  ListNode: "Optional[ListNode]",
-  "ListNode[]": "List[Optional[ListNode]]",
-  TreeNode: "Optional[TreeNode]",
-  void: "None",
-};
+/** Types the prototype can't build in the browser (linked lists, trees). */
+const STRUCTURED = /ListNode|TreeNode/;
 
-const GO_TYPES: Record<ParamType, string> = {
-  int: "int",
-  float: "float64",
-  bool: "bool",
-  string: "string",
-  "int[]": "[]int",
-  "float[]": "[]float64",
-  "string[]": "[]string",
-  "bool[]": "[]bool",
-  "int[][]": "[][]int",
-  "string[][]": "[][]string",
-  "char[][]": "[][]byte",
-  ListNode: "*ListNode",
-  "ListNode[]": "[]*ListNode",
-  TreeNode: "*TreeNode",
-  void: "",
-};
-
-export function mockStarterCode(sig: Signature, lang: Language): string {
-  const names = sig.params.map((p) => p.name);
-  if (lang === "python") {
-    const args = sig.params.map((p) => `${p.name}: ${PY_TYPES[p.type]}`).join(", ");
-    return `class Solution:\n    def ${sig.functionName}(self, ${args}) -> ${PY_TYPES[sig.returns]}:\n        pass\n`;
+/**
+ * Runs a JavaScript reference solution in the browser for the prototype's Verify button.
+ * The desktop app runs every language in its sandboxed runner instead.
+ */
+function runJsReference(req: VerifyRequest) {
+  // Prototype only: evaluates the author's own reference code in their own browser.
+  // oxlint-disable-next-line typescript/no-implied-eval
+  const fn = new Function(`${req.code}\nreturn ${req.signature.functionName};`)() as unknown;
+  if (typeof fn !== "function") {
+    throw new Error(`Define a function named ${req.signature.functionName}`);
   }
-  if (lang === "javascript") {
-    const doc = sig.params.map((p) => ` * @param {${p.type}} ${p.name}`).join("\n");
-    return `/**\n${doc}\n * @return {${sig.returns}}\n */\nfunction ${sig.functionName}(${names.join(", ")}) {\n  \n}\n`;
-  }
-  const args = sig.params.map((p) => `${p.name} ${GO_TYPES[p.type]}`).join(", ");
-  const ret = GO_TYPES[sig.returns];
-  return `func ${sig.functionName}(${args})${ret ? ` ${ret}` : ""} {\n    \n}\n`;
+  return req.tests.map((t, index) => {
+    try {
+      const args = structuredClone(t.input);
+      const returned = (fn as (...a: unknown[]) => unknown)(...args);
+      const actual = req.inPlaceArg === null ? returned : args[req.inPlaceArg];
+      return {
+        index,
+        actual: actual === undefined ? null : actual,
+        passed: answersMatch(req.comparator, actual, t.expected),
+        error: null,
+      };
+    } catch (e) {
+      return {
+        index,
+        actual: null,
+        passed: false,
+        error: e instanceof Error ? e.message : String(e),
+      };
+    }
+  });
 }
-
-const MENTOR_REPLIES: Record<MentorMode, string> = {
-  chat: "Good question! Before I answer directly, what have you tried so far, and where did you get stuck?",
-  hint: "Here's a nudge: as you walk through `nums`, what would you need to **remember** about the numbers you've already seen so you could answer *\"have I seen `target - x` before?\"* in O(1)?",
-  explain:
-    "In plain words: you get a list of numbers and a goal number. Find **two different positions** whose values add up to the goal and return those positions.\n\nThink of it like finding two items in a shop whose prices add up exactly to the money in your pocket.",
-  review:
-    "Nice start! A few things I notice:\n\n1. Your nested loop checks every pair, which is **O(n²)**. That passes the examples but will be slow for 10⁴ elements.\n2. Variable names like `i` and `j` are fine, but `seen` / `complement` would make your intent clearer.\n\nWhat data structure gives O(1) lookups?",
-  debug:
-    "Case 2 expects `[1, 2]` but you returned `null`. Your loop starts `j` at `0`, so when `i == j` you can pair an element with itself. What should `j` start at?",
-  complexity:
-    "Your current solution:\n\n- **Time:** O(n²), two nested loops over `nums`\n- **Space:** O(1), no extra structures\n\nThe optimal approach trades space for time: **O(n) time, O(n) space**.",
-  approach:
-    "Let's build it step by step:\n\n1. Keep a map from **value → index** for numbers seen so far.\n2. For each `x` at index `i`, compute `need = target - x`.\n3. If `need` is in the map, you're done: return `[map[need], i]`.\n4. Otherwise store `x → i` and continue.\n\nTry writing step 3 yourself. What should happen if `need` isn't there yet?",
-  solution:
-    "Here's a full solution with explanation:\n\n```python\nclass Solution:\n    def twoSum(self, nums, target):\n        seen = {}\n        for i, x in enumerate(nums):\n            if target - x in seen:\n                return [seen[target - x], i]\n            seen[x] = i\n```\n\nOne pass, O(n) time and O(n) space. **Challenge:** close this and re-type it from memory tomorrow.",
-};
 
 export function createMockApi(): CodegymApi {
   let settings: AppSettings = {
@@ -104,10 +88,21 @@ export function createMockApi(): CodegymApi {
     autosaveSeconds: 5,
     runTimeoutSeconds: 10,
   };
+
   // Each mock instance gets its own copy so tests do not share state.
-  let problems: ProblemSummary[] = MOCK_SUMMARIES.map((p) => ({ ...p }));
+  let questions: QuestionRecord[] = seedQuestions();
+  let categories: CategoryRecord[] = seedCategories();
+  let plans: PlanRecord[] = seedPlans();
+  const status = new Map<string, ProblemSummary["status"]>();
+  for (const id of SEED_SOLVED) status.set(id, "solved");
+  for (const id of SEED_ATTEMPTED) status.set(id, "attempted");
+  const hidden = new Set<string>();
+  const updatedAt = new Map<string, string>();
+  const verified = new Set<string>(["two-sum", "rotate-string"]);
   let streakDays = 3;
+
   const drafts = new Map<string, Draft>();
+  const chats = new Map<string, ChatMessage[]>();
   const minutesAgo = (m: number) => new Date(Date.now() - m * 60_000).toISOString();
   const seed = (
     problemId: string,
@@ -128,7 +123,7 @@ export function createMockApi(): CodegymApi {
     code: "",
   });
   // Sample history so the prototype dashboard is not empty.
-  const submissions: Submission[] = [
+  let submissions: Submission[] = [
     seed("coin-change", "go", "wrong_answer", 6, 10, minutesAgo(25)),
     seed(
       "longest-substring-without-repeating-characters",
@@ -142,7 +137,7 @@ export function createMockApi(): CodegymApi {
     seed("binary-search", "javascript", "accepted", 8, 8, minutesAgo(60 * 26)),
     seed("climbing-stairs", "python", "accepted", 9, 9, minutesAgo(60 * 50)),
   ];
-  const chats = new Map<string, ChatMessage[]>();
+
   let profiles: AiProfile[] = [
     {
       id: "p-ollama",
@@ -168,44 +163,112 @@ export function createMockApi(): CodegymApi {
     },
   ];
 
-  const getProblem = (id: string): Problem => {
-    const summary = problems.find((p) => p.id === id);
-    if (!summary) throw new Error(`Unknown problem: ${id}`);
-    return mockProblem(summary);
+  // --- helpers --------------------------------------------------------------
+
+  const findQuestion = (id: string) => {
+    const q = questions.find((x) => x.id === id);
+    if (!q) throw new Error(`Unknown question: ${id}`);
+    return q;
+  };
+
+  const summary = (q: QuestionRecord): ProblemSummary => ({
+    id: q.id,
+    number: questions.indexOf(q) + 1,
+    title: q.title,
+    difficulty: q.difficulty,
+    categories: q.categoryIds
+      .map((cid) => categories.find((c) => c.id === cid))
+      .filter((c): c is CategoryRecord => !!c)
+      .map((c) => ({ id: c.id, name: c.name, color: c.color })),
+    origin: q.origin,
+    hidden: hidden.has(q.id),
+    status: status.get(q.id) ?? "todo",
+  });
+
+  const toProblem = (q: QuestionRecord): Problem => ({
+    ...summary(q),
+    descriptionMd: q.descriptionMd,
+    constraints: q.constraints,
+    signature: q.signature,
+    comparator: q.comparator,
+    inPlaceArg: q.inPlaceArg,
+    examples: q.tests.filter((t) => !t.hidden),
+    hiddenTestCount: q.tests.filter((t) => t.hidden).length,
+  });
+
+  const planSummary = (p: PlanRecord): PlanSummary => {
+    const items = p.problemIds
+      .map((id) => questions.find((q) => q.id === id))
+      .filter((q): q is QuestionRecord => !!q);
+    const next = items.find((q) => status.get(q.id) !== "solved");
+    return {
+      id: p.id,
+      name: p.name,
+      description: p.description,
+      builtin: p.builtin,
+      solved: items.filter((q) => status.get(q.id) === "solved").length,
+      total: items.length,
+      next: next ? summary(next) : null,
+      updatedAt: p.updatedAt,
+    };
+  };
+
+  const findPlan = (id: string) => {
+    const p = plans.find((x) => x.id === id);
+    if (!p) throw new Error(`Unknown study plan: ${id}`);
+    return p;
+  };
+
+  const editablePlan = (id: string) => {
+    const p = findPlan(id);
+    if (p.builtin) throw new Error("Built-in plans can't be changed. Duplicate it first.");
+    return p;
+  };
+
+  const touchPlan = (p: PlanRecord) => {
+    p.updatedAt = now();
+  };
+
+  const categoryRow = (c: CategoryRecord): Category => {
+    const tagged = questions.filter((q) => q.categoryIds.includes(c.id));
+    return {
+      ...c,
+      questionCount: tagged.length,
+      solvedCount: tagged.filter((q) => status.get(q.id) === "solved").length,
+    };
+  };
+
+  const removeQuestionData = (ids: Set<string>) => {
+    questions = questions.filter((q) => !ids.has(q.id));
+    submissions = submissions.filter((s) => !ids.has(s.problemId));
+    for (const key of [...drafts.keys()]) if (ids.has(key.split(":")[0]!)) drafts.delete(key);
+    for (const id of ids) {
+      chats.delete(id);
+      status.delete(id);
+      hidden.delete(id);
+    }
+    for (const p of plans) p.problemIds = p.problemIds.filter((id) => !ids.has(id));
   };
 
   const fakeRun = async (req: RunRequest, includeHidden: boolean): Promise<RunResult> => {
     await sleep(500);
-    const problem = getProblem(req.problemId);
-    const starter = mockStarterCode(problem.signature, req.language);
+    const q = findQuestion(req.problemId);
+    const starter = starterCode(q.signature, req.language);
     const attempted = req.code.trim() !== starter.trim() && /return/.test(req.code);
-    const results: TestResult[] = problem.examples.map((t, index) => ({
-      index,
-      hidden: false,
-      custom: false,
-      input: t.input,
-      expected: t.expected,
-      actual: attempted ? t.expected : null,
-      passed: attempted,
-      stdout: index === 0 && attempted ? "debug: checking pair\n" : "",
-      error: null,
-      timeMs: 1 + index,
-    }));
-    if (includeHidden) {
-      for (let i = 0; i < problem.hiddenTestCount; i++) {
-        results.push({
-          index: results.length,
-          hidden: true,
-          custom: false,
-          input: null,
-          expected: null,
-          actual: null,
-          passed: attempted,
-          stdout: "",
-          error: null,
-          timeMs: 2,
-        });
-      }
+    const results: TestResult[] = [];
+    for (const t of q.tests.filter((t) => includeHidden || !t.hidden)) {
+      results.push({
+        index: results.length,
+        hidden: t.hidden,
+        custom: false,
+        input: t.hidden ? null : t.input,
+        expected: t.hidden ? null : t.expected,
+        actual: attempted && !t.hidden ? t.expected : null,
+        passed: attempted,
+        stdout: results.length === 0 && attempted ? "debug: checking pair\n" : "",
+        error: null,
+        timeMs: 1 + results.length,
+      });
     }
     for (const input of req.customInputs) {
       results.push({
@@ -233,14 +296,27 @@ export function createMockApi(): CodegymApi {
     };
   };
 
+  const createRecord = (input: QuestionInput): QuestionRecord => {
+    const base = slugify(input.title) || "question";
+    let id = base;
+    for (let n = 2; questions.some((q) => q.id === id); n++) id = `${base}-${n}`;
+    const record: QuestionRecord = { ...input, id };
+    questions.push(record);
+    updatedAt.set(id, now());
+    if (input.reference) verified.add(id);
+    return record;
+  };
+
+  // --- API ------------------------------------------------------------------
+
   return {
     async listProblems() {
       await sleep(80);
-      return problems;
+      return questions.filter((q) => !hidden.has(q.id)).map(summary);
     },
     async getProblem(id) {
       await sleep(60);
-      return getProblem(id);
+      return toProblem(findQuestion(id));
     },
     async getStats() {
       const byDifficulty = {
@@ -248,47 +324,54 @@ export function createMockApi(): CodegymApi {
         medium: { solved: 0, total: 0 },
         hard: { solved: 0, total: 0 },
       };
-      for (const p of problems) {
-        byDifficulty[p.difficulty].total++;
-        if (p.status === "solved") byDifficulty[p.difficulty].solved++;
+      const visible = questions.filter((q) => !hidden.has(q.id));
+      for (const q of visible) {
+        byDifficulty[q.difficulty].total++;
+        if (status.get(q.id) === "solved") byDifficulty[q.difficulty].solved++;
       }
       return {
-        solved: problems.filter((p) => p.status === "solved").length,
-        total: problems.length,
+        solved: visible.filter((q) => status.get(q.id) === "solved").length,
+        total: visible.length,
         byDifficulty,
         streakDays,
       };
     },
     async getDashboard() {
       await sleep(80);
-      const title = (id: string) => problems.find((p) => p.id === id)?.title ?? id;
-      const lastAttempt = submissions.find(
-        (s) => problems.find((p) => p.id === s.problemId)?.status === "attempted",
-      );
-      const continueProblem = lastAttempt
-        ? {
-            problem: problems.find((p) => p.id === lastAttempt.problemId)!,
-            attempts: submissions.filter((s) => s.problemId === lastAttempt.problemId).length,
-            language: lastAttempt.language,
-            lastActiveAt: lastAttempt.createdAt,
-          }
-        : null;
+      const title = (id: string) => questions.find((q) => q.id === id)?.title ?? id;
+      const lastAttempt = submissions.find((s) => status.get(s.problemId) === "attempted");
+      const continueQ = lastAttempt ? questions.find((q) => q.id === lastAttempt.problemId) : null;
+      const continueProblem =
+        lastAttempt && continueQ
+          ? {
+              problem: summary(continueQ),
+              attempts: submissions.filter((s) => s.problemId === lastAttempt.problemId).length,
+              language: lastAttempt.language,
+              lastActiveAt: lastAttempt.createdAt,
+            }
+          : null;
 
-      const byTopic = new Map<string, ProblemSummary[]>();
-      for (const p of problems.filter((p) => p.source === "builtin")) {
-        for (const t of p.topics) byTopic.set(t, [...(byTopic.get(t) ?? []), p]);
-      }
       let suggestion: Dashboard["suggestion"] = null;
-      for (const [topic, list] of byTopic) {
-        const unsolved = list.filter((p) => p.status !== "solved");
+      for (const c of categories.filter((c) => c.builtin)) {
+        const list = questions.filter(
+          (q) => q.origin === "builtin" && !hidden.has(q.id) && q.categoryIds.includes(c.id),
+        );
+        const unsolved = list.filter((q) => status.get(q.id) !== "solved");
         if (list.length < 3 || unsolved.length === 0) continue;
         const solved = list.length - unsolved.length;
         if (!suggestion || solved / list.length < suggestion.solved / suggestion.total) {
-          suggestion = { topic, solved, total: list.length, problems: unsolved.slice(0, 3) };
+          suggestion = {
+            topic: c.name,
+            solved,
+            total: list.length,
+            problems: unsolved.slice(0, 3).map(summary),
+          };
         }
       }
+      const recentPlan = [...plans].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))[0];
       return {
         continueProblem,
+        plan: recentPlan ? planSummary(recentPlan) : null,
         recentSubmissions: submissions
           .slice(0, 6)
           .map((s) => ({ ...s, problemTitle: title(s.problemId) })),
@@ -297,13 +380,16 @@ export function createMockApi(): CodegymApi {
     },
     async resetProgress({ includeCustomProblems }) {
       await sleep(300);
-      submissions.length = 0;
+      submissions = [];
       drafts.clear();
       chats.clear();
+      status.clear();
       streakDays = 0;
-      problems = problems
-        .filter((p) => !(includeCustomProblems && p.source === "custom"))
-        .map((p) => ({ ...p, status: "todo" as const }));
+      if (includeCustomProblems) {
+        removeQuestionData(
+          new Set(questions.filter((q) => q.origin !== "builtin").map((q) => q.id)),
+        );
+      }
     },
     async getDraft(problemId, language) {
       return drafts.get(`${problemId}:${language}`) ?? null;
@@ -314,7 +400,7 @@ export function createMockApi(): CodegymApi {
       return draft;
     },
     async starterCode(problemId, language) {
-      return mockStarterCode(getProblem(problemId).signature, language);
+      return starterCode(findQuestion(problemId).signature, language);
     },
     runCode: (req) => fakeRun(req, false),
     async submitCode(req) {
@@ -334,15 +420,8 @@ export function createMockApi(): CodegymApi {
         code: req.code,
       };
       submissions.unshift(submission);
-      const summary = problems.find((p) => p.id === req.problemId);
-      if (summary) {
-        summary.status =
-          run.verdict === "accepted"
-            ? "solved"
-            : summary.status === "solved"
-              ? "solved"
-              : "attempted";
-      }
+      if (run.verdict === "accepted") status.set(req.problemId, "solved");
+      else if (status.get(req.problemId) !== "solved") status.set(req.problemId, "attempted");
       return { run, submission, firstSolve };
     },
     async listSubmissions(problemId) {
@@ -388,8 +467,8 @@ export function createMockApi(): CodegymApi {
     async dataInfo() {
       return {
         dbPath: "~/.local/share/com.codegym.app/codegym.db",
-        builtinProblems: problems.filter((p) => p.source === "builtin").length,
-        customProblems: problems.filter((p) => p.source === "custom").length,
+        builtinProblems: questions.filter((q) => q.origin === "builtin").length,
+        customProblems: questions.filter((q) => q.origin !== "builtin").length,
         bankVersion: "2026.10.0",
       };
     },
@@ -479,12 +558,197 @@ export function createMockApi(): CodegymApi {
     },
     async importProblem(text) {
       await sleep(1200);
+      const [sample] = cannedGenerated("array", "easy");
       const firstLine = text.trim().split("\n")[0]?.slice(0, 60) || "Imported problem";
       return {
-        ...mockProblem(MOCK_SUMMARIES[MOCK_SUMMARIES.length - 1]!),
-        id: newId(),
-        title: firstLine,
+        ...sample!,
+        question: { ...sample!.question, title: firstLine, origin: "ai_imported" },
       };
+    },
+
+    // --- Question Bank --------------------------------------------------------
+
+    async listBankQuestions() {
+      await sleep(80);
+      return questions.map((q): BankQuestion => ({
+        ...summary(q),
+        testCount: q.tests.length,
+        verified: verified.has(q.id),
+        updatedAt: updatedAt.get(q.id) ?? "2026-10-01T00:00:00.000Z",
+      }));
+    },
+    async getQuestion(id) {
+      await sleep(60);
+      return structuredClone(findQuestion(id));
+    },
+    async createQuestion(input) {
+      await sleep(200);
+      return structuredClone(createRecord(structuredClone(input)));
+    },
+    async updateQuestion(id, input) {
+      await sleep(200);
+      const q = findQuestion(id);
+      if (q.origin === "builtin") {
+        throw new Error("Built-in questions are read-only. Duplicate it to edit.");
+      }
+      Object.assign(q, structuredClone(input), { id, origin: q.origin });
+      updatedAt.set(id, now());
+      if (input.reference) verified.add(id);
+      else verified.delete(id);
+      return structuredClone(q);
+    },
+    async deleteQuestions(ids) {
+      await sleep(200);
+      if (ids.some((id) => findQuestion(id).origin === "builtin")) {
+        throw new Error("Built-in questions can't be deleted. Hide them instead.");
+      }
+      removeQuestionData(new Set(ids));
+    },
+    async setHidden(ids, value) {
+      for (const id of ids) {
+        if (value) hidden.add(id);
+        else hidden.delete(id);
+      }
+    },
+    async verifyReference(req) {
+      await sleep(400);
+      const types = [...req.signature.params.map((p) => p.type), req.signature.returns];
+      if (req.language !== "javascript" || types.some((t) => STRUCTURED.test(t))) {
+        return {
+          executed: false,
+          note:
+            req.language !== "javascript"
+              ? "The prototype only runs JavaScript. Python and Go references run in the desktop app."
+              : "Linked lists and trees are built by the desktop app's runner, not the prototype.",
+          results: [],
+        };
+      }
+      return { executed: true, note: null, results: runJsReference(req) };
+    },
+    async generateQuestions(req, onProgress) {
+      for (const step of ["writing", "testing", "verifying"] as const) {
+        onProgress(step);
+        await sleep(700);
+      }
+      onProgress("done");
+      const category = categories.find(
+        (c) => c.name.toLowerCase() === req.topic.trim().toLowerCase(),
+      );
+      const generated: GeneratedQuestion[] = cannedGenerated(
+        category?.id ?? "array",
+        req.difficulty,
+      );
+      return generated.slice(0, req.count);
+    },
+
+    // --- Categories -----------------------------------------------------------
+
+    async listCategories() {
+      return categories.map(categoryRow);
+    },
+    async saveCategory(form) {
+      await sleep(150);
+      const clash = categories.find(
+        (c) => c.id !== form.id && c.name.toLowerCase() === form.name.trim().toLowerCase(),
+      );
+      if (clash) throw new Error("A category with this name exists");
+      if (form.id) {
+        const c = categories.find((x) => x.id === form.id);
+        if (!c) throw new Error("Unknown category");
+        if (c.builtin) throw new Error("Built-in categories can't be changed");
+        Object.assign(c, {
+          name: form.name.trim(),
+          color: form.color,
+          description: form.description,
+        });
+        return categoryRow(c);
+      }
+      let id = slugify(form.name) || "category";
+      while (categories.some((c) => c.id === id)) id = `${id}-x`;
+      const record: CategoryRecord = {
+        id,
+        name: form.name.trim(),
+        color: form.color,
+        description: form.description,
+        builtin: false,
+      };
+      categories.push(record);
+      return categoryRow(record);
+    },
+    async deleteCategory(id) {
+      const c = categories.find((x) => x.id === id);
+      if (!c) return;
+      if (c.builtin) throw new Error("Built-in categories can't be deleted");
+      categories = categories.filter((x) => x.id !== id);
+      for (const q of questions) q.categoryIds = q.categoryIds.filter((cid) => cid !== id);
+    },
+    async setQuestionCategories(ids, add, remove) {
+      for (const id of ids) {
+        const q = findQuestion(id);
+        q.categoryIds = [...new Set([...q.categoryIds.filter((c) => !remove.includes(c)), ...add])];
+      }
+    },
+
+    // --- Study plans ----------------------------------------------------------
+
+    async listPlans() {
+      await sleep(60);
+      return [...plans]
+        .sort(
+          (a, b) => Number(b.builtin) - Number(a.builtin) || b.updatedAt.localeCompare(a.updatedAt),
+        )
+        .map(planSummary);
+    },
+    async getPlan(id) {
+      await sleep(60);
+      const p = findPlan(id);
+      return {
+        ...planSummary(p),
+        items: p.problemIds
+          .map((pid) => questions.find((q) => q.id === pid))
+          .filter((q): q is QuestionRecord => !!q)
+          .map(summary),
+      };
+    },
+    async savePlan(form) {
+      await sleep(150);
+      if (form.id) {
+        const p = editablePlan(form.id);
+        Object.assign(p, { name: form.name.trim(), description: form.description.trim() });
+        touchPlan(p);
+        return planSummary(p);
+      }
+      const record: PlanRecord = {
+        id: newId("plan"),
+        name: form.name.trim(),
+        description: form.description.trim(),
+        builtin: false,
+        problemIds: [],
+        updatedAt: now(),
+      };
+      plans.push(record);
+      return planSummary(record);
+    },
+    async duplicatePlan(id) {
+      const p = findPlan(id);
+      const copy: PlanRecord = {
+        ...structuredClone(p),
+        id: newId("plan"),
+        name: `${p.name} (copy)`,
+        builtin: false,
+        updatedAt: now(),
+      };
+      plans.push(copy);
+      return planSummary(copy);
+    },
+    async deletePlan(id) {
+      editablePlan(id);
+      plans = plans.filter((p) => p.id !== id);
+    },
+    async setPlanItems(id, problemIds) {
+      const p = editablePlan(id);
+      p.problemIds = [...new Set(problemIds)];
+      touchPlan(p);
     },
   };
 }
