@@ -45,6 +45,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Spinner } from "@/components/ui/spinner";
+import { formatDuration } from "@/features/workspace/format";
 import { cn } from "@/lib/utils";
 import {
   aiProfileFormSchema,
@@ -323,7 +324,7 @@ function ProfileForm({
             )}
           >
             {test.ok ? <CheckCircle2Icon className="size-4" /> : <XCircleIcon className="size-4" />}
-            {test.ok ? `Connected · ${test.latencyMs} ms` : test.error}
+            {test.ok ? `Connected · ${formatDuration(test.latencyMs ?? 0)}` : test.error}
           </div>
         )}
 

@@ -55,26 +55,28 @@ impl QuestionDraft {
     }
 }
 
-/// Finds the JSON value in a reply: inside a code fence if there is one, else from the first
-/// `{` or `[` to its matching last bracket.
-pub fn extract_json(text: &str) -> Option<&str> {
-    let text = text.trim();
-    let text = match text.find("```") {
-        Some(start) => {
-            let after = &text[start + 3..];
-            let body_start = after.find('\n').map(|i| i + 1).unwrap_or(0);
-            let body = &after[body_start..];
-            match body.find("```") {
-                Some(end) => &body[..end],
-                None => body,
-            }
-        }
-        None => text,
-    };
+/// The text from the first `{` or `[` to the last matching bracket.
+fn bracket_span(text: &str) -> Option<&str> {
     let start = text.find(['{', '['])?;
     let close = if text.as_bytes()[start] == b'{' { '}' } else { ']' };
     let end = text.rfind(close)?;
     (end > start).then(|| &text[start..=end])
+}
+
+/// The body of the first fenced code block, if any.
+fn fenced(text: &str) -> Option<&str> {
+    let start = text.find("```")?;
+    let after = &text[start + 3..];
+    let body = &after[after.find('\n').map(|i| i + 1).unwrap_or(0)..];
+    Some(body.find("```").map(|end| &body[..end]).unwrap_or(body))
+}
+
+/// Finds the JSON value in a reply. Question descriptions contain Markdown code fences inside
+/// their JSON strings, so the whole reply's outer brackets are tried before any fence.
+pub fn extract_json(text: &str) -> Option<&str> {
+    let text = text.trim();
+    let candidates = [bracket_span(text), fenced(text).and_then(|f| bracket_span(f.trim()))];
+    candidates.into_iter().flatten().find(|c| serde_json::from_str::<Value>(c).is_ok()).or(candidates[0])
 }
 
 fn parse_value(text: &str) -> Result<Value, String> {
@@ -122,6 +124,11 @@ mod tests {
         assert_eq!(extract_json("Sure!\n```json\n{\"a\": 1}\n```\nEnjoy"), Some("{\"a\": 1}"));
         assert_eq!(extract_json("Here: [1, 2] done"), Some("[1, 2]"));
         assert_eq!(extract_json("no json"), None);
+        // Fences inside the JSON (in a description) must not be mistaken for the wrapper.
+        let inner = r#"{"descriptionMd": "**Example**\n\n```\nnums = [2, 7]\n→ 9\n```", "x": 1}"#;
+        assert_eq!(extract_json(inner), Some(inner));
+        let wrapped = format!("```json\n{inner}\n```");
+        assert_eq!(extract_json(&wrapped), Some(inner));
     }
 
     #[test]
