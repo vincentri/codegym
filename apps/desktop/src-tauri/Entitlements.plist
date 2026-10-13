@@ -2,11 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <!-- The built-in Python is WebAssembly compiled to machine code at run time by wasmtime.
-         The hardened runtime kills apps that run code they generate unless they ask for it. -->
     <key>com.apple.security.cs.allow-jit</key>
     <true/>
-    <!-- wasmtime also maps code it compiled on an earlier launch back in from its cache. -->
     <key>com.apple.security.cs.allow-unsigned-executable-memory</key>
     <true/>
 </dict>

@@ -71,15 +71,19 @@ jobs:
 
             Built from ${{ github.sha }}.
 
-      # The app must carry its entitlements: without allow-jit, macOS kills it on the first Python run.
+      # The app must be validly signed and carry Entitlements.plist (wasmtime compiles the built-in
+      # Python to machine code at run time; the hardened runtime needs these to allow it).
       - name: Check the app's signature
         run: |
-          APP=apps/desktop/src-tauri/target/universal-apple-darwin/release/bundle/macos/CodeGym.app
+          # The desktop crate is in the Cargo workspace, so it builds into the root target dir.
+          APP=target/universal-apple-darwin/release/bundle/macos/CodeGym.app
+          [ -d "$APP" ] || { echo "No app at $APP"; find . -name CodeGym.app -maxdepth 7; exit 1; }
           codesign --verify --deep --strict "$APP"
-          codesign -d --entitlements - --xml "$APP" > entitlements.xml
-          cat entitlements.xml
-          grep -q com.apple.security.cs.allow-jit entitlements.xml
-          grep -q com.apple.security.cs.allow-unsigned-executable-memory entitlements.xml
+          codesign -d --entitlements - --xml "$APP" > entitlements.plist
+          cat entitlements.plist
+          for key in com.apple.security.cs.allow-jit com.apple.security.cs.allow-unsigned-executable-memory; do
+            [ "$(/usr/libexec/PlistBuddy -c "Print :$key" entitlements.plist)" = true ] || { echo "$key is not true"; exit 1; }
+          done
 
       - name: Publish the release
         env:

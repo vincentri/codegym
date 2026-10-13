@@ -120,7 +120,8 @@ quarantine flag there (no password needed):
 
 ```bash
 mkdir -p ~/Applications
-hdiutil attach ~/Downloads/CodeGym_<version>_universal.dmg -nobrowse -mountpoint /tmp/codegym-dmg
+VERSION=0.1.1   # the version you downloaded
+hdiutil attach ~/Downloads/CodeGym_${VERSION}_universal.dmg -nobrowse -mountpoint /tmp/codegym-dmg
 cp -R /tmp/codegym-dmg/CodeGym.app ~/Applications/
 hdiutil detach /tmp/codegym-dmg
 xattr -dr com.apple.quarantine ~/Applications/CodeGym.app

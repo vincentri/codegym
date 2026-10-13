@@ -120,13 +120,6 @@ jobs:
             | jq -r 'select(.profile.test == true and .target.name == "codegym_runner") | .executable')
           echo "BIN=$BIN" >> "$GITHUB_ENV"
 
-      # For the log: shows what the app hits without the entitlements. Allowed to fail.
-      - name: Hardened runtime without entitlements (expected to fail)
-        continue-on-error: true
-        run: |
-          codesign --force --sign - --options runtime "$BIN"
-          "$BIN" sandboxed_python_cannot_read_host_files
-
       - name: Hardened runtime with the app's entitlements
         run: |
           codesign --force --sign - --options runtime \
