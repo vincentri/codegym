@@ -45,6 +45,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Spinner } from "@/components/ui/spinner";
 import { RESET_CONFIRM_WORD, resetConfirmSchema, type ResetConfirmForm } from "@/schemas";
 import { useUiStore } from "@/stores/ui";
+import { IN_DOCKER } from "@/api/client";
 
 const DELETED = [
   "Solved status and progress on every problem",
@@ -219,7 +220,9 @@ export function DataSettings() {
         <CardHeader>
           <CardTitle>Storage</CardTitle>
           <CardDescription>
-            Everything is stored locally in a single SQLite database on this computer.
+            {IN_DOCKER
+              ? "Everything is stored in a single SQLite database in the codegym-data Docker volume."
+              : "Everything is stored locally in a single SQLite database on this computer."}
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4">
@@ -239,9 +242,11 @@ export function DataSettings() {
             <Skeleton className="h-20" />
           )}
           <div className="flex flex-wrap gap-2">
-            <Button variant="outline" onClick={openFolder}>
-              <FolderOpenIcon /> Open data folder
-            </Button>
+            {!IN_DOCKER && (
+              <Button variant="outline" onClick={openFolder}>
+                <FolderOpenIcon /> Open data folder
+              </Button>
+            )}
             <Button variant="outline" onClick={onExport} disabled={exportPack.isPending}>
               <DownloadIcon /> Export my problems
             </Button>

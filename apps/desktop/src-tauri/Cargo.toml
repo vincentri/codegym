@@ -13,7 +13,7 @@ crate-type = ["rlib"]
 tauri-build = { version = "2.7", features = [] }
 
 [dependencies]
-codegym-ai.workspace = true
+codegym-ai = { workspace = true, features = ["keychain"] }
 codegym-core.workspace = true
 codegym-runner.workspace = true
 codegym-service.workspace = true

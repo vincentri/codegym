@@ -75,7 +75,8 @@ impl Service {
         Ok(ProblemPack { format: FORMAT.into(), version: VERSION, exported_at: chrono_now(), categories, questions })
     }
 
-    pub fn export_problem_pack(&self, path: &Path) -> Result<PackExport> {
+    /// The pack as file contents, with how many questions it holds.
+    pub fn problem_pack_text(&self) -> Result<(String, usize)> {
         let pack = self.problem_pack()?;
         if pack.questions.is_empty() {
             return Err(ServiceError::Invalid(
@@ -83,9 +84,14 @@ impl Service {
             ));
         }
         let json = serde_json::to_string_pretty(&pack).map_err(|e| ServiceError::Internal(e.to_string()))?;
-        std::fs::write(path, json + "\n")
+        Ok((json + "\n", pack.questions.len()))
+    }
+
+    pub fn export_problem_pack(&self, path: &Path) -> Result<PackExport> {
+        let (text, questions) = self.problem_pack_text()?;
+        std::fs::write(path, text)
             .map_err(|e| ServiceError::Invalid(format!("Couldn't write {}: {e}", path.display())))?;
-        Ok(PackExport { path: path.display().to_string(), questions: pack.questions.len() })
+        Ok(PackExport { path: path.display().to_string(), questions })
     }
 
     pub fn import_problem_pack(&self, path: &Path) -> Result<PackImport> {

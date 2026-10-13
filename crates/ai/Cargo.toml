@@ -8,7 +8,7 @@ license.workspace = true
 [dependencies]
 codegym-core.workspace = true
 futures-util = "0.3"
-keyring = { version = "3.6", features = ["apple-native", "windows-native", "sync-secret-service", "crypto-rust"] }
+keyring = { version = "3.6", features = ["apple-native", "windows-native", "sync-secret-service", "crypto-rust"], optional = true }
 reqwest = { version = "0.13", features = ["json", "stream"] }
 serde.workspace = true
 serde_json.workspace = true
@@ -17,10 +17,14 @@ tokio = { version = "1", features = ["macros", "time", "net", "io-util", "rt"] }
 tokio-util = "0.7"
 
 [features]
+# `KeyringStore`: API keys in the OS keychain (the desktop app). Needs D-Bus on Linux, so the
+# Docker server leaves it out and keeps keys in a file instead.
+keychain = ["dep:keyring"]
 # Exposes `mock_server` for other crates' tests.
 testing = []
 
 [dev-dependencies]
+tempfile.workspace = true
 tokio = { version = "1", features = ["macros", "rt-multi-thread", "net", "io-util", "time", "sync"] }
 
 [lints]

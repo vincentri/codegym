@@ -30,7 +30,7 @@ import {
 } from "@/schemas";
 import { starterCode } from "@/lib/starter-code";
 import fixture from "./backend-contract.json";
-import { dataInfoSchema } from "./tauri";
+import { dataInfoSchema } from "./backend";
 
 // Real responses recorded from the Rust backend (crates/service `contract_fixture_is_up_to_date`).
 // If Rust and the Zod schemas drift apart, the desktop app would reject replies at runtime; this

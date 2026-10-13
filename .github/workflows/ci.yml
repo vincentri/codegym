@@ -1,5 +1,6 @@
-# Checks every change: formatting, lint, types and tests for the UI and the Rust crates,
-# including every built-in problem in every language.
+# Checks every change: formatting, lint, types and tests for the UI and the Rust crates
+# (including every built-in problem in every language), the macOS runner under the app's
+# signature, and the Docker image.
 name: CI
 
 on:
@@ -132,3 +133,23 @@ jobs:
             --entitlements apps/desktop/src-tauri/Entitlements.plist "$BIN"
           codesign -d --entitlements - "$BIN"
           "$BIN"
+
+  # The Docker image: built the way `docker compose up` builds it, then every language's Two Sum
+  # is submitted through the HTTP API.
+  docker:
+    name: Docker (compose build + smoke test)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - name: Build
+        run: docker compose build
+      - name: Start
+        run: docker compose up -d
+      - name: Smoke test
+        run: scripts/docker-smoke.sh http://localhost:8080
+      - name: Server log
+        if: always()
+        run: docker compose logs
+      - name: Stop
+        if: always()
+        run: docker compose down --volumes

@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { languageLabel } from "@/schemas";
+import { IN_DOCKER } from "@/api/client";
 
 export function LanguageSettings() {
   const { data, isLoading } = useRuntimes();
@@ -12,8 +13,9 @@ export function LanguageSettings() {
       <CardHeader>
         <CardTitle>Runtimes</CardTitle>
         <CardDescription>
-          Python runs inside CodeGym (sandboxed WebAssembly) and JavaScript always works. Go needs
-          the Go toolchain installed on your computer.
+          {IN_DOCKER
+            ? "Every language's toolchain comes with the CodeGym Docker image."
+            : "Python, JavaScript and TypeScript are built in. Go, Java, C++ and Rust use the toolchain installed on your computer."}
         </CardDescription>
       </CardHeader>
       <CardContent className="grid gap-2">
