@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { languageLabel, type Problem } from "@/schemas";
-import { VERDICT_LABEL } from "./format";
+import { formatDuration, VERDICT_LABEL } from "./format";
 
 function Submissions({ problemId }: { problemId: string }) {
   const { data } = useSubmissions(problemId);
@@ -43,7 +43,9 @@ function Submissions({ problemId }: { problemId: string }) {
           </div>
           <Badge variant="secondary">{languageLabel(s.language)}</Badge>
           {s.runtimeMs !== null && (
-            <span className="text-xs text-muted-foreground tabular-nums">{s.runtimeMs} ms</span>
+            <span className="text-xs text-muted-foreground tabular-nums">
+              {formatDuration(s.runtimeMs)}
+            </span>
           )}
         </li>
       ))}

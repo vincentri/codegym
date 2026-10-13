@@ -1,0 +1,2481 @@
+{
+  "dataInfo": {
+    "bankVersion": "2026.10.2",
+    "builtinProblems": 34,
+    "customProblems": 1,
+    "dbPath": ":memory:"
+  },
+  "detectRuntimes": [
+    {
+      "available": true,
+      "bundled": true,
+      "engine": "CPython (WebAssembly, built in)",
+      "installHint": null,
+      "language": "python",
+      "version": "3.12"
+    },
+    {
+      "available": true,
+      "bundled": false,
+      "engine": "Node.js (system)",
+      "installHint": null,
+      "language": "javascript",
+      "version": "22.22.0"
+    },
+    {
+      "available": true,
+      "bundled": false,
+      "engine": "Go toolchain (system)",
+      "installHint": null,
+      "language": "go",
+      "version": "1.24.7"
+    }
+  ],
+  "getDashboard": {
+    "continueProblem": null,
+    "plan": {
+      "builtin": false,
+      "description": "First week",
+      "id": "4c0105de-5b18-4ed2-a284-c6d940c86992",
+      "name": "Week 1",
+      "next": {
+        "categories": [
+          {
+            "color": "blue",
+            "id": "array",
+            "name": "Array"
+          }
+        ],
+        "difficulty": "easy",
+        "hidden": false,
+        "id": "sum-all",
+        "number": 35,
+        "origin": "manual",
+        "status": "todo",
+        "title": "Sum All"
+      },
+      "solved": 1,
+      "total": 2,
+      "updatedAt": "2026-10-13T04:47:59.867Z"
+    },
+    "recentSubmissions": [
+      {
+        "code": "function twoSum(nums, target) {\n  const seen = new Map();\n  for (let i = 0; i < nums.length; i++) {\n    if (seen.has(target - nums[i])) return [seen.get(target - nums[i]), i];\n    seen.set(nums[i], i);\n  }\n  return [];\n}\n",
+        "createdAt": "2026-10-13T04:47:59.601Z",
+        "id": "8d895945-1604-4035-93ae-ae9889fe1d57",
+        "language": "javascript",
+        "passed": 8,
+        "problemId": "two-sum",
+        "problemTitle": "Two Sum",
+        "runtimeMs": 0.09314600000000439,
+        "total": 8,
+        "verdict": "accepted"
+      }
+    ],
+    "suggestion": {
+      "problems": [
+        {
+          "categories": [
+            {
+              "color": "blue",
+              "id": "binary-search",
+              "name": "Binary Search"
+            }
+          ],
+          "difficulty": "easy",
+          "hidden": false,
+          "id": "binary-search",
+          "number": 6,
+          "origin": "builtin",
+          "status": "todo",
+          "title": "Binary Search"
+        },
+        {
+          "categories": [
+            {
+              "color": "blue",
+              "id": "binary-search",
+              "name": "Binary Search"
+            },
+            {
+              "color": "red",
+              "id": "dynamic-programming",
+              "name": "Dynamic Programming"
+            }
+          ],
+          "difficulty": "medium",
+          "hidden": false,
+          "id": "longest-increasing-subsequence",
+          "number": 21,
+          "origin": "builtin",
+          "status": "todo",
+          "title": "Longest Increasing Subsequence"
+        },
+        {
+          "categories": [
+            {
+              "color": "blue",
+              "id": "array",
+              "name": "Array"
+            },
+            {
+              "color": "blue",
+              "id": "binary-search",
+              "name": "Binary Search"
+            }
+          ],
+          "difficulty": "medium",
+          "hidden": false,
+          "id": "search-in-rotated-sorted-array",
+          "number": 27,
+          "origin": "builtin",
+          "status": "todo",
+          "title": "Search in Rotated Sorted Array"
+        }
+      ],
+      "solved": 0,
+      "topic": "Binary Search",
+      "total": 4
+    }
+  },
+  "getDraft": {
+    "code": "class Solution: pass",
+    "language": "python",
+    "problemId": "two-sum",
+    "updatedAt": "2026-10-13T04:47:59.567Z"
+  },
+  "getPlan": {
+    "builtin": false,
+    "description": "First week",
+    "id": "4c0105de-5b18-4ed2-a284-c6d940c86992",
+    "items": [
+      {
+        "categories": [
+          {
+            "color": "blue",
+            "id": "array",
+            "name": "Array"
+          },
+          {
+            "color": "teal",
+            "id": "hash-map",
+            "name": "Hash Map"
+          }
+        ],
+        "difficulty": "easy",
+        "hidden": false,
+        "id": "two-sum",
+        "number": 1,
+        "origin": "builtin",
+        "status": "solved",
+        "title": "Two Sum"
+      },
+      {
+        "categories": [
+          {
+            "color": "blue",
+            "id": "array",
+            "name": "Array"
+          }
+        ],
+        "difficulty": "easy",
+        "hidden": false,
+        "id": "sum-all",
+        "number": 35,
+        "origin": "manual",
+        "status": "todo",
+        "title": "Sum All"
+      }
+    ],
+    "name": "Week 1",
+    "next": {
+      "categories": [
+        {
+          "color": "blue",
+          "id": "array",
+          "name": "Array"
+        }
+      ],
+      "difficulty": "easy",
+      "hidden": false,
+      "id": "sum-all",
+      "number": 35,
+      "origin": "manual",
+      "status": "todo",
+      "title": "Sum All"
+    },
+    "solved": 1,
+    "total": 2,
+    "updatedAt": "2026-10-13T04:47:59.867Z"
+  },
+  "getProblem": {
+    "categories": [
+      {
+        "color": "blue",
+        "id": "array",
+        "name": "Array"
+      },
+      {
+        "color": "teal",
+        "id": "hash-map",
+        "name": "Hash Map"
+      }
+    ],
+    "comparator": "unordered",
+    "constraints": [
+      "2 ≤ nums.length ≤ 10⁴",
+      "-10⁹ ≤ nums[i], target ≤ 10⁹",
+      "Exactly one valid answer exists."
+    ],
+    "descriptionMd": "You are given an array of integers `nums` and an integer `target`.\n\nReturn the **indices of the two numbers** that add up to `target`. Each input has exactly one valid answer, and you may not use the same element twice. Return the two indices in any order.\n\n**Example 1**\n\n```\nnums = [2, 7, 11, 15], target = 9\n→ [0, 1]\n```\nBecause `nums[0] + nums[1] == 9`.\n\n**Example 2**\n\n```\nnums = [3, 2, 4], target = 6\n→ [1, 2]\n```\n\n**Follow-up:** can you do better than checking every pair?",
+    "difficulty": "easy",
+    "examples": [
+      {
+        "expected": [0, 1],
+        "hidden": false,
+        "input": [[2, 7, 11, 15], 9]
+      },
+      {
+        "expected": [1, 2],
+        "hidden": false,
+        "input": [[3, 2, 4], 6]
+      },
+      {
+        "expected": [0, 1],
+        "hidden": false,
+        "input": [[3, 3], 6]
+      }
+    ],
+    "hidden": false,
+    "hiddenTestCount": 5,
+    "id": "two-sum",
+    "inPlaceArg": null,
+    "number": 1,
+    "origin": "builtin",
+    "signature": {
+      "functionName": "twoSum",
+      "params": [
+        {
+          "name": "nums",
+          "type": "int[]"
+        },
+        {
+          "name": "target",
+          "type": "int"
+        }
+      ],
+      "returns": "int[]"
+    },
+    "status": "solved",
+    "title": "Two Sum"
+  },
+  "getQuestion": {
+    "categoryIds": ["array"],
+    "comparator": "exact",
+    "constraints": [],
+    "descriptionMd": "Add up the numbers.",
+    "difficulty": "easy",
+    "forkedFrom": null,
+    "hints": [],
+    "id": "sum-all",
+    "inPlaceArg": null,
+    "origin": "manual",
+    "reference": {
+      "code": "class Solution:\n    def sumAll(self, nums):\n        return sum(nums)\n",
+      "language": "python"
+    },
+    "signature": {
+      "functionName": "sumAll",
+      "params": [
+        {
+          "name": "nums",
+          "type": "int[]"
+        }
+      ],
+      "returns": "int"
+    },
+    "tests": [
+      {
+        "expected": 6,
+        "hidden": false,
+        "input": [[1, 2, 3]]
+      },
+      {
+        "expected": 0,
+        "hidden": true,
+        "input": [[]]
+      },
+      {
+        "expected": 0,
+        "hidden": true,
+        "input": [[-4, 4]]
+      }
+    ],
+    "title": "Sum All"
+  },
+  "getSettings": {
+    "autosaveSeconds": 5,
+    "defaultLanguage": "python",
+    "editorFontSize": 14,
+    "editorTabSize": 4,
+    "runTimeoutSeconds": 10,
+    "theme": "dark"
+  },
+  "getStats": {
+    "byDifficulty": {
+      "easy": {
+        "solved": 1,
+        "total": 13
+      },
+      "hard": {
+        "solved": 0,
+        "total": 4
+      },
+      "medium": {
+        "solved": 0,
+        "total": 18
+      }
+    },
+    "solved": 1,
+    "streakDays": 1,
+    "total": 35
+  },
+  "listAiProfiles": [
+    {
+      "baseUrl": "http://localhost:11434/v1",
+      "effort": "medium",
+      "hasApiKey": false,
+      "id": "b22dcfc8-2e65-4dda-b843-f8791aab7ba5",
+      "isActive": true,
+      "mentorStyle": "socratic",
+      "model": "qwen2.5-coder",
+      "name": "Local",
+      "provider": "ollama"
+    }
+  ],
+  "listBankQuestions": [
+    {
+      "categories": [
+        {
+          "color": "blue",
+          "id": "array",
+          "name": "Array"
+        },
+        {
+          "color": "teal",
+          "id": "hash-map",
+          "name": "Hash Map"
+        }
+      ],
+      "difficulty": "easy",
+      "hidden": false,
+      "id": "two-sum",
+      "number": 1,
+      "origin": "builtin",
+      "status": "solved",
+      "testCount": 8,
+      "title": "Two Sum",
+      "updatedAt": "2026-10-13T04:47:59.441Z",
+      "verified": true
+    },
+    {
+      "categories": [
+        {
+          "color": "orange",
+          "id": "stack",
+          "name": "Stack"
+        },
+        {
+          "color": "violet",
+          "id": "string",
+          "name": "String"
+        }
+      ],
+      "difficulty": "easy",
+      "hidden": false,
+      "id": "valid-parentheses",
+      "number": 2,
+      "origin": "builtin",
+      "status": "todo",
+      "testCount": 12,
+      "title": "Valid Parentheses",
+      "updatedAt": "2026-10-13T04:47:59.441Z",
+      "verified": true
+    },
+    {
+      "categories": [
+        {
+          "color": "pink",
+          "id": "linked-list",
+          "name": "Linked List"
+        }
+      ],
+      "difficulty": "easy",
+      "hidden": false,
+      "id": "merge-two-sorted-lists",
+      "number": 3,
+      "origin": "builtin",
+      "status": "todo",
+      "testCount": 10,
+      "title": "Merge Two Sorted Lists",
+      "updatedAt": "2026-10-13T04:47:59.441Z",
+      "verified": true
+    },
+    {
+      "categories": [
+        {
+          "color": "blue",
+          "id": "array",
+          "name": "Array"
+        },
+        {
+          "color": "slate",
+          "id": "greedy",
+          "name": "Greedy"
+        }
+      ],
+      "difficulty": "easy",
+      "hidden": false,
+      "id": "best-time-to-buy-and-sell-stock",
+      "number": 4,
+      "origin": "builtin",
+      "status": "todo",
+      "testCount": 11,
+      "title": "Best Time to Buy and Sell Stock",
+      "updatedAt": "2026-10-13T04:47:59.441Z",
+      "verified": true
+    },
+    {
+      "categories": [
+        {
+          "color": "teal",
+          "id": "hash-map",
+          "name": "Hash Map"
+        },
+        {
+          "color": "violet",
+          "id": "string",
+          "name": "String"
+        }
+      ],
+      "difficulty": "easy",
+      "hidden": false,
+      "id": "valid-anagram",
+      "number": 5,
+      "origin": "builtin",
+      "status": "todo",
+      "testCount": 11,
+      "title": "Valid Anagram",
+      "updatedAt": "2026-10-13T04:47:59.441Z",
+      "verified": true
+    },
+    {
+      "categories": [
+        {
+          "color": "blue",
+          "id": "binary-search",
+          "name": "Binary Search"
+        }
+      ],
+      "difficulty": "easy",
+      "hidden": false,
+      "id": "binary-search",
+      "number": 6,
+      "origin": "builtin",
+      "status": "todo",
+      "testCount": 12,
+      "title": "Binary Search",
+      "updatedAt": "2026-10-13T04:47:59.441Z",
+      "verified": true
+    },
+    {
+      "categories": [
+        {
+          "color": "pink",
+          "id": "linked-list",
+          "name": "Linked List"
+        }
+      ],
+      "difficulty": "easy",
+      "hidden": false,
+      "id": "reverse-linked-list",
+      "number": 7,
+      "origin": "builtin",
+      "status": "todo",
+      "testCount": 9,
+      "title": "Reverse Linked List",
+      "updatedAt": "2026-10-13T04:47:59.441Z",
+      "verified": true
+    },
+    {
+      "categories": [
+        {
+          "color": "green",
+          "id": "dfs",
+          "name": "DFS"
+        },
+        {
+          "color": "green",
+          "id": "tree",
+          "name": "Tree"
+        }
+      ],
+      "difficulty": "easy",
+      "hidden": false,
+      "id": "maximum-depth-of-binary-tree",
+      "number": 8,
+      "origin": "builtin",
+      "status": "todo",
+      "testCount": 11,
+      "title": "Maximum Depth of Binary Tree",
+      "updatedAt": "2026-10-13T04:47:59.441Z",
+      "verified": true
+    },
+    {
+      "categories": [
+        {
+          "color": "green",
+          "id": "dfs",
+          "name": "DFS"
+        },
+        {
+          "color": "green",
+          "id": "tree",
+          "name": "Tree"
+        }
+      ],
+      "difficulty": "easy",
+      "hidden": false,
+      "id": "invert-binary-tree",
+      "number": 9,
+      "origin": "builtin",
+      "status": "todo",
+      "testCount": 10,
+      "title": "Invert Binary Tree",
+      "updatedAt": "2026-10-13T04:47:59.441Z",
+      "verified": true
+    },
+    {
+      "categories": [
+        {
+          "color": "red",
+          "id": "dynamic-programming",
+          "name": "Dynamic Programming"
+        }
+      ],
+      "difficulty": "easy",
+      "hidden": false,
+      "id": "climbing-stairs",
+      "number": 10,
+      "origin": "builtin",
+      "status": "todo",
+      "testCount": 10,
+      "title": "Climbing Stairs",
+      "updatedAt": "2026-10-13T04:47:59.441Z",
+      "verified": true
+    },
+    {
+      "categories": [
+        {
+          "color": "blue",
+          "id": "array",
+          "name": "Array"
+        },
+        {
+          "color": "teal",
+          "id": "hash-map",
+          "name": "Hash Map"
+        }
+      ],
+      "difficulty": "easy",
+      "hidden": false,
+      "id": "contains-duplicate",
+      "number": 11,
+      "origin": "builtin",
+      "status": "todo",
+      "testCount": 11,
+      "title": "Contains Duplicate",
+      "updatedAt": "2026-10-13T04:47:59.441Z",
+      "verified": true
+    },
+    {
+      "categories": [
+        {
+          "color": "blue",
+          "id": "array",
+          "name": "Array"
+        },
+        {
+          "color": "orange",
+          "id": "two-pointers",
+          "name": "Two Pointers"
+        }
+      ],
+      "difficulty": "easy",
+      "hidden": false,
+      "id": "move-zeroes",
+      "number": 12,
+      "origin": "builtin",
+      "status": "todo",
+      "testCount": 10,
+      "title": "Move Zeroes",
+      "updatedAt": "2026-10-13T04:47:59.441Z",
+      "verified": true
+    },
+    {
+      "categories": [
+        {
+          "color": "teal",
+          "id": "hash-map",
+          "name": "Hash Map"
+        },
+        {
+          "color": "violet",
+          "id": "string",
+          "name": "String"
+        }
+      ],
+      "difficulty": "medium",
+      "hidden": false,
+      "id": "group-anagrams",
+      "number": 13,
+      "origin": "builtin",
+      "status": "todo",
+      "testCount": 11,
+      "title": "Group Anagrams",
+      "updatedAt": "2026-10-13T04:47:59.441Z",
+      "verified": true
+    },
+    {
+      "categories": [
+        {
+          "color": "teal",
+          "id": "hash-map",
+          "name": "Hash Map"
+        },
+        {
+          "color": "amber",
+          "id": "heap",
+          "name": "Heap"
+        }
+      ],
+      "difficulty": "medium",
+      "hidden": false,
+      "id": "top-k-frequent-elements",
+      "number": 14,
+      "origin": "builtin",
+      "status": "todo",
+      "testCount": 11,
+      "title": "Top K Frequent Elements",
+      "updatedAt": "2026-10-13T04:47:59.441Z",
+      "verified": true
+    },
+    {
+      "categories": [
+        {
+          "color": "blue",
+          "id": "array",
+          "name": "Array"
+        },
+        {
+          "color": "slate",
+          "id": "prefix-sum",
+          "name": "Prefix Sum"
+        }
+      ],
+      "difficulty": "medium",
+      "hidden": false,
+      "id": "product-of-array-except-self",
+      "number": 15,
+      "origin": "builtin",
+      "status": "todo",
+      "testCount": 11,
+      "title": "Product of Array Except Self",
+      "updatedAt": "2026-10-13T04:47:59.441Z",
+      "verified": true
+    },
+    {
+      "categories": [
+        {
+          "color": "teal",
+          "id": "hash-map",
+          "name": "Hash Map"
+        },
+        {
+          "color": "violet",
+          "id": "sliding-window",
+          "name": "Sliding Window"
+        },
+        {
+          "color": "violet",
+          "id": "string",
+          "name": "String"
+        }
+      ],
+      "difficulty": "medium",
+      "hidden": false,
+      "id": "longest-substring-without-repeating-characters",
+      "number": 16,
+      "origin": "builtin",
+      "status": "todo",
+      "testCount": 11,
+      "title": "Longest Substring Without Repeating Characters",
+      "updatedAt": "2026-10-13T04:47:59.441Z",
+      "verified": true
+    },
+    {
+      "categories": [
+        {
+          "color": "blue",
+          "id": "array",
+          "name": "Array"
+        },
+        {
+          "color": "slate",
+          "id": "sorting",
+          "name": "Sorting"
+        },
+        {
+          "color": "orange",
+          "id": "two-pointers",
+          "name": "Two Pointers"
+        }
+      ],
+      "difficulty": "medium",
+      "hidden": false,
+      "id": "three-sum",
+      "number": 17,
+      "origin": "builtin",
+      "status": "todo",
+      "testCount": 10,
+      "title": "3Sum",
+      "updatedAt": "2026-10-13T04:47:59.441Z",
+      "verified": true
+    },
+    {
+      "categories": [
+        {
+          "color": "blue",
+          "id": "array",
+          "name": "Array"
+        },
+        {
+          "color": "slate",
+          "id": "greedy",
+          "name": "Greedy"
+        },
+        {
+          "color": "orange",
+          "id": "two-pointers",
+          "name": "Two Pointers"
+        }
+      ],
+      "difficulty": "medium",
+      "hidden": false,
+      "id": "container-with-most-water",
+      "number": 18,
+      "origin": "builtin",
+      "status": "todo",
+      "testCount": 10,
+      "title": "Container With Most Water",
+      "updatedAt": "2026-10-13T04:47:59.441Z",
+      "verified": true
+    },
+    {
+      "categories": [
+        {
+          "color": "teal",
+          "id": "bfs",
+          "name": "BFS"
+        },
+        {
+          "color": "green",
+          "id": "dfs",
+          "name": "DFS"
+        },
+        {
+          "color": "amber",
+          "id": "graph",
+          "name": "Graph"
+        }
+      ],
+      "difficulty": "medium",
+      "hidden": false,
+      "id": "number-of-islands",
+      "number": 19,
+      "origin": "builtin",
+      "status": "todo",
+      "testCount": 11,
+      "title": "Number of Islands",
+      "updatedAt": "2026-10-13T04:47:59.441Z",
+      "verified": true
+    },
+    {
+      "categories": [
+        {
+          "color": "red",
+          "id": "dynamic-programming",
+          "name": "Dynamic Programming"
+        }
+      ],
+      "difficulty": "medium",
+      "hidden": false,
+      "id": "coin-change",
+      "number": 20,
+      "origin": "builtin",
+      "status": "todo",
+      "testCount": 12,
+      "title": "Coin Change",
+      "updatedAt": "2026-10-13T04:47:59.441Z",
+      "verified": true
+    },
+    {
+      "categories": [
+        {
+          "color": "blue",
+          "id": "binary-search",
+          "name": "Binary Search"
+        },
+        {
+          "color": "red",
+          "id": "dynamic-programming",
+          "name": "Dynamic Programming"
+        }
+      ],
+      "difficulty": "medium",
+      "hidden": false,
+      "id": "longest-increasing-subsequence",
+      "number": 21,
+      "origin": "builtin",
+      "status": "todo",
+      "testCount": 11,
+      "title": "Longest Increasing Subsequence",
+      "updatedAt": "2026-10-13T04:47:59.441Z",
+      "verified": true
+    },
+    {
+      "categories": [
+        {
+          "color": "blue",
+          "id": "array",
+          "name": "Array"
+        },
+        {
+          "color": "slate",
+          "id": "intervals",
+          "name": "Intervals"
+        },
+        {
+          "color": "slate",
+          "id": "sorting",
+          "name": "Sorting"
+        }
+      ],
+      "difficulty": "medium",
+      "hidden": false,
+      "id": "merge-intervals",
+      "number": 22,
+      "origin": "builtin",
+      "status": "todo",
+      "testCount": 11,
+      "title": "Merge Intervals",
+      "updatedAt": "2026-10-13T04:47:59.441Z",
+      "verified": true
+    },
+    {
+      "categories": [
+        {
+          "color": "amber",
+          "id": "heap",
+          "name": "Heap"
+        },
+        {
+          "color": "slate",
+          "id": "sorting",
+          "name": "Sorting"
+        }
+      ],
+      "difficulty": "medium",
+      "hidden": false,
+      "id": "kth-largest-element-in-an-array",
+      "number": 23,
+      "origin": "builtin",
+      "status": "todo",
+      "testCount": 12,
+      "title": "Kth Largest Element in an Array",
+      "updatedAt": "2026-10-13T04:47:59.441Z",
+      "verified": true
+    },
+    {
+      "categories": [
+        {
+          "color": "teal",
+          "id": "bfs",
+          "name": "BFS"
+        },
+        {
+          "color": "green",
+          "id": "tree",
+          "name": "Tree"
+        }
+      ],
+      "difficulty": "medium",
+      "hidden": false,
+      "id": "binary-tree-level-order-traversal",
+      "number": 24,
+      "origin": "builtin",
+      "status": "todo",
+      "testCount": 10,
+      "title": "Binary Tree Level Order Traversal",
+      "updatedAt": "2026-10-13T04:47:59.441Z",
+      "verified": true
+    },
+    {
+      "categories": [
+        {
+          "color": "green",
+          "id": "dfs",
+          "name": "DFS"
+        },
+        {
+          "color": "green",
+          "id": "tree",
+          "name": "Tree"
+        }
+      ],
+      "difficulty": "medium",
+      "hidden": false,
+      "id": "validate-binary-search-tree",
+      "number": 25,
+      "origin": "builtin",
+      "status": "todo",
+      "testCount": 12,
+      "title": "Validate Binary Search Tree",
+      "updatedAt": "2026-10-13T04:47:59.441Z",
+      "verified": true
+    },
+    {
+      "categories": [
+        {
+          "color": "amber",
+          "id": "graph",
+          "name": "Graph"
+        },
+        {
+          "color": "amber",
+          "id": "topological-sort",
+          "name": "Topological Sort"
+        }
+      ],
+      "difficulty": "medium",
+      "hidden": false,
+      "id": "course-schedule",
+      "number": 26,
+      "origin": "builtin",
+      "status": "todo",
+      "testCount": 12,
+      "title": "Course Schedule",
+      "updatedAt": "2026-10-13T04:47:59.441Z",
+      "verified": true
+    },
+    {
+      "categories": [
+        {
+          "color": "blue",
+          "id": "array",
+          "name": "Array"
+        },
+        {
+          "color": "blue",
+          "id": "binary-search",
+          "name": "Binary Search"
+        }
+      ],
+      "difficulty": "medium",
+      "hidden": false,
+      "id": "search-in-rotated-sorted-array",
+      "number": 27,
+      "origin": "builtin",
+      "status": "todo",
+      "testCount": 12,
+      "title": "Search in Rotated Sorted Array",
+      "updatedAt": "2026-10-13T04:47:59.441Z",
+      "verified": true
+    },
+    {
+      "categories": [
+        {
+          "color": "blue",
+          "id": "array",
+          "name": "Array"
+        },
+        {
+          "color": "orange",
+          "id": "monotonic-stack",
+          "name": "Monotonic Stack"
+        },
+        {
+          "color": "orange",
+          "id": "stack",
+          "name": "Stack"
+        }
+      ],
+      "difficulty": "medium",
+      "hidden": false,
+      "id": "daily-temperatures",
+      "number": 28,
+      "origin": "builtin",
+      "status": "todo",
+      "testCount": 10,
+      "title": "Daily Temperatures",
+      "updatedAt": "2026-10-13T04:47:59.441Z",
+      "verified": true
+    },
+    {
+      "categories": [
+        {
+          "color": "red",
+          "id": "dynamic-programming",
+          "name": "Dynamic Programming"
+        },
+        {
+          "color": "violet",
+          "id": "string",
+          "name": "String"
+        }
+      ],
+      "difficulty": "medium",
+      "hidden": false,
+      "id": "word-break",
+      "number": 29,
+      "origin": "builtin",
+      "status": "todo",
+      "testCount": 11,
+      "title": "Word Break",
+      "updatedAt": "2026-10-13T04:47:59.441Z",
+      "verified": true
+    },
+    {
+      "categories": [
+        {
+          "color": "red",
+          "id": "dynamic-programming",
+          "name": "Dynamic Programming"
+        },
+        {
+          "color": "violet",
+          "id": "string",
+          "name": "String"
+        }
+      ],
+      "difficulty": "medium",
+      "hidden": false,
+      "id": "edit-distance",
+      "number": 30,
+      "origin": "builtin",
+      "status": "todo",
+      "testCount": 11,
+      "title": "Edit Distance",
+      "updatedAt": "2026-10-13T04:47:59.441Z",
+      "verified": true
+    },
+    {
+      "categories": [
+        {
+          "color": "blue",
+          "id": "array",
+          "name": "Array"
+        },
+        {
+          "color": "orange",
+          "id": "monotonic-stack",
+          "name": "Monotonic Stack"
+        },
+        {
+          "color": "orange",
+          "id": "two-pointers",
+          "name": "Two Pointers"
+        }
+      ],
+      "difficulty": "hard",
+      "hidden": false,
+      "id": "trapping-rain-water",
+      "number": 31,
+      "origin": "builtin",
+      "status": "todo",
+      "testCount": 11,
+      "title": "Trapping Rain Water",
+      "updatedAt": "2026-10-13T04:47:59.441Z",
+      "verified": true
+    },
+    {
+      "categories": [
+        {
+          "color": "blue",
+          "id": "array",
+          "name": "Array"
+        },
+        {
+          "color": "blue",
+          "id": "binary-search",
+          "name": "Binary Search"
+        }
+      ],
+      "difficulty": "hard",
+      "hidden": false,
+      "id": "median-of-two-sorted-arrays",
+      "number": 32,
+      "origin": "builtin",
+      "status": "todo",
+      "testCount": 12,
+      "title": "Median of Two Sorted Arrays",
+      "updatedAt": "2026-10-13T04:47:59.441Z",
+      "verified": true
+    },
+    {
+      "categories": [
+        {
+          "color": "amber",
+          "id": "heap",
+          "name": "Heap"
+        },
+        {
+          "color": "pink",
+          "id": "linked-list",
+          "name": "Linked List"
+        }
+      ],
+      "difficulty": "hard",
+      "hidden": false,
+      "id": "merge-k-sorted-lists",
+      "number": 33,
+      "origin": "builtin",
+      "status": "todo",
+      "testCount": 11,
+      "title": "Merge k Sorted Lists",
+      "updatedAt": "2026-10-13T04:47:59.441Z",
+      "verified": true
+    },
+    {
+      "categories": [
+        {
+          "color": "teal",
+          "id": "hash-map",
+          "name": "Hash Map"
+        },
+        {
+          "color": "violet",
+          "id": "sliding-window",
+          "name": "Sliding Window"
+        },
+        {
+          "color": "violet",
+          "id": "string",
+          "name": "String"
+        }
+      ],
+      "difficulty": "hard",
+      "hidden": false,
+      "id": "minimum-window-substring",
+      "number": 34,
+      "origin": "builtin",
+      "status": "todo",
+      "testCount": 11,
+      "title": "Minimum Window Substring",
+      "updatedAt": "2026-10-13T04:47:59.441Z",
+      "verified": true
+    },
+    {
+      "categories": [
+        {
+          "color": "blue",
+          "id": "array",
+          "name": "Array"
+        }
+      ],
+      "difficulty": "easy",
+      "hidden": false,
+      "id": "sum-all",
+      "number": 35,
+      "origin": "manual",
+      "status": "todo",
+      "testCount": 3,
+      "title": "Sum All",
+      "updatedAt": "2026-10-13T04:47:59.602Z",
+      "verified": true
+    }
+  ],
+  "listCategories": [
+    {
+      "builtin": false,
+      "color": "green",
+      "description": "",
+      "id": "warm-ups",
+      "name": "Warm-ups",
+      "questionCount": 0,
+      "solvedCount": 0
+    },
+    {
+      "builtin": true,
+      "color": "blue",
+      "description": "",
+      "id": "array",
+      "name": "Array",
+      "questionCount": 13,
+      "solvedCount": 1
+    },
+    {
+      "builtin": true,
+      "color": "teal",
+      "description": "",
+      "id": "bfs",
+      "name": "BFS",
+      "questionCount": 2,
+      "solvedCount": 0
+    },
+    {
+      "builtin": true,
+      "color": "blue",
+      "description": "",
+      "id": "binary-search",
+      "name": "Binary Search",
+      "questionCount": 4,
+      "solvedCount": 0
+    },
+    {
+      "builtin": true,
+      "color": "green",
+      "description": "",
+      "id": "dfs",
+      "name": "DFS",
+      "questionCount": 4,
+      "solvedCount": 0
+    },
+    {
+      "builtin": true,
+      "color": "red",
+      "description": "",
+      "id": "dynamic-programming",
+      "name": "Dynamic Programming",
+      "questionCount": 5,
+      "solvedCount": 0
+    },
+    {
+      "builtin": true,
+      "color": "amber",
+      "description": "",
+      "id": "graph",
+      "name": "Graph",
+      "questionCount": 2,
+      "solvedCount": 0
+    },
+    {
+      "builtin": true,
+      "color": "slate",
+      "description": "",
+      "id": "greedy",
+      "name": "Greedy",
+      "questionCount": 2,
+      "solvedCount": 0
+    },
+    {
+      "builtin": true,
+      "color": "teal",
+      "description": "",
+      "id": "hash-map",
+      "name": "Hash Map",
+      "questionCount": 7,
+      "solvedCount": 1
+    },
+    {
+      "builtin": true,
+      "color": "amber",
+      "description": "",
+      "id": "heap",
+      "name": "Heap",
+      "questionCount": 3,
+      "solvedCount": 0
+    },
+    {
+      "builtin": true,
+      "color": "slate",
+      "description": "",
+      "id": "intervals",
+      "name": "Intervals",
+      "questionCount": 1,
+      "solvedCount": 0
+    },
+    {
+      "builtin": true,
+      "color": "pink",
+      "description": "",
+      "id": "linked-list",
+      "name": "Linked List",
+      "questionCount": 3,
+      "solvedCount": 0
+    },
+    {
+      "builtin": true,
+      "color": "orange",
+      "description": "",
+      "id": "monotonic-stack",
+      "name": "Monotonic Stack",
+      "questionCount": 2,
+      "solvedCount": 0
+    },
+    {
+      "builtin": true,
+      "color": "slate",
+      "description": "",
+      "id": "prefix-sum",
+      "name": "Prefix Sum",
+      "questionCount": 1,
+      "solvedCount": 0
+    },
+    {
+      "builtin": true,
+      "color": "violet",
+      "description": "",
+      "id": "sliding-window",
+      "name": "Sliding Window",
+      "questionCount": 2,
+      "solvedCount": 0
+    },
+    {
+      "builtin": true,
+      "color": "slate",
+      "description": "",
+      "id": "sorting",
+      "name": "Sorting",
+      "questionCount": 3,
+      "solvedCount": 0
+    },
+    {
+      "builtin": true,
+      "color": "orange",
+      "description": "",
+      "id": "stack",
+      "name": "Stack",
+      "questionCount": 2,
+      "solvedCount": 0
+    },
+    {
+      "builtin": true,
+      "color": "violet",
+      "description": "",
+      "id": "string",
+      "name": "String",
+      "questionCount": 7,
+      "solvedCount": 0
+    },
+    {
+      "builtin": true,
+      "color": "amber",
+      "description": "",
+      "id": "topological-sort",
+      "name": "Topological Sort",
+      "questionCount": 1,
+      "solvedCount": 0
+    },
+    {
+      "builtin": true,
+      "color": "green",
+      "description": "",
+      "id": "tree",
+      "name": "Tree",
+      "questionCount": 4,
+      "solvedCount": 0
+    },
+    {
+      "builtin": true,
+      "color": "orange",
+      "description": "",
+      "id": "two-pointers",
+      "name": "Two Pointers",
+      "questionCount": 4,
+      "solvedCount": 0
+    }
+  ],
+  "listChat": [],
+  "listPlans": [
+    {
+      "builtin": true,
+      "description": "The built-in question bank in a sensible order: easy warm-ups first, then the classic patterns.",
+      "id": "interview-essentials",
+      "name": "Interview Essentials",
+      "next": {
+        "categories": [
+          {
+            "color": "orange",
+            "id": "stack",
+            "name": "Stack"
+          },
+          {
+            "color": "violet",
+            "id": "string",
+            "name": "String"
+          }
+        ],
+        "difficulty": "easy",
+        "hidden": false,
+        "id": "valid-parentheses",
+        "number": 2,
+        "origin": "builtin",
+        "status": "todo",
+        "title": "Valid Parentheses"
+      },
+      "solved": 1,
+      "total": 34,
+      "updatedAt": "2026-10-13T04:47:59.441Z"
+    },
+    {
+      "builtin": false,
+      "description": "First week",
+      "id": "4c0105de-5b18-4ed2-a284-c6d940c86992",
+      "name": "Week 1",
+      "next": {
+        "categories": [
+          {
+            "color": "blue",
+            "id": "array",
+            "name": "Array"
+          }
+        ],
+        "difficulty": "easy",
+        "hidden": false,
+        "id": "sum-all",
+        "number": 35,
+        "origin": "manual",
+        "status": "todo",
+        "title": "Sum All"
+      },
+      "solved": 1,
+      "total": 2,
+      "updatedAt": "2026-10-13T04:47:59.867Z"
+    }
+  ],
+  "listProblems": [
+    {
+      "categories": [
+        {
+          "color": "blue",
+          "id": "array",
+          "name": "Array"
+        },
+        {
+          "color": "teal",
+          "id": "hash-map",
+          "name": "Hash Map"
+        }
+      ],
+      "difficulty": "easy",
+      "hidden": false,
+      "id": "two-sum",
+      "number": 1,
+      "origin": "builtin",
+      "status": "solved",
+      "title": "Two Sum"
+    },
+    {
+      "categories": [
+        {
+          "color": "orange",
+          "id": "stack",
+          "name": "Stack"
+        },
+        {
+          "color": "violet",
+          "id": "string",
+          "name": "String"
+        }
+      ],
+      "difficulty": "easy",
+      "hidden": false,
+      "id": "valid-parentheses",
+      "number": 2,
+      "origin": "builtin",
+      "status": "todo",
+      "title": "Valid Parentheses"
+    },
+    {
+      "categories": [
+        {
+          "color": "pink",
+          "id": "linked-list",
+          "name": "Linked List"
+        }
+      ],
+      "difficulty": "easy",
+      "hidden": false,
+      "id": "merge-two-sorted-lists",
+      "number": 3,
+      "origin": "builtin",
+      "status": "todo",
+      "title": "Merge Two Sorted Lists"
+    },
+    {
+      "categories": [
+        {
+          "color": "blue",
+          "id": "array",
+          "name": "Array"
+        },
+        {
+          "color": "slate",
+          "id": "greedy",
+          "name": "Greedy"
+        }
+      ],
+      "difficulty": "easy",
+      "hidden": false,
+      "id": "best-time-to-buy-and-sell-stock",
+      "number": 4,
+      "origin": "builtin",
+      "status": "todo",
+      "title": "Best Time to Buy and Sell Stock"
+    },
+    {
+      "categories": [
+        {
+          "color": "teal",
+          "id": "hash-map",
+          "name": "Hash Map"
+        },
+        {
+          "color": "violet",
+          "id": "string",
+          "name": "String"
+        }
+      ],
+      "difficulty": "easy",
+      "hidden": false,
+      "id": "valid-anagram",
+      "number": 5,
+      "origin": "builtin",
+      "status": "todo",
+      "title": "Valid Anagram"
+    },
+    {
+      "categories": [
+        {
+          "color": "blue",
+          "id": "binary-search",
+          "name": "Binary Search"
+        }
+      ],
+      "difficulty": "easy",
+      "hidden": false,
+      "id": "binary-search",
+      "number": 6,
+      "origin": "builtin",
+      "status": "todo",
+      "title": "Binary Search"
+    },
+    {
+      "categories": [
+        {
+          "color": "pink",
+          "id": "linked-list",
+          "name": "Linked List"
+        }
+      ],
+      "difficulty": "easy",
+      "hidden": false,
+      "id": "reverse-linked-list",
+      "number": 7,
+      "origin": "builtin",
+      "status": "todo",
+      "title": "Reverse Linked List"
+    },
+    {
+      "categories": [
+        {
+          "color": "green",
+          "id": "dfs",
+          "name": "DFS"
+        },
+        {
+          "color": "green",
+          "id": "tree",
+          "name": "Tree"
+        }
+      ],
+      "difficulty": "easy",
+      "hidden": false,
+      "id": "maximum-depth-of-binary-tree",
+      "number": 8,
+      "origin": "builtin",
+      "status": "todo",
+      "title": "Maximum Depth of Binary Tree"
+    },
+    {
+      "categories": [
+        {
+          "color": "green",
+          "id": "dfs",
+          "name": "DFS"
+        },
+        {
+          "color": "green",
+          "id": "tree",
+          "name": "Tree"
+        }
+      ],
+      "difficulty": "easy",
+      "hidden": false,
+      "id": "invert-binary-tree",
+      "number": 9,
+      "origin": "builtin",
+      "status": "todo",
+      "title": "Invert Binary Tree"
+    },
+    {
+      "categories": [
+        {
+          "color": "red",
+          "id": "dynamic-programming",
+          "name": "Dynamic Programming"
+        }
+      ],
+      "difficulty": "easy",
+      "hidden": false,
+      "id": "climbing-stairs",
+      "number": 10,
+      "origin": "builtin",
+      "status": "todo",
+      "title": "Climbing Stairs"
+    },
+    {
+      "categories": [
+        {
+          "color": "blue",
+          "id": "array",
+          "name": "Array"
+        },
+        {
+          "color": "teal",
+          "id": "hash-map",
+          "name": "Hash Map"
+        }
+      ],
+      "difficulty": "easy",
+      "hidden": false,
+      "id": "contains-duplicate",
+      "number": 11,
+      "origin": "builtin",
+      "status": "todo",
+      "title": "Contains Duplicate"
+    },
+    {
+      "categories": [
+        {
+          "color": "blue",
+          "id": "array",
+          "name": "Array"
+        },
+        {
+          "color": "orange",
+          "id": "two-pointers",
+          "name": "Two Pointers"
+        }
+      ],
+      "difficulty": "easy",
+      "hidden": false,
+      "id": "move-zeroes",
+      "number": 12,
+      "origin": "builtin",
+      "status": "todo",
+      "title": "Move Zeroes"
+    },
+    {
+      "categories": [
+        {
+          "color": "teal",
+          "id": "hash-map",
+          "name": "Hash Map"
+        },
+        {
+          "color": "violet",
+          "id": "string",
+          "name": "String"
+        }
+      ],
+      "difficulty": "medium",
+      "hidden": false,
+      "id": "group-anagrams",
+      "number": 13,
+      "origin": "builtin",
+      "status": "todo",
+      "title": "Group Anagrams"
+    },
+    {
+      "categories": [
+        {
+          "color": "teal",
+          "id": "hash-map",
+          "name": "Hash Map"
+        },
+        {
+          "color": "amber",
+          "id": "heap",
+          "name": "Heap"
+        }
+      ],
+      "difficulty": "medium",
+      "hidden": false,
+      "id": "top-k-frequent-elements",
+      "number": 14,
+      "origin": "builtin",
+      "status": "todo",
+      "title": "Top K Frequent Elements"
+    },
+    {
+      "categories": [
+        {
+          "color": "blue",
+          "id": "array",
+          "name": "Array"
+        },
+        {
+          "color": "slate",
+          "id": "prefix-sum",
+          "name": "Prefix Sum"
+        }
+      ],
+      "difficulty": "medium",
+      "hidden": false,
+      "id": "product-of-array-except-self",
+      "number": 15,
+      "origin": "builtin",
+      "status": "todo",
+      "title": "Product of Array Except Self"
+    },
+    {
+      "categories": [
+        {
+          "color": "teal",
+          "id": "hash-map",
+          "name": "Hash Map"
+        },
+        {
+          "color": "violet",
+          "id": "sliding-window",
+          "name": "Sliding Window"
+        },
+        {
+          "color": "violet",
+          "id": "string",
+          "name": "String"
+        }
+      ],
+      "difficulty": "medium",
+      "hidden": false,
+      "id": "longest-substring-without-repeating-characters",
+      "number": 16,
+      "origin": "builtin",
+      "status": "todo",
+      "title": "Longest Substring Without Repeating Characters"
+    },
+    {
+      "categories": [
+        {
+          "color": "blue",
+          "id": "array",
+          "name": "Array"
+        },
+        {
+          "color": "slate",
+          "id": "sorting",
+          "name": "Sorting"
+        },
+        {
+          "color": "orange",
+          "id": "two-pointers",
+          "name": "Two Pointers"
+        }
+      ],
+      "difficulty": "medium",
+      "hidden": false,
+      "id": "three-sum",
+      "number": 17,
+      "origin": "builtin",
+      "status": "todo",
+      "title": "3Sum"
+    },
+    {
+      "categories": [
+        {
+          "color": "blue",
+          "id": "array",
+          "name": "Array"
+        },
+        {
+          "color": "slate",
+          "id": "greedy",
+          "name": "Greedy"
+        },
+        {
+          "color": "orange",
+          "id": "two-pointers",
+          "name": "Two Pointers"
+        }
+      ],
+      "difficulty": "medium",
+      "hidden": false,
+      "id": "container-with-most-water",
+      "number": 18,
+      "origin": "builtin",
+      "status": "todo",
+      "title": "Container With Most Water"
+    },
+    {
+      "categories": [
+        {
+          "color": "teal",
+          "id": "bfs",
+          "name": "BFS"
+        },
+        {
+          "color": "green",
+          "id": "dfs",
+          "name": "DFS"
+        },
+        {
+          "color": "amber",
+          "id": "graph",
+          "name": "Graph"
+        }
+      ],
+      "difficulty": "medium",
+      "hidden": false,
+      "id": "number-of-islands",
+      "number": 19,
+      "origin": "builtin",
+      "status": "todo",
+      "title": "Number of Islands"
+    },
+    {
+      "categories": [
+        {
+          "color": "red",
+          "id": "dynamic-programming",
+          "name": "Dynamic Programming"
+        }
+      ],
+      "difficulty": "medium",
+      "hidden": false,
+      "id": "coin-change",
+      "number": 20,
+      "origin": "builtin",
+      "status": "todo",
+      "title": "Coin Change"
+    },
+    {
+      "categories": [
+        {
+          "color": "blue",
+          "id": "binary-search",
+          "name": "Binary Search"
+        },
+        {
+          "color": "red",
+          "id": "dynamic-programming",
+          "name": "Dynamic Programming"
+        }
+      ],
+      "difficulty": "medium",
+      "hidden": false,
+      "id": "longest-increasing-subsequence",
+      "number": 21,
+      "origin": "builtin",
+      "status": "todo",
+      "title": "Longest Increasing Subsequence"
+    },
+    {
+      "categories": [
+        {
+          "color": "blue",
+          "id": "array",
+          "name": "Array"
+        },
+        {
+          "color": "slate",
+          "id": "intervals",
+          "name": "Intervals"
+        },
+        {
+          "color": "slate",
+          "id": "sorting",
+          "name": "Sorting"
+        }
+      ],
+      "difficulty": "medium",
+      "hidden": false,
+      "id": "merge-intervals",
+      "number": 22,
+      "origin": "builtin",
+      "status": "todo",
+      "title": "Merge Intervals"
+    },
+    {
+      "categories": [
+        {
+          "color": "amber",
+          "id": "heap",
+          "name": "Heap"
+        },
+        {
+          "color": "slate",
+          "id": "sorting",
+          "name": "Sorting"
+        }
+      ],
+      "difficulty": "medium",
+      "hidden": false,
+      "id": "kth-largest-element-in-an-array",
+      "number": 23,
+      "origin": "builtin",
+      "status": "todo",
+      "title": "Kth Largest Element in an Array"
+    },
+    {
+      "categories": [
+        {
+          "color": "teal",
+          "id": "bfs",
+          "name": "BFS"
+        },
+        {
+          "color": "green",
+          "id": "tree",
+          "name": "Tree"
+        }
+      ],
+      "difficulty": "medium",
+      "hidden": false,
+      "id": "binary-tree-level-order-traversal",
+      "number": 24,
+      "origin": "builtin",
+      "status": "todo",
+      "title": "Binary Tree Level Order Traversal"
+    },
+    {
+      "categories": [
+        {
+          "color": "green",
+          "id": "dfs",
+          "name": "DFS"
+        },
+        {
+          "color": "green",
+          "id": "tree",
+          "name": "Tree"
+        }
+      ],
+      "difficulty": "medium",
+      "hidden": false,
+      "id": "validate-binary-search-tree",
+      "number": 25,
+      "origin": "builtin",
+      "status": "todo",
+      "title": "Validate Binary Search Tree"
+    },
+    {
+      "categories": [
+        {
+          "color": "amber",
+          "id": "graph",
+          "name": "Graph"
+        },
+        {
+          "color": "amber",
+          "id": "topological-sort",
+          "name": "Topological Sort"
+        }
+      ],
+      "difficulty": "medium",
+      "hidden": false,
+      "id": "course-schedule",
+      "number": 26,
+      "origin": "builtin",
+      "status": "todo",
+      "title": "Course Schedule"
+    },
+    {
+      "categories": [
+        {
+          "color": "blue",
+          "id": "array",
+          "name": "Array"
+        },
+        {
+          "color": "blue",
+          "id": "binary-search",
+          "name": "Binary Search"
+        }
+      ],
+      "difficulty": "medium",
+      "hidden": false,
+      "id": "search-in-rotated-sorted-array",
+      "number": 27,
+      "origin": "builtin",
+      "status": "todo",
+      "title": "Search in Rotated Sorted Array"
+    },
+    {
+      "categories": [
+        {
+          "color": "blue",
+          "id": "array",
+          "name": "Array"
+        },
+        {
+          "color": "orange",
+          "id": "monotonic-stack",
+          "name": "Monotonic Stack"
+        },
+        {
+          "color": "orange",
+          "id": "stack",
+          "name": "Stack"
+        }
+      ],
+      "difficulty": "medium",
+      "hidden": false,
+      "id": "daily-temperatures",
+      "number": 28,
+      "origin": "builtin",
+      "status": "todo",
+      "title": "Daily Temperatures"
+    },
+    {
+      "categories": [
+        {
+          "color": "red",
+          "id": "dynamic-programming",
+          "name": "Dynamic Programming"
+        },
+        {
+          "color": "violet",
+          "id": "string",
+          "name": "String"
+        }
+      ],
+      "difficulty": "medium",
+      "hidden": false,
+      "id": "word-break",
+      "number": 29,
+      "origin": "builtin",
+      "status": "todo",
+      "title": "Word Break"
+    },
+    {
+      "categories": [
+        {
+          "color": "red",
+          "id": "dynamic-programming",
+          "name": "Dynamic Programming"
+        },
+        {
+          "color": "violet",
+          "id": "string",
+          "name": "String"
+        }
+      ],
+      "difficulty": "medium",
+      "hidden": false,
+      "id": "edit-distance",
+      "number": 30,
+      "origin": "builtin",
+      "status": "todo",
+      "title": "Edit Distance"
+    },
+    {
+      "categories": [
+        {
+          "color": "blue",
+          "id": "array",
+          "name": "Array"
+        },
+        {
+          "color": "orange",
+          "id": "monotonic-stack",
+          "name": "Monotonic Stack"
+        },
+        {
+          "color": "orange",
+          "id": "two-pointers",
+          "name": "Two Pointers"
+        }
+      ],
+      "difficulty": "hard",
+      "hidden": false,
+      "id": "trapping-rain-water",
+      "number": 31,
+      "origin": "builtin",
+      "status": "todo",
+      "title": "Trapping Rain Water"
+    },
+    {
+      "categories": [
+        {
+          "color": "blue",
+          "id": "array",
+          "name": "Array"
+        },
+        {
+          "color": "blue",
+          "id": "binary-search",
+          "name": "Binary Search"
+        }
+      ],
+      "difficulty": "hard",
+      "hidden": false,
+      "id": "median-of-two-sorted-arrays",
+      "number": 32,
+      "origin": "builtin",
+      "status": "todo",
+      "title": "Median of Two Sorted Arrays"
+    },
+    {
+      "categories": [
+        {
+          "color": "amber",
+          "id": "heap",
+          "name": "Heap"
+        },
+        {
+          "color": "pink",
+          "id": "linked-list",
+          "name": "Linked List"
+        }
+      ],
+      "difficulty": "hard",
+      "hidden": false,
+      "id": "merge-k-sorted-lists",
+      "number": 33,
+      "origin": "builtin",
+      "status": "todo",
+      "title": "Merge k Sorted Lists"
+    },
+    {
+      "categories": [
+        {
+          "color": "teal",
+          "id": "hash-map",
+          "name": "Hash Map"
+        },
+        {
+          "color": "violet",
+          "id": "sliding-window",
+          "name": "Sliding Window"
+        },
+        {
+          "color": "violet",
+          "id": "string",
+          "name": "String"
+        }
+      ],
+      "difficulty": "hard",
+      "hidden": false,
+      "id": "minimum-window-substring",
+      "number": 34,
+      "origin": "builtin",
+      "status": "todo",
+      "title": "Minimum Window Substring"
+    },
+    {
+      "categories": [
+        {
+          "color": "blue",
+          "id": "array",
+          "name": "Array"
+        }
+      ],
+      "difficulty": "easy",
+      "hidden": false,
+      "id": "sum-all",
+      "number": 35,
+      "origin": "manual",
+      "status": "todo",
+      "title": "Sum All"
+    }
+  ],
+  "listSubmissions": [
+    {
+      "code": "function twoSum(nums, target) {\n  const seen = new Map();\n  for (let i = 0; i < nums.length; i++) {\n    if (seen.has(target - nums[i])) return [seen.get(target - nums[i]), i];\n    seen.set(nums[i], i);\n  }\n  return [];\n}\n",
+      "createdAt": "2026-10-13T04:47:59.601Z",
+      "id": "8d895945-1604-4035-93ae-ae9889fe1d57",
+      "language": "javascript",
+      "passed": 8,
+      "problemId": "two-sum",
+      "runtimeMs": 0.09314600000000439,
+      "total": 8,
+      "verdict": "accepted"
+    }
+  ],
+  "runCode": [
+    {
+      "compileOutput": null,
+      "passed": 3,
+      "results": [
+        {
+          "actual": [0, 1],
+          "custom": false,
+          "error": null,
+          "expected": [0, 1],
+          "hidden": false,
+          "index": 0,
+          "input": [[2, 7, 11, 15], 9],
+          "passed": true,
+          "stdout": "",
+          "timeMs": 0.03220200000000162
+        },
+        {
+          "actual": [1, 2],
+          "custom": false,
+          "error": null,
+          "expected": [1, 2],
+          "hidden": false,
+          "index": 1,
+          "input": [[3, 2, 4], 6],
+          "passed": true,
+          "stdout": "",
+          "timeMs": 0.00420000000000087
+        },
+        {
+          "actual": [0, 1],
+          "custom": false,
+          "error": null,
+          "expected": [0, 1],
+          "hidden": false,
+          "index": 2,
+          "input": [[3, 3], 6],
+          "passed": true,
+          "stdout": "",
+          "timeMs": 0.0035640000000007888
+        },
+        {
+          "actual": [0, 1],
+          "custom": true,
+          "error": null,
+          "expected": null,
+          "hidden": false,
+          "index": 3,
+          "input": [[1, 2], 3],
+          "passed": null,
+          "stdout": "",
+          "timeMs": 0.003575000000001438
+        }
+      ],
+      "total": 3,
+      "totalTimeMs": 0.043541000000004715,
+      "verdict": "accepted"
+    },
+    {
+      "compileOutput": null,
+      "passed": 0,
+      "results": [
+        {
+          "actual": null,
+          "custom": false,
+          "error": "Error: boom\n    at twoSum (solution.js:1:27)",
+          "expected": [0, 1],
+          "hidden": false,
+          "index": 0,
+          "input": [[2, 7, 11, 15], 9],
+          "passed": false,
+          "stdout": "",
+          "timeMs": 0.0
+        },
+        {
+          "actual": null,
+          "custom": false,
+          "error": "Error: boom\n    at twoSum (solution.js:1:27)",
+          "expected": [1, 2],
+          "hidden": false,
+          "index": 1,
+          "input": [[3, 2, 4], 6],
+          "passed": false,
+          "stdout": "",
+          "timeMs": 0.0
+        },
+        {
+          "actual": null,
+          "custom": false,
+          "error": "Error: boom\n    at twoSum (solution.js:1:27)",
+          "expected": [0, 1],
+          "hidden": false,
+          "index": 2,
+          "input": [[3, 3], 6],
+          "passed": false,
+          "stdout": "",
+          "timeMs": 0.0
+        }
+      ],
+      "total": 3,
+      "totalTimeMs": 0.0,
+      "verdict": "runtime_error"
+    },
+    {
+      "compileOutput": "solution.js:3\n;(function () {\n^\n\nSyntaxError: Unexpected token ';'",
+      "passed": 0,
+      "results": [],
+      "total": 3,
+      "totalTimeMs": 0.0,
+      "verdict": "compile_error"
+    }
+  ],
+  "saveCategory": {
+    "builtin": false,
+    "color": "green",
+    "description": "",
+    "id": "warm-ups",
+    "name": "Warm-ups",
+    "questionCount": 0,
+    "solvedCount": 0
+  },
+  "submitCode": {
+    "firstSolve": true,
+    "run": {
+      "compileOutput": null,
+      "passed": 8,
+      "results": [
+        {
+          "actual": [0, 1],
+          "custom": false,
+          "error": null,
+          "expected": [0, 1],
+          "hidden": false,
+          "index": 0,
+          "input": [[2, 7, 11, 15], 9],
+          "passed": true,
+          "stdout": "",
+          "timeMs": 0.03752900000000281
+        },
+        {
+          "actual": [1, 2],
+          "custom": false,
+          "error": null,
+          "expected": [1, 2],
+          "hidden": false,
+          "index": 1,
+          "input": [[3, 2, 4], 6],
+          "passed": true,
+          "stdout": "",
+          "timeMs": 0.0035600000000002296
+        },
+        {
+          "actual": [0, 1],
+          "custom": false,
+          "error": null,
+          "expected": [0, 1],
+          "hidden": false,
+          "index": 2,
+          "input": [[3, 3], 6],
+          "passed": true,
+          "stdout": "",
+          "timeMs": 0.0029140000000005273
+        },
+        {
+          "actual": null,
+          "custom": false,
+          "error": null,
+          "expected": null,
+          "hidden": true,
+          "index": 3,
+          "input": null,
+          "passed": true,
+          "stdout": "",
+          "timeMs": 0.003519000000000716
+        },
+        {
+          "actual": null,
+          "custom": false,
+          "error": null,
+          "expected": null,
+          "hidden": true,
+          "index": 4,
+          "input": null,
+          "passed": true,
+          "stdout": "",
+          "timeMs": 0.03875099999999776
+        },
+        {
+          "actual": null,
+          "custom": false,
+          "error": null,
+          "expected": null,
+          "hidden": true,
+          "index": 5,
+          "input": null,
+          "passed": true,
+          "stdout": "",
+          "timeMs": 0.0029479999999999507
+        },
+        {
+          "actual": null,
+          "custom": false,
+          "error": null,
+          "expected": null,
+          "hidden": true,
+          "index": 6,
+          "input": null,
+          "passed": true,
+          "stdout": "",
+          "timeMs": 0.0015490000000006887
+        },
+        {
+          "actual": null,
+          "custom": false,
+          "error": null,
+          "expected": null,
+          "hidden": true,
+          "index": 7,
+          "input": null,
+          "passed": true,
+          "stdout": "",
+          "timeMs": 0.00237600000000171
+        }
+      ],
+      "total": 8,
+      "totalTimeMs": 0.09314600000000439,
+      "verdict": "accepted"
+    },
+    "submission": {
+      "code": "function twoSum(nums, target) {\n  const seen = new Map();\n  for (let i = 0; i < nums.length; i++) {\n    if (seen.has(target - nums[i])) return [seen.get(target - nums[i]), i];\n    seen.set(nums[i], i);\n  }\n  return [];\n}\n",
+      "createdAt": "2026-10-13T04:47:59.601Z",
+      "id": "8d895945-1604-4035-93ae-ae9889fe1d57",
+      "language": "javascript",
+      "passed": 8,
+      "problemId": "two-sum",
+      "runtimeMs": 0.09314600000000439,
+      "total": 8,
+      "verdict": "accepted"
+    }
+  },
+  "verifyReference": {
+    "executed": true,
+    "note": null,
+    "results": [
+      {
+        "actual": 6,
+        "error": null,
+        "index": 0,
+        "passed": true
+      },
+      {
+        "actual": 0,
+        "error": null,
+        "index": 1,
+        "passed": true
+      },
+      {
+        "actual": 0,
+        "error": null,
+        "index": 2,
+        "passed": true
+      }
+    ]
+  }
+}

@@ -118,6 +118,10 @@ export function useDataInfo() {
   return useQuery({ queryKey: queryKeys.dataInfo, queryFn: () => api.dataInfo() });
 }
 
+export function useOpenDataFolder() {
+  return useMutation({ mutationFn: () => api.openDataFolder() });
+}
+
 export function useAiProfiles() {
   return useQuery({ queryKey: queryKeys.aiProfiles, queryFn: () => api.listAiProfiles() });
 }

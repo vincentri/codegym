@@ -1,0 +1,28 @@
+{
+  "id": "group-anagrams",
+  "title": "Group Anagrams",
+  "difficulty": "medium",
+  "categories": ["hash-map", "string"],
+  "descriptionMd": "Given an array of strings `strs`, gather the strings into groups such that two strings share a group exactly when one is a rearrangement of the other's letters (they are **anagrams**). Return the list of groups. The order of the groups, and the order of strings within each group, does not matter. If a word appears more than once, every copy goes into its group.\n\n**Example 1**\n\n```\nstrs = [\"tea\", \"ant\", \"eat\", \"tan\", \"bat\", \"ate\"]\n→ [[\"tea\", \"eat\", \"ate\"], [\"ant\", \"tan\"], [\"bat\"]]\n```\n\n**Example 2**\n\n```\nstrs = [\"\"]\n→ [[\"\"]]\n```\n\n**Example 3**\n\n```\nstrs = [\"z\"]\n→ [[\"z\"]]\n```",
+  "constraints": ["1 ≤ strs.length ≤ 10⁴", "0 ≤ strs[i].length ≤ 100", "strs[i] contains only lowercase English letters"],
+  "hints": ["Anagrams look identical once you ignore letter order. What canonical form could every member of a group share?", "Use that canonical form as a key into a hash map of groups.", "With only 26 possible letters, a letter-count signature can replace sorting."],
+  "signature": {
+    "functionName": "groupAnagrams",
+    "params": [{ "name": "strs", "type": "string[]" }],
+    "returns": "string[][]"
+  },
+  "comparator": "unorderedNested",
+  "tests": [
+    { "input": [["tea", "ant", "eat", "tan", "bat", "ate"]], "expected": [["tea", "eat", "ate"], ["ant", "tan"], ["bat"]] },
+    { "input": [[""]], "expected": [[""]] },
+    { "input": [["z"]], "expected": [["z"]] },
+    { "input": [["", ""]], "expected": [["", ""]], "hidden": true },
+    { "input": [["ab", "ba", "ab"]], "expected": [["ab", "ba", "ab"]], "hidden": true },
+    { "input": [["abc", "def", "ghi"]], "expected": [["abc"], ["def"], ["ghi"]], "hidden": true },
+    { "input": [["listen", "silent", "enlist", "google", "gogole", "inlets"]], "expected": [["listen", "silent", "enlist", "inlets"], ["google", "gogole"]], "hidden": true },
+    { "input": [["a", "b", "a", "c", "b", "a"]], "expected": [["a", "a", "a"], ["b", "b"], ["c"]], "hidden": true },
+    { "input": [["abc", "ab", "a", "cba", "ba"]], "expected": [["abc", "cba"], ["ab", "ba"], ["a"]], "hidden": true },
+    { "input": [["aab", "aba", "abb", "bab", "baa"]], "expected": [["aab", "aba", "baa"], ["abb", "bab"]], "hidden": true },
+    { "input": [["bdaadb", "hgefg", "hgceha", "hd", "dcg", "affhbb", "ddeaab", "f", "cb", "gfa", "dgc", "fhbdh", "dhe", "achhgf", "cgaheh", "fdbebf", "fb", "bedehd", "ec", "cgaabb", "ch", "gfbg", "g", "aebbhe", "cce", "edh", "hc", "gfgb", "b", "dfec", "hbfafb", "hg", "d", "gdg", "gb", "ddaba", "ghcafh", "bdh", "ehd", "fbab", "feghg", "gggcfc", "gdbhhe", "f", "bbf", "dbdaa", "bf", "bhd", "he", "ge", "hbd", "adbad", "bdeada", "fh", "cec", "f", "gcch", "ch", "hcfh", "cdfe", "g", "fdgg", "bbf", "dfbfeb", "ch", "ch", "gafae", "gb", "hgafg", "ec", "hc", "f", "dhechd", "f", "cec", "gh", "abedda", "dbbdaa", "ecee", "eehbba", "ahghfc", "aabdd", "gh", "e", "ge", "hbeaeb", "fgeaa", "hd", "cb", "ghcc", "bfdbfe", "hfhdb", "fdbea", "e", "fggb", "ggd", "fdec", "dggf", "d", "ahbbff", "bbaf", "chhf", "hg", "g", "abfb", "bdefa", "e", "bdadab", "hfhdb", "g", "agfhg", "he", "gfa", "bg", "ghfe", "gefh", "hc", "gghaf", "ecdghf", "eg", "c", "fb", "cgehha", "f", "hff", "cdehdh", "ce", "dbdeaa", "dhb", "deh", "cc", "ce", "ge", "dbadba", "a", "f", "agchfh", "bfb", "e", "fh", "bg"]], "expected": [["bdaadb", "dbbdaa", "bdadab", "dbadba"], ["hgefg", "feghg"], ["hgceha", "cgaheh", "cgehha"], ["hd", "hd"], ["dcg", "dgc"], ["affhbb", "hbfafb", "ahbbff"], ["ddeaab", "bdeada", "abedda", "dbdeaa"], ["f", "f", "f", "f", "f", "f", "f"], ["cb", "cb"], ["gfa", "gfa"], ["fhbdh", "hfhdb", "hfhdb"], ["dhe", "edh", "ehd", "deh"], ["achhgf", "ghcafh", "ahghfc", "agchfh"], ["fdbebf", "dfbfeb", "bfdbfe"], ["fb", "bf", "fb"], ["bedehd"], ["ec", "ec", "ce", "ce"], ["cgaabb"], ["ch", "hc", "ch", "ch", "ch", "hc", "hc"], ["gfbg", "gfgb", "fggb"], ["g", "g", "g", "g"], ["aebbhe", "eehbba", "hbeaeb"], ["cce", "cec", "cec"], ["b"], ["dfec", "cdfe", "fdec"], ["hg", "gh", "gh", "hg"], ["d", "d"], ["gdg", "ggd"], ["gb", "gb", "bg", "bg"], ["ddaba", "dbdaa", "adbad", "aabdd"], ["bdh", "bhd", "hbd", "dhb"], ["fbab", "bbaf", "abfb"], ["gggcfc"], ["gdbhhe"], ["bbf", "bbf", "bfb"], ["he", "he"], ["ge", "ge", "eg", "ge"], ["fh", "fh"], ["gcch", "ghcc"], ["hcfh", "chhf"], ["fdgg", "dggf"], ["gafae", "fgeaa"], ["hgafg", "agfhg", "gghaf"], ["dhechd", "cdehdh"], ["ecee"], ["e", "e", "e", "e"], ["fdbea", "bdefa"], ["ghfe", "gefh"], ["ecdghf"], ["c"], ["hff"], ["cc"], ["a"]], "hidden": true }
+  ]
+}

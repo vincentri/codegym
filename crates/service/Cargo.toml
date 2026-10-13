@@ -1,0 +1,16 @@
+[package]
+name = "codegym-service"
+description = "The operations behind every CodeGym screen, on top of the store and the code runner."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+codegym-core.workspace = true
+codegym-runner.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+
+[lints]
+workspace = true

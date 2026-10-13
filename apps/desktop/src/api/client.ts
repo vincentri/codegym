@@ -1,6 +1,8 @@
+import { isTauri } from "@tauri-apps/api/core";
 import { createMockApi } from "./mock";
+import { createTauriApi } from "./tauri";
 import type { CodegymApi } from "./types";
 
-// Milestone 0 runs entirely on the mock backend (browser prototype). Milestone 1 adds the Tauri
-// implementation and picks it when running inside the desktop shell.
-export const api: CodegymApi = createMockApi();
+// Inside the desktop app every call goes to the Rust backend. In a plain browser (the published
+// prototype, `vp dev` without Tauri) and in tests the mock backend stands in.
+export const api: CodegymApi = isTauri() ? createTauriApi() : createMockApi();

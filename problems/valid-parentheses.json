@@ -1,0 +1,29 @@
+{
+  "id": "valid-parentheses",
+  "title": "Valid Parentheses",
+  "difficulty": "easy",
+  "categories": ["stack", "string"],
+  "descriptionMd": "You are given a string `s` made up only of the bracket characters `(`, `)`, `[`, `]`, `{` and `}`.\n\nDecide whether the brackets are **properly balanced**: every opening bracket must be closed by a bracket of the same kind, closings must happen in the reverse order of openings (inner pairs close before outer ones), and no closing bracket may appear without a matching opener before it.\n\n**Example 1**\n\n```\ns = \"([]){}\"\n→ true\n```\nThe square pair sits fully inside the round pair, and the curly pair follows.\n\n**Example 2**\n\n```\ns = \"([)]\"\n→ false\n```\nThe `)` arrives while `[` is still the most recent unclosed bracket.\n\n**Example 3**\n\n```\ns = \"((\"\n→ false\n```",
+  "constraints": ["1 ≤ s.length ≤ 10⁴", "s contains only the characters ()[]{}"],
+  "hints": ["When you meet a closing bracket, which opening bracket must it match?", "The most recently opened, still-unclosed bracket is the only candidate — what data structure gives you \"most recent\" cheaply?"],
+  "signature": {
+    "functionName": "isValid",
+    "params": [{ "name": "s", "type": "string" }],
+    "returns": "bool"
+  },
+  "comparator": "exact",
+  "tests": [
+    { "input": ["([]){}"], "expected": true },
+    { "input": ["([)]"], "expected": false },
+    { "input": ["(("], "expected": false },
+    { "input": ["()"], "expected": true, "hidden": true },
+    { "input": [")"], "expected": false, "hidden": true },
+    { "input": ["]["], "expected": false, "hidden": true },
+    { "input": ["{[()()]}"], "expected": true, "hidden": true },
+    { "input": ["(((([]))))"], "expected": true, "hidden": true },
+    { "input": ["{[}]"], "expected": false, "hidden": true },
+    { "input": ["([]"], "expected": false, "hidden": true },
+    { "input": ["{{{}[{{{}}{}}]{}}({[]{{[][][]}}}([({{}(()()())}[{}(({{{}}({})}[][[{{}(){}[{[{()[()()([]()){}]{{()}}}]{{({()})}[]{}}}([](){}([(()){}][[(){{(()()[]{}[[][][{[]}][()[{({[[]({[([[{([][(()[]{{{}}{[(([(){{}}])[][()][])()][]([[]])[{}{}][{{[[(()[[]]){{[()]}}][[({[{}]})(){()}[]]][[{}{()[{[][{{}{{{}}([]{{{[][]}}{}([{{}}[]])}[()[{{([{[()]}]{[()][([[]])]})}}]])}}]}]}]]]}}]}})])}]])]})]})}]]])}}]]))]}]]))])]))}"], "expected": true, "hidden": true },
+    { "input": ["{{{}[{{{}}{}}]{}}({[]{{[][][]}}}([({{}(()()())}[{}(({{{}}({})}[][[{{}(){}[{[{()[()()([]()){}]{{()}}}]{{({()})}[]{}}}([](){}([(()){}][[(){{(()()[]{}[[][][{[]}][()[{({[[]({[([[{([][(()[]{{{}}{[(([(){{}}])[][()][])()][]([[]])[{}{}][{{[[(()[[]]){{[()]}}][[({[{}]})(){()}[]]][[{}{()[{[][{{}{{{}}([]{{{[][]}}{}([{{}}[]])}[()[{{([{[()]}]{[()][([[]])]})}}]])}}]}]}]]]}}]}})])}]])]})]})}]]])}}]]))]}]]))])]))]"], "expected": false, "hidden": true }
+  ]
+}

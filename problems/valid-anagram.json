@@ -1,0 +1,28 @@
+{
+  "id": "valid-anagram",
+  "title": "Valid Anagram",
+  "difficulty": "easy",
+  "categories": ["hash-map", "string"],
+  "descriptionMd": "Given two strings `s` and `t`, decide whether `t` is an **anagram** of `s` — that is, whether `t` can be produced by rearranging the letters of `s`, using every letter exactly as many times as it appears in `s`.\n\n**Example 1**\n\n```\ns = \"listen\", t = \"silent\"\n→ true\n```\n\n**Example 2**\n\n```\ns = \"apple\", t = \"paper\"\n→ false\n```\n`s` has two `p`s and an `l`; `t` has two `p`s and an `r`.\n\n**Follow-up:** how would you adapt your approach if the strings could contain arbitrary Unicode characters?",
+  "constraints": ["1 ≤ s.length, t.length ≤ 5 · 10⁴", "s and t contain only lowercase English letters"],
+  "hints": ["If the lengths differ, can they possibly be anagrams?", "Two strings are anagrams exactly when every letter occurs the same number of times in both."],
+  "signature": {
+    "functionName": "isAnagram",
+    "params": [{ "name": "s", "type": "string" }, { "name": "t", "type": "string" }],
+    "returns": "bool"
+  },
+  "comparator": "exact",
+  "tests": [
+    { "input": ["listen", "silent"], "expected": true },
+    { "input": ["apple", "paper"], "expected": false },
+    { "input": ["a", "a"], "expected": true, "hidden": true },
+    { "input": ["a", "b"], "expected": false, "hidden": true },
+    { "input": ["ab", "a"], "expected": false, "hidden": true },
+    { "input": ["aab", "abb"], "expected": false, "hidden": true },
+    { "input": ["anagram", "nagaram"], "expected": true, "hidden": true },
+    { "input": ["rat", "car"], "expected": false, "hidden": true },
+    { "input": ["zzzz", "zzzz"], "expected": true, "hidden": true },
+    { "input": ["dclvcjzvtrmbsrqkecdihosfsoyilavncfctatnynbyqrwgtgiueugkkmbfndyfihkboiipdtdcwrshtkhdhvfbluobgramygqrdfokqkarrzxnwntazlypkuaabhaqkldgzweojgmmymywxglupvqmvroionxjqfkyjljkfnacwyyqymifkhwiqmthxvzlqfnlmecmarbmkqjntvayxkhftfwuhfzkzakqetwfvtztegqxrqdhxdabdvsgufzppildzxnqhrnnmtlelxjtnxtfoyqwpwmvzwyahuqkfniriiblmddcazyuchxsufqlziesbaylpkhfaedrlqpxswlnjombdpsgtmadihccodxodctctajvdqxogibgwhakikksbmshacbkjjbvq", "uzhtnbitaaxsezgqnshxfgfvimjyqhrrbislhwhnrwwybwkixfawvcsfjyqwladzfmtckmduhuaqkjonapdlhiyutxanniljodavqtcjtdlldruaniloyvtrktmoaqyxclihpesfnavxdgrmbhrxtjyoiwvbrsxzonkfmlfqcahigayqzhdwmacudvmpmipmklegzqiamhzdhixtpkoxfxkfegkvqqedjpubyfasfwfbtfbhbzaqkgzcidlsvxcrxlpbfdyqtdtrcnczcnvtdtwdokotgqhalkhjqnfbbilkrnzmqlxyggagkwetqgescgtbbwoeakqhftynmdepkrlflursdcbyjyvwyhjykvziwozdndkomakpocnumqcuvkjfqkmrkimybmqs"], "expected": true, "hidden": true },
+    { "input": ["dclvcjzvtrmbsrqkecdihosfsoyilavncfctatnynbyqrwgtgiueugkkmbfndyfihkboiipdtdcwrshtkhdhvfbluobgramygqrdfokqkarrzxnwntazlypkuaabhaqkldgzweojgmmymywxglupvqmvroionxjqfkyjljkfnacwyyqymifkhwiqmthxvzlqfnlmecmarbmkqjntvayxkhftfwuhfzkzakqetwfvtztegqxrqdhxdabdvsgufzppildzxnqhrnnmtlelxjtnxtfoyqwpwmvzwyahuqkfniriiblmddcazyuchxsufqlziesbaylpkhfaedrlqpxswlnjombdpsgtmadihccodxodctctajvdqxogibgwhakikksbmshacbkjjbvq", "uzhtnbitaaxsezgqnshxfgfvimjyqhrrbislhwhnrwwybwkixfawvcsfjyqwladzfmtckmduhuaqkjonapdlhiyutxanniljodavqtcjtdlldruaniloyvtrktmoaqyxclihpesfnavxdgrmbhrxtjyoiwvbrsxzonkfmlfqcahigayqzhdwmacudvmpmipmklegzqiamhzdhixtpkoxfxkfegkvqqedjpubyfasfwfbtfbhbzaqkgzcidlsvxcrxlpbfdyqtdtrcnczcnvtdtwdokotgqhalkhjqnfbbilkrnzmqlxyggagkwetqgescgtbbwoeakqhftynmdepkrlflursdcbyjyvwyhjykvziwozdndkomakpocnumqcuvkjfqkmrkimybmqa"], "expected": false, "hidden": true }
+  ]
+}

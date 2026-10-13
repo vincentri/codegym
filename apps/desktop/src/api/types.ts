@@ -88,6 +88,8 @@ export interface CodegymApi {
   updateSettings(settings: AppSettings): Promise<AppSettings>;
   detectRuntimes(): Promise<RuntimeInfo[]>;
   dataInfo(): Promise<DataInfo>;
+  /** Shows the folder holding the database in the system file manager (desktop app only). */
+  openDataFolder(): Promise<void>;
   /** Deletes all progress, submissions, drafts, chats and activity records. Settings and AI profiles stay. */
   resetProgress(req: ResetProgressRequest): Promise<void>;
 

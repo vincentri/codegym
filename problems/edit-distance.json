@@ -1,0 +1,28 @@
+{
+  "id": "edit-distance",
+  "title": "Edit Distance",
+  "difficulty": "medium",
+  "categories": ["dynamic-programming", "string"],
+  "descriptionMd": "Given two strings `word1` and `word2`, find the **minimum number of single-character edits** needed to turn `word1` into `word2`.\n\nEach edit is one of:\n- **insert** a character anywhere,\n- **delete** a character,\n- **replace** a character with a different one.\n\n**Example 1**\n\n```\nword1 = \"horse\", word2 = \"ros\"\n→ 3\n```\nReplace `h` with `r` (`rorse`), delete the `r` that follows `o` (`rose`), delete `e` (`ros`).\n\n**Example 2**\n\n```\nword1 = \"intention\", word2 = \"execution\"\n→ 5\n```",
+  "constraints": ["0 ≤ word1.length, word2.length ≤ 500", "word1 and word2 consist of lowercase English letters"],
+  "hints": ["Compare the last characters of the two strings. If they match, what does that tell you? If not, each of the three edits shrinks the problem in a different way.", "Fill a table where cell `(i, j)` holds the answer for the first `i` characters of `word1` and the first `j` characters of `word2`."],
+  "signature": {
+    "functionName": "minDistance",
+    "params": [{ "name": "word1", "type": "string" }, { "name": "word2", "type": "string" }],
+    "returns": "int"
+  },
+  "comparator": "exact",
+  "tests": [
+    {"input": ["horse", "ros"], "expected": 3},
+    {"input": ["intention", "execution"], "expected": 5},
+    {"input": ["", ""], "expected": 0, "hidden": true},
+    {"input": ["", "abc"], "expected": 3, "hidden": true},
+    {"input": ["abc", ""], "expected": 3, "hidden": true},
+    {"input": ["same", "same"], "expected": 0, "hidden": true},
+    {"input": ["a", "b"], "expected": 1, "hidden": true},
+    {"input": ["abc", "cba"], "expected": 2, "hidden": true},
+    {"input": ["kitten", "sitting"], "expected": 3, "hidden": true},
+    {"input": ["zoologicoarchaeologist", "zoogeologist"], "expected": 10, "hidden": true},
+    {"input": ["cabcabdaaddcadbacdaadddaddaacbabccdcddaabddbdcdddacdcccbdaaaadacbacadcdacccabbdbaccacbdacabccccabbdabaabdddcbcccaabbaacdddddcbacdacdcabdaabcbbcccaaddbbdbcadadadacdddcadacbdcadabddadccbcbaabccbbabcbbba", "bdddccbdaddccacacddaaccaaddadbcdbadacababddbcccddcacacadccbcabccdbacdcbadcaccbbcdbbbbacaacbdbbbbdadcbdcdbbcdbcddcddbbbcadcaacabcdbdabdcadadcbdacbacacbbacdbddaaacbbdacbcaabddaadabbc"], "expected": 104, "hidden": true}
+  ]
+}

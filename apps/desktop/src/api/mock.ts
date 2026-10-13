@@ -472,6 +472,9 @@ export function createMockApi(): CodegymApi {
         bankVersion: "2026.10.0",
       };
     },
+    async openDataFolder() {
+      throw new Error("Opening the data folder works in the desktop app.");
+    },
     async listAiProfiles() {
       return profiles;
     },

@@ -64,7 +64,9 @@ export function StatsBar() {
         <CardContent className="flex items-center gap-3 px-4">
           <FlameIcon className="size-8 text-medium" />
           <div>
-            <div className="text-2xl font-semibold">{stats.streakDays} days</div>
+            <div className="text-2xl font-semibold">
+              {stats.streakDays} {stats.streakDays === 1 ? "day" : "days"}
+            </div>
             <div className="text-xs text-muted-foreground">current streak</div>
           </div>
         </CardContent>

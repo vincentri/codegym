@@ -1,0 +1,28 @@
+{
+  "id": "minimum-window-substring",
+  "title": "Minimum Window Substring",
+  "difficulty": "hard",
+  "categories": ["sliding-window", "hash-map", "string"],
+  "descriptionMd": "Given two strings `s` and `t`, find the **shortest contiguous substring** of `s` that contains every character of `t`, counting repeats — if `t` has two `'a'`s, the substring needs at least two `'a'`s as well. Characters are case-sensitive.\n\nReturn that substring, or the empty string `\"\"` if no such substring exists. The tests are chosen so that the shortest window is always unique.\n\n**Example 1**\n\n```\ns = \"ADOBECODEBANC\", t = \"ABC\"\n→ \"BANC\"\n```\n`\"BANC\"` contains an `A`, a `B` and a `C`, and no shorter window does.\n\n**Example 2**\n\n```\ns = \"a\", t = \"aa\"\n→ \"\"\n```\n`s` has only one `'a'`, so no window can cover `t`.\n\n**Follow-up:** can you find it in O(|s| + |t|) time?",
+  "constraints": ["1 ≤ s.length, t.length ≤ 10⁵", "`s` and `t` consist of uppercase and lowercase English letters.", "If a valid window exists, the shortest one is unique."],
+  "hints": ["Grow a window by moving its right edge until it covers all of `t`, then shrink it from the left while it still does.", "Instead of re-counting the whole window each step, track how many required characters are still missing and update it as characters enter and leave."],
+  "signature": {
+    "functionName": "minWindow",
+    "params": [{ "name": "s", "type": "string" }, { "name": "t", "type": "string" }],
+    "returns": "string"
+  },
+  "comparator": "exact",
+  "tests": [
+    { "input": ["ADOBECODEBANC","ABC"], "expected": "BANC" },
+    { "input": ["a","aa"], "expected": "" },
+    { "input": ["a","a"], "expected": "a" },
+    { "input": ["a","b"], "expected": "", "hidden": true },
+    { "input": ["ab","b"], "expected": "b", "hidden": true },
+    { "input": ["abc","cba"], "expected": "abc", "hidden": true },
+    { "input": ["aaflslflsldkalskaaa","aaa"], "expected": "aaa", "hidden": true },
+    { "input": ["aAbBcC","Ab"], "expected": "Ab", "hidden": true },
+    { "input": ["cabwefgewcwaefgcf","cae"], "expected": "cwae", "hidden": true },
+    { "input": ["xyzzyxaab","aab"], "expected": "aab", "hidden": true },
+    { "input": ["ahweownnrekntbrgahdoiqbolbratkvoqjunotfjiafrdkotqhqcwsoohrgppcjacdwvrfohowhjgnqfmkredlbvenliugvtrpdjxhwqaswgwodpklkclnetdwugkvcfeknhmflbrtrsnfeoagknwhfhebftgrjbdlhiiidlfibeirfuablewwjufvhaiijuahjqagdtrooatibnwltvcmrqsatronurvquhuloepplegirbnqvjahhijgounkrjumqqgefwvibouccjkbjohgpptvftuucqfglnpnefqeqqdhhjreecfhvwadeqndmpclhetfjiggvnmjlovngkjedolqjvjhyfzeankqplotmlfkwcovtilrapeitaxhagchqcenehjlpdwlib","xyz"], "expected": "yfzeankqplotmlfkwcovtilrapeitax", "hidden": true }
+  ]
+}

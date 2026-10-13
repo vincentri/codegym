@@ -1,0 +1,28 @@
+{
+  "id": "best-time-to-buy-and-sell-stock",
+  "title": "Best Time to Buy and Sell Stock",
+  "difficulty": "easy",
+  "categories": ["array", "greedy"],
+  "descriptionMd": "The array `prices` lists a stock's price on consecutive days: `prices[i]` is the price on day `i`.\n\nYou may make **at most one trade**: buy one share on some day and sell it on a **later** day. Return the largest profit you can lock in. If every possible trade loses money (or breaks even), don't trade and return `0`.\n\n**Example 1**\n\n```\nprices = [8, 2, 6, 1, 4, 9]\n→ 8\n```\nBuy at 1 on day 3, sell at 9 on day 5.\n\n**Example 2**\n\n```\nprices = [9, 7, 4, 3]\n→ 0\n```\nThe price only falls, so no trade is profitable.",
+  "constraints": ["1 ≤ prices.length ≤ 10⁵", "0 ≤ prices[i] ≤ 10⁴"],
+  "hints": ["If you were forced to sell on day `i`, which buying day would be best?", "Can you keep that answer up to date in a single left-to-right pass?"],
+  "signature": {
+    "functionName": "maxProfit",
+    "params": [{ "name": "prices", "type": "int[]" }],
+    "returns": "int"
+  },
+  "comparator": "exact",
+  "tests": [
+    { "input": [[8, 2, 6, 1, 4, 9]], "expected": 8 },
+    { "input": [[9, 7, 4, 3]], "expected": 0 },
+    { "input": [[5]], "expected": 0, "hidden": true },
+    { "input": [[1, 2]], "expected": 1, "hidden": true },
+    { "input": [[2, 1]], "expected": 0, "hidden": true },
+    { "input": [[3, 3, 3, 3]], "expected": 0, "hidden": true },
+    { "input": [[2, 4, 1, 3]], "expected": 2, "hidden": true },
+    { "input": [[7, 1, 5, 3, 6, 4]], "expected": 5, "hidden": true },
+    { "input": [[0, 10000]], "expected": 10000, "hidden": true },
+    { "input": [[3, 8, 1, 6, 2, 7]], "expected": 6, "hidden": true },
+    { "input": [[4293, 5654, 8178, 8970, 4320, 8768, 5599, 7334, 2176, 181, 7495, 7689, 6238, 3774, 7978, 2387, 490, 2801, 6533, 7408, 6785, 9366, 8594, 5052, 3791, 3269, 6984, 3464, 8797, 2382, 2409, 9431, 2731, 4957, 9081, 5839, 6906, 4001, 2794, 3720, 2580, 4706, 7167, 3613, 821, 5214, 4143, 7183, 2473, 312, 2621, 7838, 1174, 4768, 5144, 5595, 4524, 540, 1651, 3869, 8063, 354, 6680, 6285, 2339, 2139, 7903, 1573, 2749, 5894, 977, 1708, 3417, 1323, 8340, 2574, 920, 8259, 6438, 6942, 2184, 2040, 5613, 5624, 7251, 1286, 3116, 8345, 8324, 7311, 2264, 563, 8127, 1184, 2376, 121, 1730, 6621, 7368, 7242, 7118, 5405, 8996, 8662, 658, 9707, 8558, 1712, 5101, 1018, 4773, 7635, 5119, 4718, 5879, 2147, 7989, 1970, 4564, 1706, 6881, 2644, 4952, 4096, 8616, 23, 6768, 4690, 8390, 8232, 6760, 6901, 5484, 1068, 4904, 6256, 9674, 1518, 6808, 7492, 2431, 4665, 2091, 9606, 8289, 5788, 3478, 6535, 3102, 9633, 540, 3214, 9949, 1329, 4784, 4786, 7853, 6736, 862, 5952, 7879, 6640, 1110, 8554, 966, 1933, 1636, 4588, 692, 587, 824, 2701, 7704, 2661, 4787, 8157, 5702, 188, 2376, 8616, 4185, 5487, 1780, 9897, 5301, 9605, 4889, 618, 2667, 4949, 4420, 2242, 8620, 1954, 1772, 3376, 9082, 8427, 4189, 9600, 7351, 9367, 6651, 9912, 8647, 418, 5774, 4648, 6800, 8144, 2356, 4407, 2026, 7286, 3294, 4438, 7191, 8798, 5708, 4327, 1024, 7543, 9447, 8614, 2192, 5844, 6716, 5457, 9992, 3145, 3271, 5610, 4264, 2541, 2351, 6260, 9667, 6325, 6287, 7378, 2198, 9460, 6554, 2773, 8082, 8341, 9284, 917, 2033, 7120, 9892, 8429, 5255, 1192, 8811, 5096, 1985, 9602, 4041, 4773, 2477, 1072, 311, 5612, 7607, 2055, 5928, 4772, 1161, 4446, 163, 5422, 2290, 333, 4753, 5891, 3351, 8179, 9384, 1038, 6089, 6479, 3075, 3241, 8641, 2444, 65, 4111, 7739, 2020, 6252, 5104, 5165, 7503, 1097, 7731, 894, 4117, 8010, 2225]], "expected": 9969, "hidden": true }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "id": "climbing-stairs",
+  "title": "Climbing Stairs",
+  "difficulty": "easy",
+  "categories": ["dynamic-programming"],
+  "descriptionMd": "A staircase has `n` steps. Each move takes you up either **1 step** or **2 steps**. Return how many different sequences of moves bring you from the bottom exactly to the top.\n\n**Example 1**\n\n```\nn = 3\n→ 3\n```\nThe sequences are 1+1+1, 1+2 and 2+1.\n\n**Example 2**\n\n```\nn = 4\n→ 5\n```\n1+1+1+1, 1+1+2, 1+2+1, 2+1+1 and 2+2.",
+  "constraints": ["1 ≤ n ≤ 45"],
+  "hints": ["Think about the very last move: it was either a 1-step or a 2-step. Where were you just before it?", "Plain recursion repeats a lot of work. Can you build the answers from small `n` upward and keep only what you need?"],
+  "signature": {
+    "functionName": "climbStairs",
+    "params": [{ "name": "n", "type": "int" }],
+    "returns": "int"
+  },
+  "comparator": "exact",
+  "tests": [
+    { "input": [3], "expected": 3 },
+    { "input": [4], "expected": 5 },
+    { "input": [1], "expected": 1, "hidden": true },
+    { "input": [2], "expected": 2, "hidden": true },
+    { "input": [5], "expected": 8, "hidden": true },
+    { "input": [10], "expected": 89, "hidden": true },
+    { "input": [20], "expected": 10946, "hidden": true },
+    { "input": [30], "expected": 1346269, "hidden": true },
+    { "input": [44], "expected": 1134903170, "hidden": true },
+    { "input": [45], "expected": 1836311903, "hidden": true }
+  ]
+}

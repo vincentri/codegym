@@ -11,7 +11,7 @@ import {
 import { useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
-import { useDataInfo, useResetProgress } from "@/api/hooks";
+import { useDataInfo, useOpenDataFolder, useResetProgress } from "@/api/hooks";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -181,7 +181,10 @@ export function ResetProgressDialog() {
 
 export function DataSettings() {
   const { data } = useDataInfo();
-  const notYet = () => toast.info("Available in the next milestone");
+  const notYet = () => toast.info("Problem packs arrive in a later update");
+  const openDataFolder = useOpenDataFolder();
+  const openFolder = () =>
+    openDataFolder.mutate(undefined, { onError: (e) => toast.error(e.message) });
   return (
     <div className="grid gap-5">
       <Card>
@@ -208,7 +211,7 @@ export function DataSettings() {
             <Skeleton className="h-20" />
           )}
           <div className="flex flex-wrap gap-2">
-            <Button variant="outline" onClick={notYet}>
+            <Button variant="outline" onClick={openFolder}>
               <FolderOpenIcon /> Open data folder
             </Button>
             <Button variant="outline" onClick={notYet}>

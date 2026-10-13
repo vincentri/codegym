@@ -18,10 +18,13 @@ pub struct Tool {
 }
 
 impl Tool {
-    /// Finds the first of `names` on PATH that answers `version_args`.
+    /// Finds the first of `names` that answers `version_args`, on PATH or in the usual install
+    /// folders (apps started from a desktop launcher often get a minimal PATH).
     pub fn detect(names: &[&str], version_args: &[&str]) -> Option<Tool> {
+        let search = search_path();
+        let cwd = std::env::current_dir().unwrap_or_default();
         names.iter().find_map(|name| {
-            let path = which::which(name).ok()?;
+            let path = which::which_in(name, Some(&search), &cwd).ok()?;
             let out = Command::new(&path).args(version_args).stdin(Stdio::null()).output().ok()?;
             if !out.status.success() {
                 return None;
@@ -34,6 +37,31 @@ impl Tool {
     pub fn command(&self) -> Command {
         Command::new(&self.path)
     }
+}
+
+/// PATH plus the folders where installers put Node.js, Python and Go.
+fn search_path() -> std::ffi::OsString {
+    let mut dirs: Vec<PathBuf> =
+        std::env::var_os("PATH").map(|p| std::env::split_paths(&p).collect()).unwrap_or_default();
+    let home = std::env::var_os("HOME").or_else(|| std::env::var_os("USERPROFILE")).map(PathBuf::from);
+    if cfg!(windows) {
+        for var in ["ProgramFiles", "LOCALAPPDATA"] {
+            if let Some(base) = std::env::var_os(var).map(PathBuf::from) {
+                dirs.extend([base.join("Go").join("bin"), base.join("nodejs"), base.join("Programs").join("Python")]);
+            }
+        }
+    } else {
+        dirs.extend(["/usr/local/go/bin", "/opt/homebrew/bin", "/usr/local/bin", "/opt/local/bin"].map(PathBuf::from));
+        if let Some(home) = &home {
+            dirs.extend([
+                home.join("go/bin"),
+                home.join(".volta/bin"),
+                home.join(".local/bin"),
+                home.join(".asdf/shims"),
+            ]);
+        }
+    }
+    std::env::join_paths(dirs).unwrap_or_default()
 }
 
 /// Pulls `22.1.0` out of `v22.1.0`, `Python 3.12.3` or `go version go1.24.7 linux/amd64`.
@@ -131,7 +159,16 @@ pub fn run(mut cmd: Command, stdin: &[u8], timeout: Duration) -> std::io::Result
 
 #[cfg(test)]
 mod tests {
-    use super::parse_version;
+    use super::{Tool, parse_version};
+
+    /// Run with a stripped PATH (as a desktop launcher gives) to exercise the fallback folders.
+    #[test]
+    fn finds_tools_in_install_folders() {
+        let path = std::env::var("PATH").unwrap_or_default();
+        if std::path::Path::new("/usr/local/go/bin/go").exists() && !path.contains("/usr/local/go/bin") {
+            assert!(Tool::detect(&["go"], &["version"]).is_some());
+        }
+    }
 
     #[test]
     fn parses_versions() {
